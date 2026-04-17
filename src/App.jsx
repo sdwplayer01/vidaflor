@@ -277,7 +277,7 @@ function HomeScreen({ data, cfg, T, setTab, setData }) {
           <h2 style={{ margin:0,color:T.tx,fontSize:26,fontWeight:900 }}>{greet()}, {cfg.name}</h2>
           <p style={{ margin:"2px 0 0",color:T.tm,fontSize:14 }}>{tnL[turnoNow()]}</p>
         </div>
-        <div style={{ width:52,height:52,borderRadius:18,background:T.gh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,boxShadow:`0 8px 16px ${T.p}33` }}>{T.e}</div>
+        <div style={{ width:52,height:52,borderRadius:18,background:T.gh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,boxShadow:`0 8px 16px ${T.p}33` }}><T.e size={28} color="#fff" /></div>
       </div>
 
       {/* Bloom */}
@@ -2261,7 +2261,7 @@ export default function App() {
 
   if (!data||!cfg) return (
     <div style={{ height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"#FFF0F4" }}>
-      <div style={{ textAlign:"center" }}><div style={{ fontSize:52,marginBottom:10 }}><Flower size={20} color={T.p}/></div><p style={{ color:"#9C7A83",fontSize:14,fontWeight:700,fontFamily:"sans-serif" }}>Florescendo...</p></div>
+      <div style={{ textAlign:"center" }}><div style={{ fontSize:52,marginBottom:10 }}><Flower size={32} color={T_MAP.pastel.p}/></div><p style={{ color:"#9C7A83",fontSize:14,fontWeight:700,fontFamily:"sans-serif" }}>Florescendo...</p></div>
     </div>
   );
 
