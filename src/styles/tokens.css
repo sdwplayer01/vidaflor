@@ -1,0 +1,295 @@
+/* src/styles/tokens.css
+ * Design tokens do VidaFlor — CSS Variables completo com os 5 temas.
+ * Importar no main.tsx: import "@/styles/tokens.css"
+ *
+ * Uso em CSS Modules: var(--vf-p), var(--vf-surf), etc.
+ * Tema ativo é definido pelo atributo data-theme no <html>.
+ * applyTheme.ts define data-theme e as variáveis são trocadas via cascata.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEMA PADRÃO: Rosa Pastel 🌸  (data-theme="pastel" ou :root)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme="pastel"] {
+  /* ── Superfícies ── */
+  --vf-bg:    #FFF0F4;
+  --vf-surf:  #FFFFFF;
+  --vf-alt:   #FFE4EE;
+  --vf-bd:    #F9D0DB;
+
+  /* ── Primárias ── */
+  --vf-p:     #E8799A;
+  --vf-pl:    #F9B8CC;
+  --vf-pd:    #C4567A;
+  --vf-gh:    linear-gradient(135deg, #E8799A, #F4B8CC);
+
+  /* ── Texto ── */
+  --vf-tx:    #3D2030;
+  --vf-tm:    #9C7A83;
+
+  /* ── Semânticas ── */
+  --vf-ok:    #66BB6A;
+  --vf-wn:    #FFA726;
+  --vf-er:    #EF5350;
+  --vf-ok-light: #A8F5C0;
+  --vf-er-light: #FFAAAA;
+  --vf-wn-light: #FFEB3B;
+
+  /* ── Paleta decorativa ── */
+  --vf-palette-1: #E8799A;
+  --vf-palette-2: #74B9FF;
+  --vf-palette-3: #A29BFE;
+  --vf-palette-4: #81C784;
+  --vf-palette-5: #FFB74D;
+  --vf-palette-6: #FF8A65;
+  --vf-palette-7: #B0BEC5;
+
+  /* ── Espaçamentos e raios ── */
+  --vf-r-sm:   12px;
+  --vf-r-md:   16px;
+  --vf-r-lg:   20px;
+  --vf-r-xl:   24px;
+  --vf-r-full: 9999px;
+
+  /* ── Sombras ── */
+  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .03);
+  --vf-shadow-btn:  0 4px 12px rgba(232, 121, 154, .27);
+
+  /* ── Transições ── */
+  --vf-trans-fast:   .15s ease;
+  --vf-trans-normal: .2s ease;
+  --vf-trans-slow:   .4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEMA: Terra & Mel 🌿
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="terra"] {
+  /* ── Superfícies ── */
+  --vf-bg:    #FAF5EE;
+  --vf-surf:  #FFFFFF;
+  --vf-alt:   #F2E6D8;
+  --vf-bd:    #E0CCB4;
+
+  /* ── Primárias ── */
+  --vf-p:     #8B6248;
+  --vf-pl:    #C4967A;
+  --vf-pd:    #5D3D2C;
+  --vf-gh:    linear-gradient(135deg, #8B6248, #C4967A);
+
+  /* ── Texto ── */
+  --vf-tx:    #2C1A0E;
+  --vf-tm:    #8C6E57;
+
+  /* ── Semânticas ── */
+  --vf-ok:    #7CAA72;
+  --vf-wn:    #E6A817;
+  --vf-er:    #C0614E;
+  --vf-ok-light: #B5D8AD;
+  --vf-er-light: #E8A8A0;
+  --vf-wn-light: #F5D270;
+
+  /* ── Paleta decorativa ── */
+  --vf-palette-1: #8B6248;
+  --vf-palette-2: #5B8C7A;
+  --vf-palette-3: #9E7D63;
+  --vf-palette-4: #7CAA72;
+  --vf-palette-5: #D4A655;
+  --vf-palette-6: #C87243;
+  --vf-palette-7: #96887A;
+
+  /* ── Sombras ── */
+  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .04);
+  --vf-shadow-btn:  0 4px 12px rgba(139, 98, 72, .27);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEMA: Lilás & Lavanda 💜
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="lilac"] {
+  /* ── Superfícies ── */
+  --vf-bg:    #F7F3FF;
+  --vf-surf:  #FFFFFF;
+  --vf-alt:   #EDE4FF;
+  --vf-bd:    #DDD0F5;
+
+  /* ── Primárias ── */
+  --vf-p:     #8B5CF6;
+  --vf-pl:    #C4B5FD;
+  --vf-pd:    #6D28D9;
+  --vf-gh:    linear-gradient(135deg, #8B5CF6, #C4B5FD);
+
+  /* ── Texto ── */
+  --vf-tx:    #1E1030;
+  --vf-tm:    #7C6FA0;
+
+  /* ── Semânticas ── */
+  --vf-ok:    #66BB6A;
+  --vf-wn:    #FFA726;
+  --vf-er:    #EF5350;
+  --vf-ok-light: #A8F5C0;
+  --vf-er-light: #FFAAAA;
+  --vf-wn-light: #FFEB3B;
+
+  /* ── Paleta decorativa ── */
+  --vf-palette-1: #8B5CF6;
+  --vf-palette-2: #60A5FA;
+  --vf-palette-3: #C084FC;
+  --vf-palette-4: #34D399;
+  --vf-palette-5: #FBBF24;
+  --vf-palette-6: #FB923C;
+  --vf-palette-7: #94A3B8;
+
+  /* ── Sombras ── */
+  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .03);
+  --vf-shadow-btn:  0 4px 12px rgba(139, 92, 246, .27);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEMA: Neutro Elegante 🤍
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="neutro"] {
+  /* ── Superfícies ── */
+  --vf-bg:    #F5F5F3;
+  --vf-surf:  #FFFFFF;
+  --vf-alt:   #EEEEEC;
+  --vf-bd:    #D4D4D4;
+
+  /* ── Primárias ── */
+  --vf-p:     #262626;
+  --vf-pl:    #737373;
+  --vf-pd:    #0A0A0A;
+  --vf-gh:    linear-gradient(135deg, #262626, #737373);
+
+  /* ── Texto ── */
+  --vf-tx:    #0A0A0A;
+  --vf-tm:    #737373;
+
+  /* ── Semânticas ── */
+  --vf-ok:    #22C55E;
+  --vf-wn:    #F59E0B;
+  --vf-er:    #EF4444;
+  --vf-ok-light: #86EFAC;
+  --vf-er-light: #FCA5A5;
+  --vf-wn-light: #FDE68A;
+
+  /* ── Paleta decorativa ── */
+  --vf-palette-1: #262626;
+  --vf-palette-2: #475569;
+  --vf-palette-3: #6B7280;
+  --vf-palette-4: #22C55E;
+  --vf-palette-5: #F59E0B;
+  --vf-palette-6: #EF4444;
+  --vf-palette-7: #94A3B8;
+
+  /* ── Sombras ── */
+  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .05);
+  --vf-shadow-btn:  0 4px 12px rgba(38, 38, 38, .20);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEMA: Sage & Céu 🩵
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="sage"] {
+  /* ── Superfícies ── */
+  --vf-bg:    #F0F7F4;
+  --vf-surf:  #FFFFFF;
+  --vf-alt:   #DAF0E8;
+  --vf-bd:    #B2DDD1;
+
+  /* ── Primárias ── */
+  --vf-p:     #059669;
+  --vf-pl:    #6EE7B7;
+  --vf-pd:    #047857;
+  --vf-gh:    linear-gradient(135deg, #059669, #6EE7B7);
+
+  /* ── Texto ── */
+  --vf-tx:    #0D2E25;
+  --vf-tm:    #5E9E8A;
+
+  /* ── Semânticas ── */
+  --vf-ok:    #059669;
+  --vf-wn:    #D97706;
+  --vf-er:    #DC2626;
+  --vf-ok-light: #6EE7B7;
+  --vf-er-light: #FCA5A5;
+  --vf-wn-light: #FDE68A;
+
+  /* ── Paleta decorativa ── */
+  --vf-palette-1: #059669;
+  --vf-palette-2: #0EA5E9;
+  --vf-palette-3: #8B5CF6;
+  --vf-palette-4: #34D399;
+  --vf-palette-5: #FBBF24;
+  --vf-palette-6: #FB923C;
+  --vf-palette-7: #94A3B8;
+
+  /* ── Sombras ── */
+  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .03);
+  --vf-shadow-btn:  0 4px 12px rgba(5, 150, 105, .27);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TOKENS GLOBAIS (shared — não dependem do tema)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--vf-bg);
+  color: var(--vf-tx);
+  transition: background var(--vf-trans-normal),
+              color var(--vf-trans-normal);
+}
+
+/* Reset de botão para facilitar CSS Modules */
+button {
+  font-family: inherit;
+  transition: opacity .1s ease, transform .1s ease;
+}
+
+/* Feedback de toque universal para botões inline */
+button:active {
+  opacity: 0.7;
+  transform: scale(0.97);
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vf-bd);
+  border-radius: var(--vf-r-full);
+}
+
+/* Remoção do tap highlight em mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}

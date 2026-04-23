@@ -1,6 +1,21 @@
+# Dependências e build
 node_modules
 dist
 .env
 .env.local
 .DS_Store
 *.log
+.env.*.local
+*.env
+
+# Arquivos legados — substituídos pela v2
+FinancasScreen-v2.jsx
+saude-v2.jsx
+src/App.legacy.jsx
+src/main.jsx
+clean_ui.js
+clean_ui_pt3.js
+replace.js
+replace.py
+test.cjs
+scripts/legacy/

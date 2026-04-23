@@ -1,0 +1,41 @@
+/* Toggle.module.css — Switch boolean animado */
+
+.track {
+  width:         44px;
+  height:        24px;
+  border-radius: var(--vf-r-full);
+  background:    var(--vf-bd);
+  position:      relative;
+  cursor:        pointer;
+  flex-shrink:   0;
+  transition:    background var(--vf-trans-normal);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.track:hover {
+  opacity: 0.9;
+}
+
+.track:active {
+  transform: scale(0.96);
+}
+
+.active {
+  background: var(--vf-p);
+}
+
+.thumb {
+  position:      absolute;
+  top:           2px;
+  left:          2px;
+  width:         20px;
+  height:        20px;
+  border-radius: var(--vf-r-full);
+  background:    #fff;
+  box-shadow:    0 1px 4px rgba(0, 0, 0, .25);
+  transition:    left var(--vf-trans-normal);
+}
+
+.thumbActive {
+  left: 22px;
+}

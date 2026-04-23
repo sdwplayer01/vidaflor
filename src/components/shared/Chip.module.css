@@ -1,0 +1,37 @@
+/* Chip.module.css — Pill clicável para filtros/categorias */
+
+.chip {
+  padding:       7px 14px;
+  border-radius: var(--vf-r-full);
+  border:        1.5px solid var(--vf-bd);
+  background:    transparent;
+  color:         var(--vf-tm);
+  font-weight:   500;
+  font-size:     13px;
+  font-family:   inherit;
+  cursor:        pointer;
+  white-space:   nowrap;
+  transition:    all var(--vf-trans-normal);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip:hover {
+  border-color: var(--vf-p);
+  color:        var(--vf-p);
+}
+
+.chip:active {
+  transform: scale(0.95);
+}
+
+.active {
+  background:   var(--vf-p);
+  border-color: var(--vf-p);
+  color:        #fff;
+  font-weight:  700;
+}
+
+.active:hover {
+  filter: brightness(1.05);
+  color:  #fff;
+}

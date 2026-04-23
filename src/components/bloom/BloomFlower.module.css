@@ -1,0 +1,92 @@
+/* src/components/bloom/BloomFlower.module.css */
+/* Componente isolado da Flor do Dia — animação de scale e transição suave. */
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+/* ── Card hero do Bloom ──────────────────────────────────────────────────── */
+
+.card {
+  background: var(--vf-gh);
+  border: none;
+  border-radius: var(--vf-r-xl);
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--vf-shadow-btn);
+}
+
+.cardInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.cardContent {
+  flex: 1;
+  color: #fff;
+}
+
+.cardLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
+.cardTitle {
+  margin: 4px 0 12px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* ── Progress bar interna ────────────────────────────────────────────────── */
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #fff;
+  border-radius: 99px;
+  transition: width 1s ease;
+}
+
+.progressPct {
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* ── Decorative circle ───────────────────────────────────────────────────── */
+
+.decorCircle {
+  position: absolute;
+  left: -20px;
+  bottom: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}

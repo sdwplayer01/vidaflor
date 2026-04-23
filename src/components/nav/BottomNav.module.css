@@ -1,0 +1,60 @@
+/* BottomNav.module.css — Barra de navegação inferior */
+
+.nav {
+  position:         fixed;
+  bottom:           0;
+  left:             50%;
+  transform:        translateX(-50%);
+  width:            100%;
+  max-width:        430px;
+  height:           70px;
+  background:       var(--vf-surf);
+  border-top:       1px solid var(--vf-bd);
+  display:          flex;
+  z-index:          100;
+  box-shadow:       0 -4px 16px rgba(0, 0, 0, .05);
+}
+
+.tab {
+  flex:             1;
+  padding:          4px 0;
+  background:       none;
+  border:           none;
+  cursor:           pointer;
+  display:          flex;
+  flex-direction:   column;
+  align-items:      center;
+  gap:              4px;
+  -webkit-tap-highlight-color: transparent;
+  font-family:      inherit;
+}
+
+.tab:active .pill {
+  transform: scale(0.92);
+}
+
+.pill {
+  width:            42px;
+  height:           30px;
+  border-radius:    12px;
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  transition:       all .3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pill[data-active="true"] {
+  background: var(--vf-p);
+}
+
+.label {
+  font-size:        10px;
+  font-weight:      500;
+  color:            var(--vf-tm);
+  transition:       all .2s;
+}
+
+.label[data-active="true"] {
+  color:            var(--vf-p);
+  font-weight:      800;
+}
