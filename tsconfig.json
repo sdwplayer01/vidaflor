@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2020", "DOM"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "noUncheckedIndexedAccess": true,
     "allowJs": true,
     "checkJs": false,

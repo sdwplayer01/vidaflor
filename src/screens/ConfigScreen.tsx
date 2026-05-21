@@ -1,44 +1,45 @@
-// src/screens/ConfigScreen.tsx — Tela de Configurações do VidaFlor v2
+// src/screens/ConfigScreen.tsx — Tela de Configuracoes do VidaFlor v2
 // Troca de tema, nome, dashboard toggles.
 
 import { useState } from "react";
 import {
   Palette, User, LayoutDashboard, Flower,
 } from "lucide-react";
-import type { ThemeKey, DashConfig } from "@/types/data";
+import type { ThemeKey } from "@/shared/types/theme";
+import type { DashConfig } from "@/features/config/types";
 import { Card }         from "@/components/shared/Card";
 import { Btn }          from "@/components/shared/Btn";
 import { Sheet }        from "@/components/shared/Sheet";
 import { FInput }       from "@/components/shared/FInput";
 import { Toggle }       from "@/components/shared/Toggle";
-import { useConfigStore } from "@/stores/configStore";
-import { getAvailableThemes } from "@/utils/applyTheme";
-
-// ── Tipos locais ─────────────────────────────────────────────────────────────
+import { useConfigStore }    from "@/features/config/store";
+import { getAvailableThemes } from "@/shared/constants/themes";
 
 type SheetKey = "editName" | null;
 
 const DASH_LABELS: { key: keyof DashConfig; label: string; emoji: string }[] = [
-  { key: "bloom",     label: "Flor do Dia",      emoji: "🌸" },
-  { key: "water",     label: "Hidratação",        emoji: "💧" },
-  { key: "routine",   label: "Rotina",            emoji: "📋" },
-  { key: "finance",   label: "Finanças",          emoji: "💰" },
-  { key: "cycle",     label: "Ciclo",             emoji: "🩸" },
-  { key: "spirit",    label: "Conexão Espiritual", emoji: "🙏" },
-  { key: "reminders", label: "Lembretes",         emoji: "🔔" },
+  { key: "bloom",     label: "Flor do Dia",        emoji: "\uD83C\uDF38" },
+  { key: "water",     label: "Hidratacao",          emoji: "\uD83D\uDCA7" },
+  { key: "routine",   label: "Rotina",              emoji: "\uD83D\uDCCB" },
+  { key: "finance",   label: "Financas",            emoji: "\uD83D\uDCB0" },
+  { key: "cycle",     label: "Ciclo",               emoji: "\uD83E\uDE78" },
+  { key: "spirit",    label: "Conexao Espiritual",  emoji: "\uD83D\uDE4F" },
+  { key: "reminders", label: "Lembretes",           emoji: "\uD83D\uDD14" },
+  { key: "meds",      label: "Medicamentos",        emoji: "\uD83D\uDC8A" },
+  { key: "kids",      label: "Rotina das Criancas", emoji: "\uD83D\uDC76" },
+  { key: "casa",      label: "Rotina da Casa",      emoji: "\uD83C\uDFE0" },
+  { key: "pets",      label: "Rotina dos Pets",     emoji: "\uD83D\uDC3E" },
 ];
 
-// ── Component ────────────────────────────────────────────────────────────────
-
 export function ConfigScreen() {
-  const theme       = useConfigStore(s => s.theme);
-  const name        = useConfigStore(s => s.name);
-  const dash        = useConfigStore(s => s.dash);
-  const setTheme    = useConfigStore(s => s.setTheme);
-  const setName     = useConfigStore(s => s.setName);
-  const toggleDash  = useConfigStore(s => s.toggleDash);
+  const theme      = useConfigStore((s) => s.theme);
+  const name       = useConfigStore((s) => s.name);
+  const dash       = useConfigStore((s) => s.dash);
+  const setTheme   = useConfigStore((s) => s.setTheme);
+  const setName    = useConfigStore((s) => s.setName);
+  const toggleDash = useConfigStore((s) => s.toggleDash);
 
-  const [sheet, setSheet] = useState<SheetKey>(null);
+  const [sheet, setSheet]     = useState<SheetKey>(null);
   const [nameForm, setNameForm] = useState(name);
 
   const themes = getAvailableThemes();
@@ -51,13 +52,12 @@ export function ConfigScreen() {
   return (
     <div style={{ padding: "24px 20px 20px" }}>
 
-      {/* Cabeçalho */}
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ margin: 0, color: "var(--vf-tx)", fontSize: 22, fontWeight: 900 }}>Configurações</h2>
+        <h2 style={{ margin: 0, color: "var(--vf-tx)", fontSize: 22, fontWeight: 900 }}>Configuracoes</h2>
         <p style={{ margin: "2px 0 0", color: "var(--vf-tm)", fontSize: 13 }}>Personalize o seu VidaFlor</p>
       </div>
 
-      {/* ═══ Seção: Perfil ═══ */}
+      {/* Perfil */}
       <Card style={{ marginBottom: 16, padding: "18px 18px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{
@@ -84,26 +84,28 @@ export function ConfigScreen() {
         </div>
       </Card>
 
-      {/* ═══ Seção: Tema ═══ */}
+      {/* Tema */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <Palette size={18} color="var(--vf-p)" />
           <p style={{ margin: 0, fontSize: 15, fontWeight: 800, color: "var(--vf-tx)" }}>Tema</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {themes.map(t => (
+          {themes.map((t) => (
             <button
               key={t.key}
               onClick={() => setTheme(t.key as ThemeKey)}
               style={{
                 display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
-                borderRadius: 16, border: `2px solid ${theme === t.key ? "var(--vf-p)" : "var(--vf-bd)"}`,
-                background: theme === t.key ? "color-mix(in srgb, var(--vf-p) 8%, transparent)" : "var(--vf-surf)",
+                borderRadius: 16,
+                border: `2px solid ${theme === t.key ? "var(--vf-p)" : "var(--vf-bd)"}`,
+                background: theme === t.key
+                  ? "color-mix(in srgb, var(--vf-p) 8%, transparent)"
+                  : "var(--vf-surf)",
                 cursor: "pointer", WebkitTapHighlightColor: "transparent",
                 transition: "all .2s",
               }}
             >
-              {/* Preview circle */}
               <div style={{
                 width: 40, height: 40, borderRadius: 14, background: t.gh,
                 display: "flex", alignItems: "center", justifyContent: "center",
@@ -126,7 +128,7 @@ export function ConfigScreen() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
                 }}>
-                  <span style={{ color: "#fff", fontSize: 13, fontWeight: 900 }}>✓</span>
+                  <span style={{ color: "#fff", fontSize: 13, fontWeight: 900 }}>\u2713</span>
                 </div>
               )}
             </button>
@@ -134,7 +136,7 @@ export function ConfigScreen() {
         </div>
       </div>
 
-      {/* ═══ Seção: Dashboard ═══ */}
+      {/* Dashboard Toggles */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
           <LayoutDashboard size={18} color="var(--vf-p)" />
@@ -159,18 +161,15 @@ export function ConfigScreen() {
         </Card>
       </div>
 
-      {/* ═══ Footer ═══ */}
       <div style={{ textAlign: "center", padding: "20px 0 10px" }}>
-        <p style={{ margin: 0, fontSize: 11, color: "var(--vf-tm)" }}>VidaFlor v2.0 · Feito com 💜</p>
+        <p style={{ margin: 0, fontSize: 11, color: "var(--vf-tm)" }}>VidaFlor v2.0 · Feito com amor</p>
       </div>
 
-      {/* ════════════ SHEETS ════════════ */}
-
       {sheet === "editName" && (
-        <Sheet title="✏️ Seu Nome" onClose={() => setSheet(null)}>
+        <Sheet title="Seu Nome" onClose={() => setSheet(null)}>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <p style={{ margin: 0, fontSize: 13, color: "var(--vf-tm)", lineHeight: 1.5 }}>
-              Como você quer ser chamada? Este nome aparece na saudação da Home.
+              Como voce quer ser chamada? Este nome aparece na saudacao da Home.
             </p>
             <FInput value={nameForm} onChange={setNameForm} placeholder="Seu nome ou apelido" />
             <Btn onClick={saveName}>Salvar</Btn>

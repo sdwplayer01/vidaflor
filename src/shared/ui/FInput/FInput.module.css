@@ -1,0 +1,26 @@
+/* FInput.module.css — Input padronizado do VidaFlor */
+
+.input {
+  width:         100%;
+  padding:       14px 16px;
+  border-radius: var(--vf-r-sm);
+  border:        1.5px solid var(--vf-bd);
+  background:    var(--vf-alt);
+  color:         var(--vf-tx);
+  font-size:     15px;
+  font-family:   inherit;
+  outline:       none;
+  box-sizing:    border-box;
+  transition:    border-color var(--vf-trans-fast),
+                 box-shadow var(--vf-trans-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.input::placeholder {
+  color: var(--vf-tm);
+}
+
+.input:focus {
+  border-color: var(--vf-p);
+  box-shadow:   0 0 0 3px color-mix(in srgb, var(--vf-p) 15%, transparent);
+}

@@ -1,0 +1,32 @@
+/* Card.module.css — Container padrão do VidaFlor */
+
+.card {
+  background:    var(--vf-surf);
+  border:        1px solid var(--vf-bd);
+  border-radius: var(--vf-r-xl);
+  padding:       18px;
+  box-shadow:    var(--vf-shadow-card);
+  transition:    transform var(--vf-trans-fast),
+                 box-shadow var(--vf-trans-fast);
+}
+
+.clickable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.clickable:hover {
+  transform:  translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .07);
+}
+
+.clickable:active {
+  transform:  translateY(0);
+  box-shadow: var(--vf-shadow-card);
+}
+
+.hero {
+  background: var(--vf-gh);
+  border:     none;
+  color:      #fff;
+}

@@ -1,0 +1,50 @@
+/* Btn.module.css — Botão padrão com feedback de toque */
+
+.btn {
+  width:         100%;
+  padding:       14px 0;
+  border-radius: var(--vf-r-sm);
+  font-weight:   800;
+  font-size:     15px;
+  font-family:   inherit;
+  cursor:        pointer;
+  border:        none;
+  transition:    transform .1s ease, box-shadow .1s ease, filter .1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* ── Primary ── */
+.primary {
+  background:  var(--vf-p);
+  color:       #fff;
+  box-shadow:  var(--vf-shadow-btn);
+}
+
+.primary:hover {
+  filter: brightness(1.05);
+}
+
+/* ── Ghost ── */
+.ghost {
+  background:  transparent;
+  color:       var(--vf-tm);
+  border:      1px solid var(--vf-bd);
+}
+
+.ghost:hover {
+  background: var(--vf-alt);
+}
+
+/* ── Danger ── */
+.danger {
+  background: var(--vf-er);
+  color:      #fff;
+}
+
+.danger:hover {
+  filter: brightness(1.08);
+}

@@ -1,0 +1,22 @@
+// src/features/config/types.ts
+import { ThemeKey } from "../../shared/types/theme";
+
+export interface DashConfig {
+  bloom:     boolean;
+  water:     boolean;
+  routine:   boolean;
+  finance:   boolean;
+  cycle:     boolean;
+  spirit:    boolean;
+  reminders: boolean;
+  meds:      boolean;
+  kids:      boolean;
+  casa:      boolean;
+  pets:      boolean;
+}
+
+export interface AppConfig {
+  theme: ThemeKey;
+  name:  string;
+  dash:  DashConfig;
+}
