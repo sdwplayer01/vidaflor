@@ -1,6 +1,3 @@
-// FSelect.tsx — Dropdown/Select padronizado do VidaFlor
-// Uso: <FSelect id="cat" label="Categoria" value={cat} onChange={setCat} options={[...]} />
-
 import styles from "./FSelect.module.css";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -10,17 +7,17 @@ export interface FSelectOption {
 }
 
 interface FSelectProps {
-  id?:          string;
-  label?:       string;
-  value:        string | number;
-  onChange:     (val: string) => void;
-  options:      FSelectOption[];
+  id?: string;
+  label?: string;
+  value: string | number;
+  onChange: (val: string) => void;
+  options: FSelectOption[];
   placeholder?: string;
-  error?:       string;
-  disabled?:    boolean;
-  className?:   string;
-  style?:       CSSProperties;
-  children?:    ReactNode; // Permite passar options customizadas como children se necessário
+  error?: string;
+  disabled?: boolean;
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
 }
 
 export function FSelect({

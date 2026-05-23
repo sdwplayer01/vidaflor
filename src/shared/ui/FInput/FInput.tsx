@@ -1,20 +1,17 @@
-// FInput.tsx — Input padronizado do VidaFlor
-// Uso: <FInput id="name" label="Nome" value={v} onChange={setV} />
-
 import styles from "./FInput.module.css";
 import type { CSSProperties } from "react";
 
 interface FInputProps {
-  id?:          string;
-  label?:       string;
-  value:        string;
-  onChange:     (val: string) => void;
+  id?: string;
+  label?: string;
+  value: string;
+  onChange: (val: string) => void;
   placeholder?: string;
-  type?:        string;
-  error?:       string;
-  disabled?:    boolean;
-  className?:   string;
-  style?:       CSSProperties;
+  type?: string;
+  error?: string;
+  disabled?: boolean;
+  className?: string;
+  style?: CSSProperties;
 }
 
 export function FInput({

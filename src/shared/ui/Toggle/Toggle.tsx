@@ -1,11 +1,7 @@
-// Toggle.tsx — Switch boolean do VidaFlor
-// Uso: <Toggle val={true} onChange={setBool} />
-// Acessível por mouse, toque e teclado (Space/Enter)
-
 import styles from "./Toggle.module.css";
 
 interface ToggleProps {
-  val:      boolean;
+  val: boolean;
   onChange: (next: boolean) => void;
 }
 
@@ -13,7 +9,6 @@ export function Toggle({ val, onChange }: ToggleProps) {
   const handleToggle = () => onChange(!val);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // Space ou Enter ativa o toggle
     if (e.key === " " || e.key === "Enter") {
       e.preventDefault();
       handleToggle();

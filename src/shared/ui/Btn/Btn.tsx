@@ -1,7 +1,3 @@
-// Btn.tsx — Botão padrão do VidaFlor
-// Variantes: "primary" (padrão), "ghost", "danger"
-// Estados: default, hover, active, disabled, loading
-
 import styles from "./Btn.module.css";
 import type { ReactNode, CSSProperties } from "react";
 
@@ -9,15 +5,15 @@ type BtnVariant = "primary" | "ghost" | "danger";
 type BtnType = "button" | "submit" | "reset";
 
 interface BtnProps {
-  onClick?:   () => void;
-  variant?:   BtnVariant;
-  type?:      BtnType;
+  onClick?: () => void;
+  variant?: BtnVariant;
+  type?: BtnType;
   ariaLabel?: string;
-  loading?:   boolean;
+  loading?: boolean;
   className?: string;
-  style?:     CSSProperties;
-  disabled?:  boolean;
-  children:   ReactNode;
+  style?: CSSProperties;
+  disabled?: boolean;
+  children: ReactNode;
 }
 
 export function Btn({

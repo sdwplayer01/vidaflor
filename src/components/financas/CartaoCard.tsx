@@ -1,5 +1,5 @@
 // src/components/financas/CartaoCard.tsx
-// Card visual de cartão de crédito usado na aba Cartões.
+// Card visual de cartao de credito usado na aba Cartoes.
 // Refatorado com CSS Module e design tokens
 
 import { CreditCard, X } from "lucide-react";
@@ -22,7 +22,6 @@ export function CartaoCard({ card, faturaMes, futuros, onOpen, onDelete }: Props
       onClick={onOpen}
       style={{ background: card.color }}
     >
-      {/* Header com nome do cartão */}
       <div className={styles.header}>
         <div>
           <p className={styles.brand}>{card.brand.toUpperCase()}</p>
@@ -31,12 +30,11 @@ export function CartaoCard({ card, faturaMes, futuros, onOpen, onDelete }: Props
         <CreditCard size={26} color="currentColor" />
       </div>
 
-      {/* Fatura atual e botão de delete */}
       <div className={styles.footer}>
         <div>
           <p className={styles.label}>FATURA ATUAL</p>
           <p className={styles.amount}>R$ {fmtBRL(faturaMes)}</p>
-          <p className={styles.dates}>Fecha dia {card.closeDay} · Vence dia {card.dueDay}</p>
+          <p className={styles.dates}>Fecha dia {card.closeDay} - Vence dia {card.dueDay}</p>
         </div>
         <button
           onClick={(e) => {
@@ -44,13 +42,12 @@ export function CartaoCard({ card, faturaMes, futuros, onOpen, onDelete }: Props
             onDelete();
           }}
           className={styles.deleteBtn}
-          aria-label="Deletar cartão"
+          aria-label="Deletar cartao"
         >
           <X size={14} color="currentColor" />
         </button>
       </div>
 
-      {/* Faturas futuras */}
       {futuros.length > 0 && (
         <div className={styles.futuresContainer}>
           {futuros.map((f) => (
@@ -61,10 +58,8 @@ export function CartaoCard({ card, faturaMes, futuros, onOpen, onDelete }: Props
         </div>
       )}
 
-      {/* Elemento decorativo */}
       <div className={styles.decoration} />
 
-      {/* Label "ver detalhes" */}
       <p className={styles.hintLabel}>ver detalhes</p>
     </div>
   );
