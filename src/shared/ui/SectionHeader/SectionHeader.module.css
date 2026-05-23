@@ -1,0 +1,33 @@
+/* SectionHeader.module.css — Cabeçalho de seção premium */
+
+.container {
+  display:        flex;
+  align-items:    center;
+  justify-content: space-between;
+  gap:            12px;
+  margin-bottom:  16px;
+}
+
+.textGroup {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+}
+
+.title {
+  font-size:      18px;
+  font-weight:    800;
+  color:          var(--vf-tx);
+  margin:         0;
+  line-height:    1.2;
+}
+
+.subtitle {
+  font-size:      13px;
+  color:          var(--vf-tm);
+  margin:         0;
+}
+
+.action {
+  flex-shrink: 0;
+}
