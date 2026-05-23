@@ -1,5 +1,7 @@
 // src/features/bloom/selectors.ts
 // Selector transversal: le de rotina + kids + casa + pets + saude + espiritual.
+// useMemo estabiliza o objeto retornado — cada store individual ja retorna primitivos.
+import { useMemo } from 'react';
 import { useRotinaStore }    from '@/features/rotina/store';
 import { useKidsStore }      from '@/features/kids/store';
 import { useCasaStore }      from '@/features/casa/store';
@@ -20,12 +22,13 @@ import type { ISODate } from '@/shared/types/common';
 export function useBloomDoDia(day?: ISODate): BloomBreakdown {
   const d = day ?? today();
 
-  const rotinaPct    = useRotinaStore((s)  => calcRotinaPct(s, d));
-  const kidsPct      = useKidsStore((s)    => calcKidsPct(s, d));
-  const casaPct      = useCasaStore((s)    => calcCasaPct(s, d));
-  const petsPct      = usePetsStore((s)    => calcPetsPct(s, d));
-  const waterPct     = useSaudeStore((s)   => calcAguaPctPerfilAtivo(s, d));
-  const espiritualPct= useEspiritualStore((s) => calcEspiritualPct(s, d));
+  // Cada seletor abaixo retorna um NUMBER (primitivo) — comparacao por valor, sem re-renders extras
+  const rotinaPct     = useRotinaStore((s)  => calcRotinaPct(s, d));
+  const kidsPct       = useKidsStore((s)    => calcKidsPct(s, d));
+  const casaPct       = useCasaStore((s)    => calcCasaPct(s, d));
+  const petsPct       = usePetsStore((s)    => calcPetsPct(s, d));
+  const waterPct      = useSaudeStore((s)   => calcAguaPctPerfilAtivo(s, d));
+  const espiritualPct = useEspiritualStore((s) => calcEspiritualPct(s, d));
 
   // Pesos: Minha Rotina 25% | Kids 10% | Casa 10% | Pets 5% | Agua 25% | Espiritual 25%
   const routinePct = Math.round(
@@ -35,7 +38,11 @@ export function useBloomDoDia(day?: ISODate): BloomBreakdown {
     petsPct   * 0.05
   );
 
-  return calcBloom({ routinePct, waterPct, espiritualPct });
+  // useMemo garante que o objeto BloomBreakdown retornado so muda quando os valores mudam
+  return useMemo(
+    () => calcBloom({ routinePct, waterPct, espiritualPct }),
+    [routinePct, waterPct, espiritualPct]
+  );
 }
 
 export function useBloomFase(): BloomFase {

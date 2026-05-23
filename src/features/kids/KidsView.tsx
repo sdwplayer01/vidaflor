@@ -7,16 +7,20 @@ import { KidProgressRing }   from './components/KidProgressRing';
 import { AddKidSheet }       from './components/AddKidSheet';
 import { AddKidTaskSheet }   from './components/AddKidTaskSheet';
 import { EmptyState }        from '@/shared/ui/EmptyState';
+import { useShallow } from 'zustand/react/shallow';
 import { useCriancaAtiva, useProgressoCrianca } from './selectors';
 import { useKidsStore } from './store';
 import { today } from '@/shared/utils/date';
+
+// Fallback estavel para dias sem tarefas concluidas — evita novo [] por render
+const EMPTY_IDS: string[] = [];
 
 export function KidsView() {
   const [addKid,  setAddKid]  = useState(false);
   const [addTask, setAddTask] = useState(false);
   const crianca  = useCriancaAtiva();
   const prog     = useProgressoCrianca(crianca?.id ?? '', today());
-  const doneIds  = useKidsStore((s) => s.done[today()] ?? []);
+  const doneIds  = useKidsStore(useShallow((s) => s.done[today()] ?? EMPTY_IDS));
   const toggle   = useKidsStore((s) => s.toggleTarefaKid);
   const remover  = useKidsStore((s) => s.removerTarefaKid);
 

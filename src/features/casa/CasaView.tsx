@@ -4,16 +4,20 @@ import { Plus, Home } from 'lucide-react';
 import { TarefaCasaItem }      from './components/TarefaCasaItem';
 import { AddTarefaCasaSheet }  from './components/AddTarefaCasaSheet';
 import { EmptyState }          from '@/shared/ui/EmptyState';
+import { useShallow }          from 'zustand/react/shallow';
 import { useTarefasCasaHoje }  from './selectors';
 import { useCasaStore }        from './store';
 import { today }               from '@/shared/utils/date';
+
+// Fallback estavel — evita novo [] quando nao ha tarefas feitas no dia
+const EMPTY_IDS: string[] = [];
 
 export function CasaView() {
   const [addOpen, setAddOpen] = useState(false);
   const tarefas  = useTarefasCasaHoje();
   const toggle   = useCasaStore((s) => s.toggleTarefaCasa);
   const remover  = useCasaStore((s) => s.removerTarefaCasa);
-  const doneIds  = useCasaStore((s) => s.done[today()] ?? []);
+  const doneIds  = useCasaStore(useShallow((s) => s.done[today()] ?? EMPTY_IDS));
 
   return (
     <div>

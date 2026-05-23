@@ -5,14 +5,18 @@ import { PetSwitcher }      from './components/PetSwitcher';
 import { CuidadoPetItem }   from './components/CuidadoPetItem';
 import { AddPetSheet }      from './components/AddPetSheet';
 import { EmptyState }       from '@/shared/ui/EmptyState';
+import { useShallow }       from 'zustand/react/shallow';
 import { usePetAtivo }      from './selectors';
 import { usePetsStore }     from './store';
 import { today }            from '@/shared/utils/date';
 
+// Fallback estavel — evita novo {} quando nao ha cuidados feitos no dia
+const EMPTY_DONE: Record<string, number> = {};
+
 export function PetsView() {
   const [addPetOpen, setAddPetOpen] = useState(false);
   const pet      = usePetAtivo();
-  const doneDay  = usePetsStore((s) => s.done[today()] ?? {});
+  const doneDay  = usePetsStore(useShallow((s) => s.done[today()] ?? EMPTY_DONE));
   const registrar= usePetsStore((s) => s.registrarFeito);
   const desfazer = usePetsStore((s) => s.desfazerFeito);
   const day      = today();
@@ -21,7 +25,7 @@ export function PetsView() {
     return (
       <>
         <EmptyState
-          icon={<span style={{ fontSize: 24 }}>\uD83D\uDC3E</span>}
+          icon={<span style={{ fontSize: 24 }}>🐾</span>}
           title="Nenhum pet cadastrado"
           desc="Adicione seu companheiro de quatro patas"
         />
@@ -60,7 +64,7 @@ export function PetsView() {
 
       {pet.cuidados.length === 0 ? (
         <EmptyState
-          icon={<span style={{ fontSize: 24 }}>\uD83D\uDC3E</span>}
+          icon={<span style={{ fontSize: 24 }}>🐾</span>}
           title="Sem cuidados cadastrados"
           desc="Adicione alimentacao, agua, passeio..."
         />
