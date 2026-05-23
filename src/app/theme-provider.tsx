@@ -1,5 +1,5 @@
 // src/app/theme-provider.tsx
-import React, { createContext, useContext, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useMemo, ReactNode } from "react";
 import { useConfigStore } from "../features/config/store";
 import { applyTheme, resolveTheme } from "../shared/constants/themes";
 import { Theme, ThemeKey } from "../shared/types/theme";
@@ -15,15 +15,19 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeKey = useConfigStore((s) => s.theme);
   const setTheme = useConfigStore((s) => s.setTheme);
-  const activeTheme = resolveTheme(themeKey);
 
-  // Garante que o tema seja aplicado na inicialização e em qualquer alteração
   useEffect(() => {
-    applyTheme(activeTheme);
-  }, [themeKey, activeTheme]);
+    applyTheme(resolveTheme(themeKey));
+  }, [themeKey]);
+
+  const value = useMemo(() => ({
+    themeKey,
+    theme: resolveTheme(themeKey),
+    setTheme,
+  }), [themeKey, setTheme]);
 
   return (
-    <ThemeContext.Provider value={{ themeKey, theme: activeTheme, setTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );
