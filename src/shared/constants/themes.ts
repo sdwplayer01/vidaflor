@@ -64,34 +64,16 @@ export function getAvailableThemes(): Theme[] {
 }
 
 /**
- * Aplica um tema ao documento, atualizando:
- * 1. O atributo `data-theme` no `<html>` (para seletores CSS)
- * 2. As CSS Variables individuais (para compatibilidade com estilos legados)
- * 3. A sombra do botão primário (derivada da cor primária)
+ * Aplica um tema ao documento via CSS cascade.
+ * Seta apenas o atributo `data-theme` no `<html>`.
+ * As CSS Variables são definidas em `tokens.css` pelos seletores [data-theme="..."],
+ * eliminando a dupla fonte de verdade.
  */
 export function applyTheme(T: Theme): void {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
 
-  // 1. Atributo data-theme para seletores CSS
+  // Seta o atributo data-theme para ativar o seletor CSS correspondente
+  // O CSS cascade de tokens.css aplicará as variáveis automaticamente
   root.setAttribute("data-theme", T.key);
-
-  // 2. CSS Variables individuais
-  const r = root.style;
-  r.setProperty("--vf-bg",   T.bg);
-  r.setProperty("--vf-surf", T.surf);
-  r.setProperty("--vf-alt",  T.alt);
-  r.setProperty("--vf-bd",   T.bd);
-  r.setProperty("--vf-p",    T.p);
-  r.setProperty("--vf-pl",   T.pl);
-  r.setProperty("--vf-pd",   T.pd);
-  r.setProperty("--vf-gh",   T.gh);
-  r.setProperty("--vf-tx",   T.tx);
-  r.setProperty("--vf-tm",   T.tm);
-  r.setProperty("--vf-ok",   T.ok);
-  r.setProperty("--vf-wn",   T.wn);
-  r.setProperty("--vf-er",   T.er);
-
-  // 3. Sombra derivada — usa a cor primária com 27% de opacidade (44 em hex)
-  r.setProperty("--vf-shadow-btn", `0 4px 12px ${T.p}44`);
 }

@@ -15,6 +15,7 @@ export function Chip({ active, onClick, className = "", children }: ChipProps) {
   return (
     <button
       onClick={onClick}
+      aria-pressed={active}
       className={[
         styles.chip,
         active ? styles.active : "",

@@ -1,0 +1,53 @@
+/* SectionHeader.module.css — Cabeçalho de seção com CTA */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--vf-sp-md);
+  padding: var(--vf-sp-md) 0;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--vf-fs-lg);
+  font-weight: var(--vf-fw-xbold);
+  color: var(--vf-tx);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: var(--vf-fs-sm);
+  color: var(--vf-tm);
+}
+
+.addBtn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--vf-r-md);
+  background: var(--vf-p);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--vf-trans-fast), filter var(--vf-trans-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.addBtn:hover {
+  filter: brightness(1.05);
+}
+
+.addBtn:active {
+  transform: scale(0.95);
+}

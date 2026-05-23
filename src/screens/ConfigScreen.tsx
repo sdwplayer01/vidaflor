@@ -7,11 +7,11 @@ import {
 } from "lucide-react";
 import type { ThemeKey } from "@/shared/types/theme";
 import type { DashConfig } from "@/features/config/types";
-import { Card }         from "@/components/shared/Card";
-import { Btn }          from "@/components/shared/Btn";
-import { Sheet }        from "@/components/shared/Sheet";
-import { FInput }       from "@/components/shared/FInput";
-import { Toggle }       from "@/components/shared/Toggle";
+import { Card }         from "@/shared/ui/Card";
+import { Btn }          from "@/shared/ui/Btn";
+import { Sheet }        from "@/shared/ui/Sheet";
+import { FInput }       from "@/shared/ui/FInput";
+import { Toggle }       from "@/shared/ui/Toggle";
 import { useConfigStore }    from "@/features/config/store";
 import { getAvailableThemes } from "@/shared/constants/themes";
 

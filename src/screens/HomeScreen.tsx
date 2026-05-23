@@ -6,8 +6,8 @@ import {
   Bell, BellRing, AlertCircle, Flower,
 } from "lucide-react";
 import type { TabKey } from "@/features/nav/store";
-import { Card }        from "@/components/shared/Card";
-import { ProgressBar } from "@/components/shared/ProgressBar";
+import { Card }        from "@/shared/ui/Card";
+import { ProgressBar } from "@/shared/ui/ProgressBar";
 import { BloomCard }   from "@/features/bloom/components/BloomCard";
 
 // Feature stores / selectors (v2)

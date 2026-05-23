@@ -1,0 +1,41 @@
+/* Badge.module.css — Pill de status colorida */
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--vf-r-full);
+  font-size: var(--vf-fs-xs);
+  font-weight: var(--vf-fw-bold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Success (verde) ── */
+.success {
+  background: color-mix(in srgb, var(--vf-ok) 20%, transparent);
+  color: var(--vf-ok);
+}
+
+/* ── Warning (laranja) ── */
+.warning {
+  background: color-mix(in srgb, var(--vf-wn) 20%, transparent);
+  color: var(--vf-wn);
+}
+
+/* ── Error (vermelho) ── */
+.error {
+  background: color-mix(in srgb, var(--vf-er) 20%, transparent);
+  color: var(--vf-er);
+}
+
+/* ── Info (primária) ── */
+.info {
+  background: color-mix(in srgb, var(--vf-p) 20%, transparent);
+  color: var(--vf-p);
+}
+
+/* ── Neutral (cinza) ── */
+.neutral {
+  background: var(--vf-bd);
+  color: var(--vf-tm);
+}

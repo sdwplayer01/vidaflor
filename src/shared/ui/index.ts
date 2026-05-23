@@ -10,3 +10,6 @@ export * from "./ProgressBar";
 export * from "./Sheet";
 export * from "./Toggle";
 export * from "./EmptyState";
+export * from "./Badge";
+export * from "./SectionHeader";
+export * from "./ActionRow";

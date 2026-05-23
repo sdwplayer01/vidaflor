@@ -1,0 +1,97 @@
+/* ActionRow.module.css — Linha com ações */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--vf-sp-md);
+  padding: var(--vf-sp-md);
+  background: var(--vf-alt);
+  border-radius: var(--vf-r-md);
+  transition: background var(--vf-trans-fast), transform var(--vf-trans-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.row:active {
+  transform: scale(0.98);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vf-p);
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--vf-fs-base);
+  font-weight: var(--vf-fw-bold);
+  color: var(--vf-tx);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: var(--vf-fs-xs);
+  color: var(--vf-tm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  flex-shrink: 0;
+  font-size: var(--vf-fs-sm);
+  font-weight: var(--vf-fw-bold);
+  color: var(--vf-p);
+  text-align: right;
+}
+
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.actionBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--vf-r-sm);
+  background: var(--vf-surf);
+  color: var(--vf-tx);
+  border: 1px solid var(--vf-bd);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--vf-trans-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.actionBtn:hover {
+  background: var(--vf-bd);
+  transform: scale(1.05);
+}
+
+.actionBtn:active {
+  transform: scale(0.95);
+}
+
+.actionBtn.danger {
+  color: var(--vf-er);
+}
+
+.actionBtn.danger:hover {
+  background: color-mix(in srgb, var(--vf-er) 15%, transparent);
+}

@@ -1,4 +1,4 @@
-/* Toggle.module.css — Switch boolean animado */
+/* Toggle.module.css — Switch boolean animado, acessível por teclado */
 
 .track {
   width:         44px;
@@ -8,8 +8,10 @@
   position:      relative;
   cursor:        pointer;
   flex-shrink:   0;
-  transition:    background var(--vf-trans-normal);
+  transition:    background var(--vf-trans-normal),
+                 box-shadow var(--vf-trans-normal);
   -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 .track:hover {
@@ -18,6 +20,11 @@
 
 .track:active {
   transform: scale(0.96);
+}
+
+/* Focus visível para acessibilidade de teclado */
+.track:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vf-p) 25%, transparent);
 }
 
 .active {

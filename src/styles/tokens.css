@@ -17,6 +17,7 @@
   --vf-bg:    #FFF0F4;
   --vf-surf:  #FFFFFF;
   --vf-alt:   #FFE4EE;
+  --vf-s2:    var(--vf-alt);
   --vf-bd:    #F9D0DB;
 
   /* ── Primárias ── */
@@ -72,6 +73,7 @@
   --vf-bg:    #FAF5EE;
   --vf-surf:  #FFFFFF;
   --vf-alt:   #F2E6D8;
+  --vf-s2:    var(--vf-alt);
   --vf-bd:    #E0CCB4;
 
   /* ── Primárias ── */
@@ -115,6 +117,7 @@
   --vf-bg:    #F7F3FF;
   --vf-surf:  #FFFFFF;
   --vf-alt:   #EDE4FF;
+  --vf-s2:    var(--vf-alt);
   --vf-bd:    #DDD0F5;
 
   /* ── Primárias ── */
@@ -158,6 +161,7 @@
   --vf-bg:    #F5F5F3;
   --vf-surf:  #FFFFFF;
   --vf-alt:   #EEEEEC;
+  --vf-s2:    var(--vf-alt);
   --vf-bd:    #D4D4D4;
 
   /* ── Primárias ── */
@@ -201,6 +205,7 @@
   --vf-bg:    #F0F7F4;
   --vf-surf:  #FFFFFF;
   --vf-alt:   #DAF0E8;
+  --vf-s2:    var(--vf-alt);
   --vf-bd:    #B2DDD1;
 
   /* ── Primárias ── */
@@ -238,6 +243,35 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    TOKENS GLOBAIS (shared — não dependem do tema)
    ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Tipografia ── */
+  --vf-fs-xs:    11px;
+  --vf-fs-sm:    13px;
+  --vf-fs-base:  15px;
+  --vf-fs-lg:    18px;
+  --vf-fs-xl:    22px;
+
+  --vf-fw-md:    500;
+  --vf-fw-bold:  700;
+  --vf-fw-xbold: 800;
+  --vf-fw-black: 900;
+
+  /* ── Espaçamento ── */
+  --vf-sp-xs:  4px;
+  --vf-sp-sm:  8px;
+  --vf-sp-md:  16px;
+  --vf-sp-lg:  24px;
+  --vf-sp-xl:  40px;
+
+  /* ── Sombras adicionais (além das existentes) ── */
+  --vf-shadow-card-hover: 0 8px 20px rgba(0, 0, 0, .07);
+  --vf-shadow-sheet:      0 -8px 24px rgba(0, 0, 0, .10);
+  --vf-shadow-nav:        0 -4px 16px rgba(0, 0, 0, .05);
+
+  /* ── Branco estático (não muda com tema) ── */
+  --vf-white: #ffffff;
+}
 
 *,
 *::before,

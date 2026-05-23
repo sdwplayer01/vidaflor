@@ -1,14 +1,19 @@
 // Btn.tsx — Botão padrão do VidaFlor
 // Variantes: "primary" (padrão), "ghost", "danger"
+// Estados: default, hover, active, disabled, loading
 
 import styles from "./Btn.module.css";
 import type { ReactNode, CSSProperties } from "react";
 
 type BtnVariant = "primary" | "ghost" | "danger";
+type BtnType = "button" | "submit" | "reset";
 
 interface BtnProps {
   onClick?:   () => void;
   variant?:   BtnVariant;
+  type?:      BtnType;
+  ariaLabel?: string;
+  loading?:   boolean;
   className?: string;
   style?:     CSSProperties;
   disabled?:  boolean;
@@ -18,15 +23,23 @@ interface BtnProps {
 export function Btn({
   onClick,
   variant = "primary",
+  type = "button",
+  ariaLabel,
+  loading = false,
   className = "",
   style,
   disabled,
   children,
 }: BtnProps) {
+  const isDisabled = disabled || loading;
+
   return (
     <button
+      type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={isDisabled}
+      aria-label={ariaLabel}
+      data-loading={loading}
       style={style}
       className={[
         styles.btn,
@@ -34,7 +47,11 @@ export function Btn({
         className,
       ].filter(Boolean).join(" ")}
     >
-      {children}
+      {loading ? (
+        <span className={styles.loadingSpinner} />
+      ) : (
+        children
+      )}
     </button>
   );
 }
