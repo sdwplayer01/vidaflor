@@ -36,7 +36,7 @@ const defaultDash: DashConfig = {
 export const useConfigStore = create<ConfigState & ConfigActions>()(
   persistVidaFlor(
     (set) => ({
-      theme:     'pastel',
+      theme:     'aurora',
       name:      'Amor',
       dash:      defaultDash,
       _version:  CONFIG_STORE_VERSION,

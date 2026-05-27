@@ -1,5 +1,7 @@
-// src/features/organiza/OrganizaScreen.tsx
-import { useState } from 'react';
+// src/features/organiza/OrganizaScreen.tsx — v2
+// Header with eyebrow/display/hint, segmented pill tabs with icons.
+// Sub-tabs (ShoppingTab, NotesTab, RemindersTab) unchanged.
+import { useState }          from 'react';
 import { ShoppingCart, StickyNote, Bell, type LucideIcon } from 'lucide-react';
 import { ShoppingTab }  from './components/ShoppingTab';
 import { NotesTab }     from './components/NotesTab';
@@ -8,22 +10,47 @@ import { RemindersTab } from './components/RemindersTab';
 type Tab = 'compras' | 'notas' | 'lembretes';
 
 const TABS: { key: Tab; label: string; Icon: LucideIcon }[] = [
-  { key: 'compras',    label: 'Compras',   Icon: ShoppingCart },
-  { key: 'notas',     label: 'Notas',     Icon: StickyNote   },
-  { key: 'lembretes', label: 'Lembretes', Icon: Bell         },
+  { key: 'compras',   label: 'compras',   Icon: ShoppingCart },
+  { key: 'notas',     label: 'notas',     Icon: StickyNote   },
+  { key: 'lembretes', label: 'lembretes', Icon: Bell         },
 ];
 
 export function OrganizaScreen() {
   const [tab, setTab] = useState<Tab>('compras');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Tab bar */}
-      <div style={{
-        display: 'flex', gap: 4, padding: '12px 16px 0',
-        borderBottom: '1px solid var(--vf-bd)', background: 'var(--vf-bg)',
-        flexShrink: 0,
-      }}>
+    <div style={{ padding: '24px 20px 20px' }}>
+      {/* ── Header ─────────────────────────────────────────────── */}
+      <div style={{ marginBottom: 20 }}>
+        <div className="vf-eyebrow">organiza</div>
+        <h1
+          style={{
+            margin: '4px 0 0', fontSize: 30, lineHeight: 1.05,
+            fontFamily: 'var(--vf-font-display)', fontWeight: 400,
+            color: 'var(--vf-tx)',
+          }}
+        >
+          Espaços de cultivo
+        </h1>
+        <div
+          style={{
+            fontSize: 14, color: 'var(--vf-tx-soft)',
+            marginTop: 6, fontStyle: 'italic',
+          }}
+        >
+          cada lista é um canteiro do seu pensamento
+        </div>
+      </div>
+
+      {/* ── Segmented pill tabs ────────────────────────────────── */}
+      <div
+        style={{
+          display: 'flex', gap: 4,
+          background: 'var(--vf-surf-alt)',
+          borderRadius: 99, padding: 3,
+          marginBottom: 20,
+        }}
+      >
         {TABS.map(({ key, label, Icon }) => {
           const active = tab === key;
           return (
@@ -31,29 +58,30 @@ export function OrganizaScreen() {
               key={key}
               onClick={() => setTab(key)}
               style={{
-                flex: 1, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', gap: 4, padding: '8px 4px 10px',
-                background: 'none', border: 'none', cursor: 'pointer',
-                borderBottom: active ? '2px solid var(--vf-p)' : '2px solid transparent',
-                color: active ? 'var(--vf-p)' : 'var(--vf-tm)',
-                fontFamily: 'inherit', fontSize: 11, fontWeight: active ? 700 : 400,
-                transition: 'color 0.15s',
+                flex: 1,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', gap: 3,
+                padding: '7px 4px',
+                borderRadius: 99, border: 'none', cursor: 'pointer',
+                background: active ? 'var(--vf-surf)' : 'transparent',
+                color: active ? 'var(--vf-rose)' : 'var(--vf-tx-mute)',
+                fontFamily: 'var(--vf-font-ui)', fontSize: 10, fontWeight: 600,
+                transition: 'all 0.3s var(--vf-ease-spring)',
+                boxShadow: active ? '0 2px 8px rgba(0,0,0,0.07)' : 'none',
                 WebkitTapHighlightColor: 'transparent',
               }}
             >
-              <Icon size={18} />
+              <Icon size={16} />
               {label}
             </button>
           );
         })}
       </div>
 
-      {/* Tab content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-        {tab === 'compras'    && <ShoppingTab />}
-        {tab === 'notas'     && <NotesTab />}
-        {tab === 'lembretes' && <RemindersTab />}
-      </div>
+      {/* ── Content ────────────────────────────────────────────── */}
+      {tab === 'compras'   && <ShoppingTab />}
+      {tab === 'notas'     && <NotesTab />}
+      {tab === 'lembretes' && <RemindersTab />}
     </div>
   );
 }

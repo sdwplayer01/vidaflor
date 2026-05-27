@@ -1,22 +1,28 @@
-// src/shared/types/theme.ts
+// src/shared/types/theme.ts — v2
+// 2-theme system: Aurora (light) + Crepúsculo (dark atmospheric)
 
-export type ThemeKey = "pastel" | "terra" | "lilac" | "neutro" | "sage";
+export type ThemeKey = "aurora" | "crepusculo";
 
 export interface Theme {
   key:  ThemeKey;
   name: string;
   e:    string;
-  bg:   string;
+  bg0:  string;
   surf: string;
-  alt:  string;
-  bd:   string;
-  p:    string;
-  pl:   string;
-  pd:   string;
-  gh:   string;
+  rose:       string;
+  coral:      string;
+  champagne:  string;
   tx:   string;
-  tm:   string;
-  ok:   string;
-  wn:   string;
-  er:   string;
+  // Legacy aliases (kept for backward compat)
+  bg:  string;
+  alt: string;
+  bd:  string;
+  p:   string;
+  pl:  string;
+  pd:  string;
+  gh:  string;
+  tm:  string;
+  ok:  string;
+  wn:  string;
+  er:  string;
 }

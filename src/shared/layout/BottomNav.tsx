@@ -1,41 +1,48 @@
-// src/shared/layout/BottomNav.tsx — Navegação inferior do VidaFlor v2
-// CSS Module, sem cores hardcoded, tap feedback via :active.
+// src/shared/layout/BottomNav.tsx -- v2
+// 6 tabs, top indicator pill, FlowerMark for home tab, glassmorphism background.
 
-import {
-  Home, LayoutGrid, Heart, DollarSign, Star, ShoppingCart,
-} from "lucide-react";
-import { useNavStore, TabKey } from "../../features/nav/store";
+import { Calendar, Heart, Sparkles, Users, Wallet } from "lucide-react";
+import { useNavStore, type TabKey } from "../../features/nav/store";
+import { FlowerMark }               from "../../features/bloom/components/BloomFlower";
+import { useVitality }              from "../../features/bloom/selectors";
 import styles from "./BottomNav.module.css";
 
-const NAV_ITEMS: { k: TabKey; I: typeof Home; lb: string }[] = [
-  { k: "home",       I: Home,         lb: "Início" },
-  { k: "rotina",     I: LayoutGrid,   lb: "Rotina" },
-  { k: "saude",      I: Heart,        lb: "Saúde" },
-  { k: "espiritual", I: Star,         lb: "Conexão" },
-  { k: "organiza",   I: ShoppingCart, lb: "Organiza" },
-  { k: "financas",   I: DollarSign,   lb: "Finanças" },
-];
+interface NavItem { k: TabKey; label: string; icon: React.ReactNode; }
 
 export function BottomNav() {
   const currentTab = useNavStore((s) => s.currentTab);
-  const irPara = useNavStore((s) => s.irPara);
+  const irPara     = useNavStore((s) => s.irPara);
+  const vitality   = useVitality();
+
+  const items: NavItem[] = [
+    {
+      k: "home",
+      label: "inicio",
+      icon: (
+        <span style={{ color: currentTab === "home" ? "var(--vf-rose)" : "var(--vf-tx-mute)" }}>
+          <FlowerMark pct={vitality} size={22} />
+        </span>
+      ),
+    },
+    { k: "rotina",     label: "rotina",   icon: <Calendar  size={20} strokeWidth={1.6} /> },
+    { k: "saude",      label: "saude",    icon: <Heart     size={20} strokeWidth={1.6} /> },
+    { k: "espiritual", label: "espirito", icon: <Sparkles  size={20} strokeWidth={1.6} /> },
+    { k: "organiza",   label: "conexao",  icon: <Users     size={20} strokeWidth={1.6} /> },
+    { k: "financas",   label: "financas", icon: <Wallet    size={20} strokeWidth={1.6} /> },
+  ];
 
   return (
     <nav className={styles.nav}>
-      {NAV_ITEMS.map(({ k, I, lb }) => {
+      {items.map(({ k, label, icon }) => {
         const active = currentTab === k;
         return (
-          <button key={k} className={styles.tab} onClick={() => irPara(k)}>
-            <div className={styles.pill} data-active={active}>
-              <I
-                size={18}
-                color={active ? "#fff" : "var(--vf-tm)"}
-                strokeWidth={active ? 2.5 : 2}
-              />
-            </div>
-            <span className={styles.label} data-active={active}>
-              {lb}
-            </span>
+          <button
+            key={k}
+            className={`${styles.item} ${active ? styles.isActive : ""}`}
+            onClick={() => irPara(k)}
+          >
+            <span className={styles.iconWrap}>{icon}</span>
+            <span className={styles.label}>{label}</span>
           </button>
         );
       })}

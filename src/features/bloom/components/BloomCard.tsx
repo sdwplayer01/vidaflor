@@ -18,9 +18,9 @@ export function BloomCard() {
   }, [bloom.total]);
 
   const rows: { label: string; pct: number; color: string }[] = [
-    { label: 'Rotina',       pct: bloom.routinePct,    color: '#79B8E8' },
+    { label: 'Rotina',     pct: bloom.tasksPct,  color: '#79B8E8' },
     { label: 'Agua',         pct: bloom.waterPct,      color: '#79C9E8' },
-    { label: 'Espiritual',   pct: bloom.espiritualPct, color: '#E8799A' },
+    { label: 'Espirito',   pct: bloom.spiritPct, color: '#E8799A' },
   ];
 
   const titleColor =

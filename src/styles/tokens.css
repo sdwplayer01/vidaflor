@@ -1,329 +1,290 @@
-/* src/styles/tokens.css
- * Design tokens do VidaFlor — CSS Variables completo com os 5 temas.
- * Importar no main.tsx: import "@/styles/tokens.css"
- *
- * Uso em CSS Modules: var(--vf-p), var(--vf-surf), etc.
- * Tema ativo é definido pelo atributo data-theme no <html>.
- * applyTheme.ts define data-theme e as variáveis são trocadas via cascata.
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   VIDA FLOR v2 — Premium Design Tokens
+   Two themes only: aurora (light premium) · crepusculo (warm dark)
+   Legacy themes (pastel, terra, lilac, neutro, sage) are discontinued.
+   ═══════════════════════════════════════════════════════════════════ */
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   TEMA PADRÃO: Rosa Pastel 🌸  (data-theme="pastel" ou :root)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/* ─── AURORA — off-white quente, premium claro ─────────────────────── */
 :root,
-[data-theme="pastel"] {
-  /* ── Superfícies ── */
-  --vf-bg:    #FFF0F4;
-  --vf-surf:  #FFFFFF;
-  --vf-alt:   #FFE4EE;
-  --vf-s2:    var(--vf-alt);
-  --vf-bd:    #F9D0DB;
+[data-theme="aurora"] {
+  /* surfaces */
+  --vf-bg-0:         #FAF5F0;
+  --vf-bg-1:         #F4ECE4;
+  --vf-surf:         #FFFBF6;
+  --vf-surf-alt:     #F8EFE5;
+  --vf-surf-soft:    #EFE4D8;
+  --vf-bd:           rgba(60, 28, 36, 0.08);
+  --vf-bd-strong:    rgba(60, 28, 36, 0.14);
+  --vf-glass:        rgba(255, 251, 246, 0.62);
+  --vf-glass-strong: rgba(255, 251, 246, 0.85);
 
-  /* ── Primárias ── */
-  --vf-p:     #E8799A;
-  --vf-pl:    #F9B8CC;
-  --vf-pd:    #C4567A;
-  --vf-gh:    linear-gradient(135deg, #E8799A, #F4B8CC);
+  /* palette */
+  --vf-coral:          #E89472;
+  --vf-coral-soft:     #F3B89A;
+  --vf-rose:           #B8607A;
+  --vf-rose-deep:      #8C4760;
+  --vf-rose-soft:      #E8B0BE;
+  --vf-lilac:          #9477B8;
+  --vf-lilac-soft:     #C9B6E0;
+  --vf-champagne:      #D9B872;
+  --vf-champagne-soft: #ECD9A5;
+  --vf-sage:           #8AA288;
+  --vf-sage-soft:      #C0D2B8;
 
-  /* ── Texto ── */
-  --vf-tx:    #3D2030;
-  --vf-tm:    #9C7A83;
+  /* text */
+  --vf-tx:       #2A1A22;
+  --vf-tx-soft:  #5C434E;
+  --vf-tx-mute:  #8A7079;
+  --vf-tx-faint: #B8A3AC;
+  --vf-on-rose:  #FFFBF6;
 
-  /* ── Semânticas ── */
-  --vf-ok:    #66BB6A;
-  --vf-wn:    #FFA726;
-  --vf-er:    #EF5350;
-  --vf-ok-light: #A8F5C0;
-  --vf-er-light: #FFAAAA;
-  --vf-wn-light: #FFEB3B;
+  /* gradients */
+  --vf-grad-hero:    linear-gradient(135deg, #E89472 0%, #B8607A 60%, #9477B8 100%);
+  --vf-grad-coral:   linear-gradient(135deg, #F3B89A, #E89472);
+  --vf-grad-rose:    linear-gradient(135deg, #E8B0BE, #B8607A);
+  --vf-grad-lilac:   linear-gradient(135deg, #C9B6E0, #9477B8);
+  --vf-grad-champ:   linear-gradient(135deg, #ECD9A5, #D9B872);
+  --vf-grad-sage:    linear-gradient(135deg, #C0D2B8, #8AA288);
+  --vf-grad-ambient: radial-gradient(ellipse at 20% 0%, #F8DCC8 0%, transparent 50%),
+                     radial-gradient(ellipse at 100% 30%, #ECDCEC 0%, transparent 55%),
+                     radial-gradient(ellipse at 50% 100%, #F0E4D4 0%, transparent 60%),
+                     linear-gradient(180deg, #FAF5F0, #F4ECE4);
 
-  /* ── Paleta decorativa ── */
-  --vf-palette-1: #E8799A;
-  --vf-palette-2: #74B9FF;
-  --vf-palette-3: #A29BFE;
-  --vf-palette-4: #81C784;
-  --vf-palette-5: #FFB74D;
-  --vf-palette-6: #FF8A65;
-  --vf-palette-7: #B0BEC5;
+  /* flower */
+  --vf-petal-outer: #B8607A;
+  --vf-petal-mid:   #E89472;
+  --vf-petal-inner: #ECD9A5;
+  --vf-petal-bud:   #9BA688;
+  --vf-petal-glow:  rgba(232, 148, 114, 0.45);
 
-  /* ── Espaçamentos e raios ── */
+  /* shadows */
+  --vf-shadow-xs:   0 1px 2px rgba(60, 28, 36, 0.04);
+  --vf-shadow-sm:   0 2px 8px rgba(60, 28, 36, 0.05), 0 1px 2px rgba(60, 28, 36, 0.03);
+  --vf-shadow-md:   0 8px 24px rgba(60, 28, 36, 0.06), 0 2px 4px rgba(60, 28, 36, 0.04);
+  --vf-shadow-lg:   0 20px 48px rgba(60, 28, 36, 0.10), 0 4px 8px rgba(60, 28, 36, 0.04);
+  --vf-shadow-hero: 0 30px 80px rgba(184, 96, 122, 0.20), 0 12px 32px rgba(232, 148, 114, 0.18);
+  --vf-shadow-glow: 0 0 60px rgba(232, 148, 114, 0.35);
+
+  /* semantic */
+  --vf-ok:       #6AA568;
+  --vf-wn:       #D9A84A;
+  --vf-er:       #C05068;
+  --vf-ok-light: #B8DAAC;
+  --vf-wn-light: #ECD9A5;
+  --vf-er-light: #E8B0BE;
+
+  /* backward-compat aliases — keep existing components working */
+  --vf-bg:          var(--vf-bg-0);
+  --vf-alt:         var(--vf-surf-alt);
+  --vf-s2:          var(--vf-surf-alt);
+  --vf-p:           var(--vf-rose);
+  --vf-pl:          var(--vf-rose-soft);
+  --vf-pd:          var(--vf-rose-deep);
+  --vf-gh:          var(--vf-grad-hero);
+  --vf-tm:          var(--vf-tx-mute);
+  --vf-shadow-card: var(--vf-shadow-sm);
+  --vf-shadow-btn:  0 8px 20px rgba(184, 96, 122, 0.30);
+  --vf-white:       #FFFBF6;
+}
+
+/* ─── CREPÚSCULO — ameixa profunda, atmosférico quente ─────────────── */
+[data-theme="crepusculo"] {
+  /* surfaces */
+  --vf-bg-0:         #1A1018;
+  --vf-bg-1:         #251826;
+  --vf-surf:         rgba(48, 30, 50, 0.65);
+  --vf-surf-alt:     rgba(58, 38, 58, 0.55);
+  --vf-surf-soft:    rgba(74, 50, 72, 0.40);
+  --vf-bd:           rgba(232, 180, 200, 0.10);
+  --vf-bd-strong:    rgba(232, 180, 200, 0.18);
+  --vf-glass:        rgba(48, 30, 50, 0.45);
+  --vf-glass-strong: rgba(58, 38, 58, 0.72);
+
+  /* palette */
+  --vf-coral:          #F0A88A;
+  --vf-coral-soft:     #F5BFA8;
+  --vf-rose:           #C77897;
+  --vf-rose-deep:      #8E3F5C;
+  --vf-rose-soft:      #D89AB0;
+  --vf-lilac:          #B89AE0;
+  --vf-lilac-soft:     #D4BFEC;
+  --vf-champagne:      #E5C892;
+  --vf-champagne-soft: #EFD7AC;
+  --vf-sage:           #A8BFA2;
+  --vf-sage-soft:      #C8D8C0;
+
+  /* text */
+  --vf-tx:       #F5E8E0;
+  --vf-tx-soft:  #D4BFC8;
+  --vf-tx-mute:  #A38FA0;
+  --vf-tx-faint: #7A6878;
+  --vf-on-rose:  #1A1018;
+
+  /* gradients */
+  --vf-grad-hero:    linear-gradient(135deg, #F0A88A 0%, #C77897 50%, #B89AE0 100%);
+  --vf-grad-coral:   linear-gradient(135deg, #F5BFA8, #F0A88A);
+  --vf-grad-rose:    linear-gradient(135deg, #D89AB0, #C77897);
+  --vf-grad-lilac:   linear-gradient(135deg, #D4BFEC, #B89AE0);
+  --vf-grad-champ:   linear-gradient(135deg, #EFD7AC, #E5C892);
+  --vf-grad-sage:    linear-gradient(135deg, #C8D8C0, #A8BFA2);
+  --vf-grad-ambient: radial-gradient(ellipse at 15% 5%, rgba(199, 120, 151, 0.35) 0%, transparent 45%),
+                     radial-gradient(ellipse at 90% 25%, rgba(184, 154, 224, 0.30) 0%, transparent 50%),
+                     radial-gradient(ellipse at 60% 100%, rgba(240, 168, 138, 0.18) 0%, transparent 55%),
+                     linear-gradient(180deg, #1A1018, #251826);
+
+  /* flower */
+  --vf-petal-outer: #C77897;
+  --vf-petal-mid:   #F0A88A;
+  --vf-petal-inner: #EFD7AC;
+  --vf-petal-bud:   #6A7B68;
+  --vf-petal-glow:  rgba(240, 168, 138, 0.55);
+
+  /* shadows */
+  --vf-shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.30);
+  --vf-shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.20);
+  --vf-shadow-md:   0 8px 24px rgba(0, 0, 0, 0.40), 0 2px 4px rgba(0, 0, 0, 0.20);
+  --vf-shadow-lg:   0 20px 48px rgba(0, 0, 0, 0.50), 0 4px 8px rgba(0, 0, 0, 0.30);
+  --vf-shadow-hero: 0 30px 80px rgba(184, 154, 224, 0.30), 0 12px 32px rgba(240, 168, 138, 0.25);
+  --vf-shadow-glow: 0 0 80px rgba(240, 168, 138, 0.45);
+
+  /* semantic */
+  --vf-ok:       #A8BFA2;
+  --vf-wn:       #E5C892;
+  --vf-er:       #D89AB0;
+  --vf-ok-light: rgba(168, 191, 162, 0.25);
+  --vf-wn-light: rgba(229, 200, 146, 0.25);
+  --vf-er-light: rgba(216, 154, 176, 0.25);
+
+  /* backward-compat aliases */
+  --vf-bg:          var(--vf-bg-0);
+  --vf-alt:         var(--vf-surf-alt);
+  --vf-s2:          var(--vf-surf-alt);
+  --vf-p:           var(--vf-rose);
+  --vf-pl:          var(--vf-rose-soft);
+  --vf-pd:          var(--vf-rose-deep);
+  --vf-gh:          var(--vf-grad-hero);
+  --vf-tm:          var(--vf-tx-mute);
+  --vf-shadow-card: var(--vf-shadow-sm);
+  --vf-shadow-btn:  0 8px 20px rgba(199, 120, 151, 0.40);
+  --vf-white:       #F5E8E0;
+}
+
+/* ─── shared global tokens ─────────────────────────────────────────── */
+:root {
+  /* typography */
+  --vf-font-display: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
+  --vf-font-ui:      "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --vf-font-mono:    "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  /* easing */
+  --vf-ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --vf-ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+  --vf-ease-soft:    cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* legacy easing aliases */
+  --vf-trans-fast:   0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --vf-trans-normal: 0.2s  cubic-bezier(0.4, 0, 0.2, 1);
+  --vf-trans-slow:   0.4s  cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* radii */
+  --vf-r-xs:   8px;
   --vf-r-sm:   12px;
-  --vf-r-md:   16px;
-  --vf-r-lg:   20px;
-  --vf-r-xl:   24px;
+  --vf-r-md:   18px;
+  --vf-r-lg:   24px;
+  --vf-r-xl:   32px;
+  --vf-r-2xl:  44px;
   --vf-r-full: 9999px;
 
-  /* ── Sombras ── */
-  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .03);
-  --vf-shadow-btn:  0 4px 12px rgba(232, 121, 154, .27);
-
-  /* ── Transições ── */
-  --vf-trans-fast:   .15s ease;
-  --vf-trans-normal: .2s ease;
-  --vf-trans-slow:   .4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   TEMA: Terra & Mel 🌿
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-[data-theme="terra"] {
-  /* ── Superfícies ── */
-  --vf-bg:    #FAF5EE;
-  --vf-surf:  #FFFFFF;
-  --vf-alt:   #F2E6D8;
-  --vf-s2:    var(--vf-alt);
-  --vf-bd:    #E0CCB4;
-
-  /* ── Primárias ── */
-  --vf-p:     #8B6248;
-  --vf-pl:    #C4967A;
-  --vf-pd:    #5D3D2C;
-  --vf-gh:    linear-gradient(135deg, #8B6248, #C4967A);
-
-  /* ── Texto ── */
-  --vf-tx:    #2C1A0E;
-  --vf-tm:    #8C6E57;
-
-  /* ── Semânticas ── */
-  --vf-ok:    #7CAA72;
-  --vf-wn:    #E6A817;
-  --vf-er:    #C0614E;
-  --vf-ok-light: #B5D8AD;
-  --vf-er-light: #E8A8A0;
-  --vf-wn-light: #F5D270;
-
-  /* ── Paleta decorativa ── */
-  --vf-palette-1: #8B6248;
-  --vf-palette-2: #5B8C7A;
-  --vf-palette-3: #9E7D63;
-  --vf-palette-4: #7CAA72;
-  --vf-palette-5: #D4A655;
-  --vf-palette-6: #C87243;
-  --vf-palette-7: #96887A;
-
-  /* ── Sombras ── */
-  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .04);
-  --vf-shadow-btn:  0 4px 12px rgba(139, 98, 72, .27);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   TEMA: Lilás & Lavanda 💜
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-[data-theme="lilac"] {
-  /* ── Superfícies ── */
-  --vf-bg:    #F7F3FF;
-  --vf-surf:  #FFFFFF;
-  --vf-alt:   #EDE4FF;
-  --vf-s2:    var(--vf-alt);
-  --vf-bd:    #DDD0F5;
-
-  /* ── Primárias ── */
-  --vf-p:     #8B5CF6;
-  --vf-pl:    #C4B5FD;
-  --vf-pd:    #6D28D9;
-  --vf-gh:    linear-gradient(135deg, #8B5CF6, #C4B5FD);
-
-  /* ── Texto ── */
-  --vf-tx:    #1E1030;
-  --vf-tm:    #7C6FA0;
-
-  /* ── Semânticas ── */
-  --vf-ok:    #66BB6A;
-  --vf-wn:    #FFA726;
-  --vf-er:    #EF5350;
-  --vf-ok-light: #A8F5C0;
-  --vf-er-light: #FFAAAA;
-  --vf-wn-light: #FFEB3B;
-
-  /* ── Paleta decorativa ── */
-  --vf-palette-1: #8B5CF6;
-  --vf-palette-2: #60A5FA;
-  --vf-palette-3: #C084FC;
-  --vf-palette-4: #34D399;
-  --vf-palette-5: #FBBF24;
-  --vf-palette-6: #FB923C;
-  --vf-palette-7: #94A3B8;
-
-  /* ── Sombras ── */
-  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .03);
-  --vf-shadow-btn:  0 4px 12px rgba(139, 92, 246, .27);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   TEMA: Neutro Elegante 🤍
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-[data-theme="neutro"] {
-  /* ── Superfícies ── */
-  --vf-bg:    #F5F5F3;
-  --vf-surf:  #FFFFFF;
-  --vf-alt:   #EEEEEC;
-  --vf-s2:    var(--vf-alt);
-  --vf-bd:    #D4D4D4;
-
-  /* ── Primárias ── */
-  --vf-p:     #262626;
-  --vf-pl:    #737373;
-  --vf-pd:    #0A0A0A;
-  --vf-gh:    linear-gradient(135deg, #262626, #737373);
-
-  /* ── Texto ── */
-  --vf-tx:    #0A0A0A;
-  --vf-tm:    #737373;
-
-  /* ── Semânticas ── */
-  --vf-ok:    #22C55E;
-  --vf-wn:    #F59E0B;
-  --vf-er:    #EF4444;
-  --vf-ok-light: #86EFAC;
-  --vf-er-light: #FCA5A5;
-  --vf-wn-light: #FDE68A;
-
-  /* ── Paleta decorativa ── */
-  --vf-palette-1: #262626;
-  --vf-palette-2: #475569;
-  --vf-palette-3: #6B7280;
-  --vf-palette-4: #22C55E;
-  --vf-palette-5: #F59E0B;
-  --vf-palette-6: #EF4444;
-  --vf-palette-7: #94A3B8;
-
-  /* ── Sombras ── */
-  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .05);
-  --vf-shadow-btn:  0 4px 12px rgba(38, 38, 38, .20);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   TEMA: Sage & Céu 🩵
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-[data-theme="sage"] {
-  /* ── Superfícies ── */
-  --vf-bg:    #F0F7F4;
-  --vf-surf:  #FFFFFF;
-  --vf-alt:   #DAF0E8;
-  --vf-s2:    var(--vf-alt);
-  --vf-bd:    #B2DDD1;
-
-  /* ── Primárias ── */
-  --vf-p:     #059669;
-  --vf-pl:    #6EE7B7;
-  --vf-pd:    #047857;
-  --vf-gh:    linear-gradient(135deg, #059669, #6EE7B7);
-
-  /* ── Texto ── */
-  --vf-tx:    #0D2E25;
-  --vf-tm:    #5E9E8A;
-
-  /* ── Semânticas ── */
-  --vf-ok:    #059669;
-  --vf-wn:    #D97706;
-  --vf-er:    #DC2626;
-  --vf-ok-light: #6EE7B7;
-  --vf-er-light: #FCA5A5;
-  --vf-wn-light: #FDE68A;
-
-  /* ── Paleta decorativa ── */
-  --vf-palette-1: #059669;
-  --vf-palette-2: #0EA5E9;
-  --vf-palette-3: #8B5CF6;
-  --vf-palette-4: #34D399;
-  --vf-palette-5: #FBBF24;
-  --vf-palette-6: #FB923C;
-  --vf-palette-7: #94A3B8;
-
-  /* ── Sombras ── */
-  --vf-shadow-card: 0 4px 12px rgba(0, 0, 0, .03);
-  --vf-shadow-btn:  0 4px 12px rgba(5, 150, 105, .27);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   TOKENS GLOBAIS (shared — não dependem do tema)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-:root {
-  /* ── Tipografia ── */
-  --vf-fs-xs:    11px;
-  --vf-fs-sm:    13px;
-  --vf-fs-base:  15px;
-  --vf-fs-lg:    18px;
-  --vf-fs-xl:    22px;
+  /* typography scale */
+  --vf-fs-xs:   11px;
+  --vf-fs-sm:   13px;
+  --vf-fs-base: 15px;
+  --vf-fs-lg:   18px;
+  --vf-fs-xl:   22px;
 
   --vf-fw-md:    500;
   --vf-fw-bold:  700;
   --vf-fw-xbold: 800;
   --vf-fw-black: 900;
 
-  /* ── Espaçamento ── */
-  --vf-sp-xs:  4px;
-  --vf-sp-sm:  8px;
-  --vf-sp-md:  16px;
-  --vf-sp-lg:  24px;
-  --vf-sp-xl:  40px;
+  /* spacing */
+  --vf-sp-xs: 4px;
+  --vf-sp-sm: 8px;
+  --vf-sp-md: 16px;
+  --vf-sp-lg: 24px;
+  --vf-sp-xl: 40px;
 
-  /* ── Sombras adicionais (além das existentes) ── */
-  --vf-shadow-card-hover: 0 8px 20px rgba(0, 0, 0, .07);
-  --vf-shadow-sheet:      0 -8px 24px rgba(0, 0, 0, .10);
-  --vf-shadow-nav:        0 -4px 16px rgba(0, 0, 0, .05);
-
-  /* ── Branco estático (não muda com tema) ── */
-  --vf-white: #ffffff;
+  /* shadow aliases */
+  --vf-shadow-card-hover: var(--vf-shadow-md);
+  --vf-shadow-sheet:      0 -8px 24px rgba(0, 0, 0, 0.12);
+  --vf-shadow-nav:        0 -4px 24px rgba(60, 28, 36, 0.06);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ─── reset / base ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--vf-font-ui);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: var(--vf-bg);
+  font-family: var(--vf-font-ui);
   color: var(--vf-tx);
-  transition: background var(--vf-trans-normal),
-              color var(--vf-trans-normal);
+  background: var(--vf-bg-0);
+  transition: background 0.6s var(--vf-ease-organic),
+              color 0.4s var(--vf-ease-organic);
+  min-height: 100vh;
 }
 
-/* Reset de botão para facilitar CSS Modules */
-button {
-  font-family: inherit;
-  transition: opacity .1s ease, transform .1s ease;
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+button:active { opacity: 0.85; transform: scale(0.97); }
+input, textarea, select { font-family: inherit; color: inherit; }
+* { -webkit-tap-highlight-color: transparent; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--vf-bd-strong); border-radius: var(--vf-r-full); }
+
+/* ─── typography helpers ────────────────────────────────────────────── */
+.vf-display    { font-family: var(--vf-font-display); font-weight: 400; letter-spacing: -0.01em; }
+.vf-display-it { font-family: var(--vf-font-display); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+.vf-eyebrow    { font-family: var(--vf-font-ui); font-size: 11px; font-weight: 600;
+                 letter-spacing: 0.18em; text-transform: uppercase; color: var(--vf-tx-mute); }
+.vf-label      { font-size: 12px; font-weight: 500; color: var(--vf-tx-mute); letter-spacing: 0.02em; }
+.vf-body       { font-size: 15px; line-height: 1.6; color: var(--vf-tx); }
+.vf-caption    { font-size: 12px; line-height: 1.4; color: var(--vf-tx-mute); }
+.vf-mono       { font-family: var(--vf-font-mono); font-size: 13px; }
+
+/* ─── glassmorphism helpers ─────────────────────────────────────────── */
+.vf-glass-card {
+  background:     var(--vf-glass);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border:         1px solid var(--vf-bd);
+  border-radius:  var(--vf-r-lg);
 }
 
-/* Feedback de toque universal para botões inline */
-button:active {
-  opacity: 0.7;
-  transform: scale(0.97);
-}
+/* ─── interactive states ────────────────────────────────────────────── */
+.vf-tap { transition: transform 0.15s var(--vf-ease-soft), opacity 0.15s var(--vf-ease-soft); }
+.vf-tap:active { transform: scale(0.97); opacity: 0.85; }
 
-/* Scrollbar discreta */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--vf-bd);
+/* ─── pill / badge ──────────────────────────────────────────────────── */
+.vf-pill {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           4px;
+  padding:       3px 10px;
   border-radius: var(--vf-r-full);
+  font-size:     12px;
+  font-weight:   600;
+  letter-spacing: 0.02em;
 }
-
-/* Remoção do tap highlight em mobile */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
+.vf-pill-rose    { background: var(--vf-er-light); color: var(--vf-rose); }
+.vf-pill-sage    { background: var(--vf-ok-light); color: var(--vf-ok); }
+.vf-pill-champ   { background: var(--vf-wn-light); color: var(--vf-wn); }
