@@ -1,13 +1,13 @@
 // src/app/routes.ts
 import type { ComponentType } from "react";
 import { TabKey } from "../features/nav/store";
-import { HomeScreen }      from "../screens/HomeScreen";
-import { RotinaScreen }    from "../features/rotina-shell/RotinaScreen";
-import { SaudeScreen }     from "../features/saude/SaudeScreen";
+import { HomeScreen }       from "../screens/HomeScreen";
+import { DiaScreen }        from "../features/agenda/DiaScreen";
+import { SaudeScreen }      from "../features/saude/SaudeScreen";
 import { EspiritualScreen } from "../features/espiritual/EspiritualScreen";
-import { OrganizaScreen }  from "../features/organiza/OrganizaScreen";
-import { FinancasScreen }  from "../features/financas/FinancasScreen";
-import { ConfigScreen }    from "../screens/ConfigScreen";
+import { OrganizaScreen }   from "../features/organiza/OrganizaScreen";
+import { FinancasScreen }   from "../features/financas/FinancasScreen";
+import { ConfigScreen }     from "../screens/ConfigScreen";
 
 export interface RouteDef {
   key: TabKey;
@@ -21,10 +21,10 @@ export const ROUTES: Record<TabKey, RouteDef> = {
     label: "Inicio",
     component: HomeScreen,
   },
-  rotina: {
-    key: "rotina",
-    label: "Rotina",
-    component: RotinaScreen,
+  dia: {
+    key: "dia",
+    label: "Dia",
+    component: DiaScreen,
   },
   saude: {
     key: "saude",

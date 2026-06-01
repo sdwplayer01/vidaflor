@@ -1,7 +1,10 @@
 // src/app/boot.ts
-import { migrateData, migrateConfig } from "../utils/migration";
-import { STORAGE_DATA, STORAGE_CFG } from "../utils/storage";
+import { migrateData, migrateConfig } from "./migration-legacy";
 import { STORAGE_KEYS } from "../shared/storage/keys";
+import { storageAdapter } from "../shared/storage/adapter";
+
+const STORAGE_DATA = "mvida_data_v2";
+const STORAGE_CFG  = "mvida_cfg_v2";
 
 /**
  * Orquestra toda a inicialização e migração de dados do VidaFlor v2.0.
@@ -26,7 +29,7 @@ export function boot(): void {
     for (const [oldKey, newKey] of Object.entries(keyMapping)) {
       const value = localStorage.getItem(oldKey);
       if (value && !localStorage.getItem(newKey)) {
-        localStorage.setItem(newKey, value);
+        void storageAdapter.setItem(newKey, value);
         console.log(`boot: Migrado ${oldKey} -> ${newKey}`);
       }
     }
@@ -49,7 +52,7 @@ export function boot(): void {
 
       for (const [key, val] of Object.entries(storeKeys)) {
         if (!localStorage.getItem(key)) {
-          localStorage.setItem(key, JSON.stringify(val));
+          void storageAdapter.setItem(key, JSON.stringify(val));
           console.log(`boot: Criado store individual ${key} a partir de dados monolíticos`);
         }
       }
@@ -64,7 +67,7 @@ export function boot(): void {
       const migratedCfg = migrateConfig(JSON.parse(rawCfg));
       const configKey = STORAGE_KEYS.config;
       if (!localStorage.getItem(configKey)) {
-        localStorage.setItem(configKey, JSON.stringify({ state: migratedCfg, version: 1 }));
+        void storageAdapter.setItem(configKey, JSON.stringify({ state: migratedCfg, version: 1 }));
         console.log(`boot: Migrada config ${STORAGE_CFG} -> ${configKey}`);
       }
     }

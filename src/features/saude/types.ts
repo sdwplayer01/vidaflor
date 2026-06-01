@@ -35,6 +35,7 @@ export interface HealthProfile {
   cycle?:    CycleConfig;
   meds:      Medication[];
   notes:     Record<ISODate, string>;
+  moodLog:   Record<ISODate, string>;  // humor do dia: 'calm'|'happy'|'anx'|'grat'
   createdAt: ISODate;
 }
 
@@ -61,7 +62,8 @@ export interface SaudeActions {
   adicionarMedicamento: (profileId: ID, med: Omit<Medication, 'id' | 'log' | 'createdAt' | 'active'>) => void;
   removerMedicamento:   (profileId: ID, medId: ID) => void;
   toggleMedicamentoDia: (profileId: ID, medId: ID, day: ISODate) => void;
-  desativarMedicamento: (profileId: ID, medId: ID) => void;
+  desativarMedicamento:  (profileId: ID, medId: ID) => void;
+  registrarMoodDia:      (profileId: ID, day: ISODate, mood: string | null) => void;
 
   registrarAnotacaoDia: (profileId: ID, day: ISODate, text: string) => void;
 }

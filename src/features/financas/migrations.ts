@@ -1,6 +1,6 @@
 // src/features/financas/migrations.ts
 
-export const FINANCAS_VERSION = 2;
+export const FINANCAS_VERSION = 3;
 
 export function migrate(state: any, fromVersion: number): any {
   let s = state;
@@ -35,6 +35,24 @@ export function migrate(state: any, fromVersion: number): any {
     };
   }
 
-  // v1 -> v2: reservado para futuro
+  // v1 -> v2: campos opcionais (recorrencia, paidFaturaRef) — nenhuma acao necessaria
+  // pois os campos sao opcionais e undefined e valido.
+
+  // v2 -> v3: budget Record<IsoMonth, Money> -> Record<IsoMonth, BudgetEntry>
+  if (fromVersion < 3) {
+    const oldBudget: Record<string, any> = s.budget ?? {};
+    const newBudget: Record<string, any> = {};
+    for (const [mes, val] of Object.entries(oldBudget)) {
+      if (typeof val === 'number') {
+        // formato antigo: converte para BudgetEntry
+        newBudget[mes] = { total: val, porCategoria: {} };
+      } else if (val && typeof val === 'object' && 'total' in val) {
+        // ja no novo formato
+        newBudget[mes] = { total: val.total ?? 0, porCategoria: val.porCategoria ?? {} };
+      }
+    }
+    s = { ...s, budget: newBudget };
+  }
+
   return s;
 }

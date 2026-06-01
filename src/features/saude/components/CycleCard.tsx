@@ -1,5 +1,6 @@
 // src/features/saude/components/CycleCard.tsx
 import { Moon } from 'lucide-react';
+import { CYCLE_PHASE_COLORS } from '@/shared/constants/colors';
 import { useCicloAtual, usePerfilAtivo } from '../selectors';
 
 export function CycleCard() {
@@ -22,10 +23,7 @@ export function CycleCard() {
   }
 
   const faseColors: Record<string, string> = {
-    Menstrual:   '#E87979',
-    Folicular:   '#79B8E8',
-    Ovulatoria:  '#79E8A0',
-    Lutea:       '#E8C479',
+    ...CYCLE_PHASE_COLORS,
   };
   const cor = faseColors[ciclo.fase] ?? 'var(--vf-p)';
 

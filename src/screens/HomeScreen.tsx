@@ -3,15 +3,18 @@
 // next-task whisper, 6 area cards.
 
 import { Settings, Flame, Check, Calendar, Heart, Sparkles, Users, Folder, Wallet } from "lucide-react";
-import { useState as useMoodState } from "react";
 import type { TabKey } from "@/features/nav/store";
 import { useNavStore }          from "@/features/nav/store";
 import { useConfigStore }       from "@/features/config/store";
 import { BloomFlower, bloomLabel, bloomPoem } from "@/features/bloom/components/BloomFlower";
 import { useBloomDoDia }        from "@/features/bloom/selectors";
+import { BloomHistoricoChart }   from "@/features/bloom/components/BloomHistoricoChart";
 import { useProgressoDoDia }    from "@/features/rotina/selectors";
 import { useRotinaStore }       from "@/features/rotina/store";
-import { useAguaDoDia, usePerfilAtivo } from "@/features/saude/selectors";
+import { useAguaDoDia, usePerfilAtivo, useMedicamentosPendentesHoje } from "@/features/saude/selectors";
+import { useProximasContas }   from "@/features/financas/selectors";
+import { useKidsCompletosHoje } from "@/features/kids/selectors";
+import { addDays }             from "@/shared/utils/date";
 import { useSaudeStore }        from "@/features/saude/store";
 import { useGratidoesDoDiaCount } from "@/features/espiritual/selectors";
 import { useSaldoDoMes }        from "@/features/financas/selectors";
@@ -172,7 +175,13 @@ const MOODS = [
 ] as const;
 
 function MoodCard() {
-  const [mood, setMood] = useMoodState<string | null>(null);
+  const perfil       = usePerfilAtivo();
+  const registrar    = useSaudeStore((s) => s.registrarMoodDia);
+  const d            = today();
+  const mood         = perfil?.moodLog?.[d] ?? null;
+  const setMood = (val: string | null) => {
+    if (perfil) registrar(perfil.id, d, val);
+  };
   return (
     <div style={{
       background:     "var(--vf-glass)",
@@ -211,6 +220,44 @@ function MoodCard() {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+
+// ── Badges de alerta ─────────────────────────────────────────────────────────
+function AlertBadges() {
+  const irPara  = useNavStore((s) => s.irPara);
+  const d       = today();
+  const amanha3 = addDays(d, 3);
+
+  const medsPendentes  = useMedicamentosPendentesHoje();
+  const contasVencendo = useProximasContas(3).filter((t) => !t.paid && (t.due ?? "") <= amanha3);
+  const kidsDone       = useKidsCompletosHoje();
+
+  const badges: { key: string; label: string; color: string; tab: TabKey }[] = [];
+  if (medsPendentes.some(({ meds }) => meds.length > 0))
+    badges.push({ key: "med",  label: `💊 ${medsPendentes.reduce((n, p) => n + p.meds.length, 0)} med.`,  color: "var(--vf-wn)",  tab: "saude"    });
+  if (contasVencendo.length > 0)
+    badges.push({ key: "bill", label: `⚠️ ${contasVencendo.length} conta${contasVencendo.length > 1 ? "s" : ""}`, color: "var(--vf-er)",  tab: "financas" });
+  if (kidsDone.length > 0)
+    badges.push({ key: "kids", label: `🌱 ${kidsDone.length} kids 100%`, color: "var(--vf-ok)", tab: "dia" });
+
+  if (badges.length === 0) return null;
+  return (
+    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "0 20px", marginBottom: 8 }}>
+      {badges.map(({ key, label, color, tab }) => (
+        <button
+          key={key}
+          onClick={() => irPara(tab)}
+          style={{
+            padding: "4px 12px", borderRadius: 99, fontSize: 11, fontWeight: 700,
+            background: `color-mix(in oklab, ${color} 15%, transparent)`,
+            border: `1px solid color-mix(in oklab, ${color} 40%, transparent)`,
+            color, cursor: "pointer", WebkitTapHighlightColor: "transparent",
+          }}
+        >{label}</button>
+      ))}
     </div>
   );
 }
@@ -370,7 +417,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
 
   const areaCards: AreaCardProps[] = [
     {
-      tab:   "rotina",
+      tab:   "dia",
       label: "Rotina",
       icon:  <Calendar size={16} />,
       pct:   rotina.total > 0 ? Math.round((rotina.feitas / rotina.total) * 100) : 0,
@@ -465,6 +512,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
         </div>
       </div>
 
+      <AlertBadges />
       {/* Quick actions: water + mood */}
       <div style={{
         position:            "relative",
@@ -481,6 +529,11 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       {/* Next task whisper */}
       <div style={{ position: "relative", zIndex: 2, padding: "0 20px" }}>
         <NextTaskCard />
+      </div>
+
+      {/* Bloom history */}
+      <div style={{ padding: "0 20px", marginBottom: 16 }}>
+        <BloomHistoricoChart />
       </div>
 
       {/* Six area cards */}

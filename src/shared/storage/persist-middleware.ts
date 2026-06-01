@@ -4,9 +4,9 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { storageAdapter } from "./adapter";
 
 // Debounce helper to prevent writing to storage on every rapid state change
-function debounce<F extends (...args: any[]) => any>(fn: F, delay: number) {
+function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number): (...args: T) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  return function (...args: Parameters<F>) {
+  return function (...args: T) {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
   };
@@ -32,7 +32,9 @@ export function persistVidaFlor<S>(
 ) {
   // Gravação debotada com 300ms de delay para evitar overhead de I/O
   const debouncedSetItem = debounce((key: string, value: string) => {
-    void storageAdapter.setItem(key, value);
+    storageAdapter.setItem(key, value).catch(err => {
+      console.error("persistVidaFlor: Falha ao persistir estado", { key, err });
+    });
   }, 300);
 
   const customStorage = {
@@ -48,7 +50,9 @@ export function persistVidaFlor<S>(
       debouncedSetItem(name, value);
     },
     removeItem: (name: string): void => {
-      void storageAdapter.removeItem(name);
+      storageAdapter.removeItem(name).catch(err => {
+        console.error("persistVidaFlor: Falha ao remover estado", { name, err });
+      });
     }
   };
 

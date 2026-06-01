@@ -4,6 +4,7 @@ import { Sheet }  from '@/shared/ui/Sheet';
 import { FInput } from '@/shared/ui/FInput';
 import { Btn }    from '@/shared/ui/Btn';
 import { useKidsStore } from '../store';
+import { KID_COLOR_DEFAULT } from '@/shared/constants/colors';
 
 interface Props {
   isOpen:  boolean;
@@ -12,7 +13,7 @@ interface Props {
 
 export function AddKidSheet({ isOpen, onClose }: Props) {
   const adicionarCrianca = useKidsStore((s) => s.adicionarCrianca);
-  const [form, setForm]  = useState({ name: '', avatar: '\uD83D\uDC76', age: '', color: '#79B8E8' });
+  const [form, setForm]  = useState({ name: '', avatar: '\uD83D\uDC76', age: '', color: KID_COLOR_DEFAULT });
 
   if (!isOpen) return null;
 
@@ -24,7 +25,7 @@ export function AddKidSheet({ isOpen, onClose }: Props) {
       age:    parseInt(form.age, 10) || 0,
       color:  form.color,
     });
-    setForm({ name: '', avatar: '\uD83D\uDC76', age: '', color: '#79B8E8' });
+    setForm({ name: '', avatar: '\uD83D\uDC76', age: '', color: KID_COLOR_DEFAULT });
     onClose();
   };
 

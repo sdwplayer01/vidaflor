@@ -4,7 +4,7 @@ import { useNavStore, TabKey } from "../../features/nav/store";
 
 const SCREEN_LABELS: Record<TabKey, string> = {
   home:       "Início",
-  rotina:     "Rotina",
+  dia:        "Dia",
   saude:      "Saúde",
   espiritual: "Conexão",
   organiza:   "Organização",

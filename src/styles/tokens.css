@@ -30,6 +30,11 @@
   --vf-champagne-soft: #ECD9A5;
   --vf-sage:           #8AA288;
   --vf-sage-soft:      #C0D2B8;
+  
+  /* ── DiaScreen source indicators */
+  --vf-source-casa:    #7CB9A8;
+  --vf-source-kids:    #F4A261;
+  --vf-source-pet:     #A8D8A8;
 
   /* text */
   --vf-tx:       #2A1A22;
@@ -112,6 +117,11 @@
   --vf-champagne-soft: #EFD7AC;
   --vf-sage:           #A8BFA2;
   --vf-sage-soft:      #C8D8C0;
+  
+  /* ── DiaScreen source indicators */
+  --vf-source-casa:    #7CB9A8;
+  --vf-source-kids:    #F4A261;
+  --vf-source-pet:     #A8D8A8;
 
   /* text */
   --vf-tx:       #F5E8E0;
@@ -288,3 +298,54 @@ input, textarea, select { font-family: inherit; color: inherit; }
 .vf-pill-rose    { background: var(--vf-er-light); color: var(--vf-rose); }
 .vf-pill-sage    { background: var(--vf-ok-light); color: var(--vf-ok); }
 .vf-pill-champ   { background: var(--vf-wn-light); color: var(--vf-wn); }
+
+/* ─── keyframes globais ─────────────────────────────────────────────── */
+
+/* flor: respira (glow) */
+@keyframes vf-breathe {
+  0%, 100% { transform: scale(1);     opacity: 0.85; }
+  50%       { transform: scale(1.07);  opacity: 1;    }
+}
+
+/* flor: balanço suave do caule */
+@keyframes vf-sway {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50%       { transform: rotate(1.5deg);  }
+}
+
+/* flor: partículas de pólen sobem com --dx/--dy */
+@keyframes vf-particle-rise {
+  0%   { transform: translate(0, 0) scale(1);                              opacity: 0;    }
+  12%  { opacity: 0.85; }
+  85%  { opacity: 0.35; }
+  100% { transform: translate(var(--dx, 0px), var(--dy, -40px)) scale(0.3); opacity: 0;    }
+}
+
+/* fundo: blobs de cor derivam suavemente (HomeScreen) */
+@keyframes vf-drift {
+  0%   { transform: translate(0,    0)     scale(1);    }
+  100% { transform: translate(12px, -16px) scale(1.04); }
+}
+
+/* skeleton shimmer: faixa de luz varre horizontalmente */
+@keyframes vf-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX( 100%); }
+}
+
+/* nav: mola ao selecionar aba */
+@keyframes vf-pop {
+  0%   { transform: scale(1);    }
+  45%  { transform: scale(1.25); }
+  100% { transform: scale(1);    }
+}
+
+/* ─── acessibilidade: respeita preferência por movimento reduzido ────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+}

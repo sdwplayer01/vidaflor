@@ -1,3 +1,5 @@
+// @ts-nocheck -- standalone test, run with: npx tsx <file>
+export {};
 // src/__tests__/bloom.test.ts
 // Testes mínimos para calcBloom — pode rodar com node diretamente.
 // Cobre: 0 tarefas, 100% completo, e edge cases.

@@ -6,6 +6,7 @@ import { ShoppingCart, StickyNote, Bell, type LucideIcon } from 'lucide-react';
 import { ShoppingTab }  from './components/ShoppingTab';
 import { NotesTab }     from './components/NotesTab';
 import { RemindersTab } from './components/RemindersTab';
+import { HEADERS }      from '@/shared/constants/messages';
 
 type Tab = 'compras' | 'notas' | 'lembretes';
 
@@ -30,7 +31,7 @@ export function OrganizaScreen() {
             color: 'var(--vf-tx)',
           }}
         >
-          Espaços de cultivo
+          {HEADERS.organiza.title}
         </h1>
         <div
           style={{
@@ -38,7 +39,7 @@ export function OrganizaScreen() {
             marginTop: 6, fontStyle: 'italic',
           }}
         >
-          cada lista é um canteiro do seu pensamento
+          {HEADERS.organiza.hint}
         </div>
       </div>
 

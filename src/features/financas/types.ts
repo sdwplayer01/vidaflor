@@ -5,26 +5,41 @@ export type Money = number;              // CENTAVOS, sempre int
 export type TransactionType = 'income' | 'expense';
 export type IsoMonth = string;           // 'YYYY-MM'
 
+// ── Recorrência ───────────────────────────────────────────────────────────────
+export type RecorrenciaTipo = 'mensal' | 'semanal' | 'anual';
+
+export interface Recorrencia {
+  tipo: RecorrenciaTipo;
+}
+
+// ── Parcelamento ──────────────────────────────────────────────────────────────
 export interface Installment {
-  total:   number;
-  current: number;
-  groupId: ID;
+  total:       number;
+  current:     number;
+  groupId:     ID;
+  valorBruto?: Money;  // Item 11: preco de etiqueta sem juros (opcional)
 }
 
+// ── Transação ─────────────────────────────────────────────────────────────────
 export interface Transaction {
-  id:          ID;
-  desc:        string;
-  amount:      Money;
-  type:        TransactionType;
-  category:    string;
-  date:        ISODate;
-  due?:        ISODate;
-  paid:        boolean;
-  cardId:      ID | null;
-  installment: Installment | null;
-  createdAt:   ISODate;
+  id:             ID;
+  desc:           string;
+  amount:         Money;
+  type:           TransactionType;
+  category:       string;
+  date:           ISODate;
+  due?:           ISODate;
+  paid:           boolean;
+  cardId:         ID | null;
+  installment:    Installment | null;
+  createdAt:      ISODate;
+  // Item 8: recorrência
+  recorrencia?:   Recorrencia;
+  // Item 7: referência ao pagamento de fatura (presente na txn de pagamento)
+  paidFaturaRef?: string;  // formato: "${cardId}_${mes}"
 }
 
+// ── Cartão ────────────────────────────────────────────────────────────────────
 export interface Card {
   id:       ID;
   name:     string;
@@ -35,33 +50,63 @@ export interface Card {
   active:   boolean;
 }
 
+// ── Fatura (entidade derivada) ────────────────────────────────────────────────
+export type FaturaStatus = 'aberta' | 'fechada' | 'paga';
+
+export interface Fatura {
+  cardId:  ID;
+  mes:     IsoMonth;
+  periodo: { from: ISODate; to: ISODate };
+  items:   Transaction[];
+  total:   Money;
+  status:  FaturaStatus;
+  pagoEm?: ISODate;  // data da txn de pagamento quando status === 'paga'
+}
+
+// ── Input de parcelada ────────────────────────────────────────────────────────
 export interface AdicionarParceladaInput {
   desc:          string;
-  totalAmount:   Money;
+  totalAmount:   Money;   // total cobrado (com juros)
+  valorBruto?:   Money;   // preco de etiqueta, sem juros (Item 11)
   totalParcelas: number;
   firstDate:     ISODate;
   category:      string;
   cardId:        ID | null;
 }
 
+// ── Orçamento ─────────────────────────────────────────────────────────────────
+// Item 10: budget expandido por categoria
+export interface BudgetEntry {
+  total:        Money;
+  porCategoria: Record<string, Money>;
+}
+
+// ── Estado e actions do store ─────────────────────────────────────────────────
 export interface FinancasState {
   transactions: Transaction[];
   cards:        Card[];
-  budget:       Record<IsoMonth, Money>;
+  budget:       Record<IsoMonth, BudgetEntry>;
   _version:     number;
   _hydrated:    boolean;
 }
 
 export interface FinancasActions {
-  adicionarTransacao:    (t: Omit<Transaction, 'id' | 'createdAt' | 'installment'>) => void;
-  adicionarParcelada:    (input: AdicionarParceladaInput) => void;
-  marcarComoPago:        (id: ID) => void;
-  desmarcarPago:         (id: ID) => void;
-  removerTransacao:      (id: ID) => void;
-  removerGrupoParcelado: (groupId: ID) => void;
-  adicionarCartao:       (card: Omit<Card, 'id' | 'active'>) => void;
-  removerCartao:         (id: ID) => void;
-  atualizarCartao:       (id: ID, patch: Partial<Card>) => void;
-  definirOrcamentoMes:   (month: IsoMonth, amount: Money) => void;
-  limparOrcamentoMes:    (month: IsoMonth) => void;
+  adicionarTransacao:         (t: Omit<Transaction, 'id' | 'createdAt' | 'installment'>) => void;
+  adicionarParcelada:         (input: AdicionarParceladaInput) => void;
+  marcarComoPago:             (id: ID) => void;
+  desmarcarPago:              (id: ID) => void;
+  removerTransacao:           (id: ID) => void;
+  removerGrupoParcelado:      (groupId: ID) => void;
+  // Item 9: editar transação
+  atualizarTransacao:         (id: ID, patch: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
+  adicionarCartao:            (card: Omit<Card, 'id' | 'active'>) => void;
+  removerCartao:              (id: ID) => void;
+  atualizarCartao:            (id: ID, patch: Partial<Card>) => void;
+  // Item 7: pagar fatura
+  pagarFatura:                (card: Card, mes: IsoMonth) => void;
+  // Item 10: orçamento
+  definirOrcamentoMes:        (month: IsoMonth, amount: Money) => void;
+  definirOrcamentoCategoria:  (month: IsoMonth, categoria: string, amount: Money) => void;
+  removerEnvelope:            (month: IsoMonth, categoria: string) => void;
+  limparOrcamentoMes:         (month: IsoMonth) => void;
 }

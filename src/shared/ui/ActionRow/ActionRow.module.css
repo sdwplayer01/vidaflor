@@ -56,3 +56,13 @@
 .right {
   flex-shrink:    0;
 }
+
+.container.clickable {
+  cursor:                      pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.container.clickable:active {
+  opacity: 0.75;
+  transform: scale(0.99);
+}

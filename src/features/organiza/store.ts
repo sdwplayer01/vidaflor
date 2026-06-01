@@ -24,9 +24,19 @@ export const useOrganizaStore = create<OrganizaState & OrganizaActions>()(
                 id:        genId("shop"),
                 done:      false,
                 createdAt: today(),
+                price:     0,
                 ...item,
               },
             ],
+          },
+        })),
+
+      atualizarItemCompra: (id: ID, patch: Partial<Omit<ShoppingItem, "id" | "createdAt">>) =>
+        set((state) => ({
+          shopping: {
+            items: state.shopping.items.map((i) =>
+              i.id === id ? { ...i, ...patch } : i
+            ),
           },
         })),
 
@@ -95,11 +105,11 @@ export const useOrganizaStore = create<OrganizaState & OrganizaActions>()(
         })),
 
       // ── Reminders ─────────────────────────────────────────────────────────
-      adicionarLembrete: (reminder: Omit<Reminder, "id" | "done">) =>
+      adicionarLembrete: (reminder: Omit<Reminder, "id" | "done" | "createdAt">) =>
         set((state) => ({
           reminders: {
             list: [
-              { id: genId("rem"), done: false, ...reminder },
+              { id: genId("rem"), done: false, createdAt: today(), ...reminder },
               ...state.reminders.list,
             ],
           },

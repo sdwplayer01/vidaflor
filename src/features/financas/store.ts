@@ -6,26 +6,31 @@ import { genId } from '@/shared/utils/id';
 import { today } from '@/shared/utils/date';
 import { seedFinancas } from './seed';
 import { migrate, FINANCAS_VERSION } from './migrations';
-import { gerarParcelas } from './utils';
+import { gerarParcelas, periodoFatura } from './utils';
 import type {
   FinancasState, FinancasActions,
-  Transaction, Card, AdicionarParceladaInput,
-  IsoMonth, Money,
+  Card, AdicionarParceladaInput,
+  Transaction, IsoMonth, Money,
 } from './types';
-import type { ID } from '@/shared/types/common';
+import type { ID, ISODate } from '@/shared/types/common';
 
 type Store = FinancasState & FinancasActions;
 
 export const useFinancasStore = create<Store>()(
   persistVidaFlor(
-    (set) => ({
+    (set, get) => ({
       ...seedFinancas,
 
       adicionarTransacao: (t) =>
         set((s) => ({
           transactions: [
             ...s.transactions,
-            { ...t, id: genId('txn'), installment: null, createdAt: today() },
+            {
+              ...t,
+              id:          genId('txn'),
+              installment: null,
+              createdAt:   today(),
+            },
           ],
         })),
 
@@ -60,6 +65,14 @@ export const useFinancasStore = create<Store>()(
           ),
         })),
 
+      // Item 9: editar transação
+      atualizarTransacao: (id: ID, patch) =>
+        set((s) => ({
+          transactions: s.transactions.map((t) =>
+            t.id === id ? { ...t, ...patch } : t
+          ),
+        })),
+
       adicionarCartao: (card) =>
         set((s) => ({
           cards: [...s.cards, { ...card, id: genId('crd'), active: true }],
@@ -73,12 +86,90 @@ export const useFinancasStore = create<Store>()(
           cards: s.cards.map((c) => (c.id === id ? { ...c, ...patch } : c)),
         })),
 
+      // Item 7: pagar fatura
+      pagarFatura: (card: Card, mes: IsoMonth) => {
+        const { from, to } = periodoFatura(card, mes);
+        const refKey = `${card.id}_${mes}` as string;
+        const jaExiste = get().transactions.some((t) => t.paidFaturaRef === refKey);
+        if (jaExiste) return;
+
+        const faturaItems = get().transactions.filter(
+          (t) =>
+            t.cardId === card.id &&
+            t.type === 'expense' &&
+            t.date >= from &&
+            t.date <= to
+        );
+        if (faturaItems.length === 0) return;
+
+        const total = faturaItems.reduce((acc, t) => acc + t.amount, 0);
+        const [y, m] = mes.split('-').map(Number) as [number, number];
+        const dueDay  = Math.min(card.dueDay, new Date(y, m, 0).getDate());
+        const dueDate = `${y}-${String(m).padStart(2, '0')}-${String(dueDay).padStart(2, '0')}` as ISODate;
+
+        const pagamento: Transaction = {
+          id:            genId('txn'),
+          desc:          `Fatura ${card.name} ${mes}`,
+          amount:        total,
+          type:          'expense',
+          category:      'cartao',
+          date:          today(),
+          due:           dueDate,
+          paid:          true,
+          cardId:        null,
+          installment:   null,
+          createdAt:     today(),
+          paidFaturaRef: refKey,
+        };
+
+        set((s) => ({
+          transactions: [
+            ...s.transactions.map((t) =>
+              faturaItems.some((fi) => fi.id === t.id) ? { ...t, paid: true } : t
+            ),
+            pagamento,
+          ],
+        }));
+      },
+
+      // Item 10: orcamento total do mes
       definirOrcamentoMes: (month: IsoMonth, amount: Money) =>
-        set((s) => ({ budget: { ...s.budget, [month]: amount } })),
+        set((s) => {
+          const atual = s.budget[month] ?? { total: 0, porCategoria: {} };
+          return { budget: { ...s.budget, [month]: { ...atual, total: amount } } };
+        }),
+
+      // Item 10: orcamento por categoria
+      definirOrcamentoCategoria: (month: IsoMonth, categoria: string, amount: Money) =>
+        set((s) => {
+          const atual = s.budget[month] ?? { total: 0, porCategoria: {} };
+          return {
+            budget: {
+              ...s.budget,
+              [month]: {
+                ...atual,
+                porCategoria: { ...atual.porCategoria, [categoria]: amount },
+              },
+            },
+          };
+        }),
+
+      removerEnvelope: (month: IsoMonth, categoria: string) =>
+        set((s) => {
+          const atual = s.budget[month];
+          if (!atual) return s;
+          const { [categoria]: _removed, ...resto } = atual.porCategoria;
+          return {
+            budget: {
+              ...s.budget,
+              [month]: { ...atual, porCategoria: resto },
+            },
+          };
+        }),
 
       limparOrcamentoMes: (month: IsoMonth) =>
         set((s) => {
-          const { [month]: _, ...rest } = s.budget;
+          const { [month]: _removed, ...rest } = s.budget;
           return { budget: rest };
         }),
     }),

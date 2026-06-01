@@ -4,20 +4,21 @@ import { Sheet }  from '@/shared/ui/Sheet';
 import { FInput } from '@/shared/ui/FInput';
 import { Btn }    from '@/shared/ui/Btn';
 import { useFinancasStore } from '../store';
+import { CARD_COLORS } from '@/shared/constants/colors';
 
 interface Props {
   isOpen:  boolean;
   onClose: () => void;
 }
 
-const CORES = ['#E8799A', '#79B8E8', '#79E8A0', '#E8C479', '#C879E8', '#E87979'];
+const CORES = CARD_COLORS as readonly string[];
 
 export function AddCardSheet({ isOpen, onClose }: Props) {
   const adicionarCartao = useFinancasStore((s) => s.adicionarCartao);
   const [form, setForm] = useState({
     name:     '',
     brand:    'Visa',
-    color:    CORES[0] ?? '#E8799A',
+    color:    (CORES[0] ?? "") as string,
     closeDay: '10',
     dueDay:   '17',
   });
@@ -33,7 +34,7 @@ export function AddCardSheet({ isOpen, onClose }: Props) {
       closeDay: parseInt(form.closeDay) || 10,
       dueDay:   parseInt(form.dueDay)   || 17,
     });
-    setForm({ name: '', brand: 'Visa', color: CORES[0] ?? '#E8799A', closeDay: '10', dueDay: '17' });
+    setForm({ name: '', brand: 'Visa', color: CORES[0] ?? CARD_COLORS[0], closeDay: '10', dueDay: '17' });
     onClose();
   };
 

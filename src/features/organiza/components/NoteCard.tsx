@@ -1,3 +1,5 @@
+import { NOTE_COLORS } from '@/shared/constants/colors';
+const NOTE_WHITE = NOTE_COLORS[0]; // '#FFFFFF'
 // src/features/organiza/components/NoteCard.tsx
 import { Trash2 } from "lucide-react";
 import type { Note } from "../types";
@@ -15,8 +17,8 @@ export function NoteCard({ note, onRemove, onEdit }: Props) {
       onClick={() => onEdit(note)}
       style={{
         padding: "14px 16px", borderRadius: 16, cursor: "pointer",
-        background: note.color && note.color !== "#FFFFFF" ? note.color + "22" : "var(--vf-surf)",
-        border: `1.5px solid ${note.color && note.color !== "#FFFFFF" ? note.color + "55" : "var(--vf-bd)"}`,
+        background: note.color && note.color !== NOTE_WHITE ? note.color + "22" : "var(--vf-surf)",
+        border: `1.5px solid ${note.color && note.color !== NOTE_WHITE ? note.color + "55" : "var(--vf-bd)"}`,
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>

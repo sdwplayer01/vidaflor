@@ -1,0 +1,22 @@
+{
+  "customSkills": [
+    {
+      "name": "vidaflor-arch",
+      "path": ".claude/vidaflor-arch/SKILL.md",
+      "description": "Arquitetura técnica v2.0 - Feature folders, stores, Money em centavos, migrations"
+    },
+    {
+      "name": "vidaflor-design",
+      "path": ".claude/vidaflor-design/SKILL.md",
+      "description": "Design system migration - Dark theme, tokens Tailwind v4, componentes"
+    }
+  ],
+  "model": "claude-haiku-4-5",
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npm list *)",
+      "Bash(npm install *)"
+    ]
+  }
+}

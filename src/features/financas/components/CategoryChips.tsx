@@ -1,8 +1,17 @@
 // src/features/financas/components/CategoryChips.tsx
 
 export const CATEGORIES = [
-  'alimentacao', 'transporte', 'saude', 'lazer',
-  'educacao', 'moradia', 'vestuario', 'assinatura', 'outros',
+  '🛒 Mercado',
+  '🏠 Casa/contas',
+  '🎒 Filhos/escola',
+  '💊 Saúde/farmácia',
+  '🚗 Transporte',
+  '🐾 Pet',
+  '👕 Roupas',
+  '🌿 Lazer',
+  '💆 Autocuidado',
+  '📺 Assinaturas',
+  '✨ Outros',
 ] as const;
 
 export type Category = typeof CATEGORIES[number];
@@ -21,13 +30,14 @@ export function CategoryChips({ value, onChange }: Props) {
           onClick={() => onChange(cat)}
           style={{
             padding: '6px 12px', borderRadius: 20, fontSize: 12,
-            border: `1.5px solid ${value === cat ? 'var(--vf-p)' : 'var(--vf-bd)'}`,
+            border: `1.5px solid ${value === cat ? 'var(--vf-rose)' : 'var(--vf-bd)'}`,
             background: value === cat
-              ? 'color-mix(in srgb, var(--vf-p) 12%, transparent)'
-              : 'var(--vf-bg)',
-            color: value === cat ? 'var(--vf-p)' : 'var(--vf-tm)',
+              ? 'color-mix(in srgb, var(--vf-rose) 12%, transparent)'
+              : 'var(--vf-surf)',
+            color: value === cat ? 'var(--vf-rose)' : 'var(--vf-tx-mute)',
             fontWeight: value === cat ? 700 : 400,
             cursor: 'pointer', fontFamily: 'inherit',
+            WebkitTapHighlightColor: 'transparent',
           }}
         >
           {cat}

@@ -1,6 +1,7 @@
 // src/features/saude/migrations.ts
+import { PROFILE_COLOR_DEFAULT } from '@/shared/constants/colors';
 
-export const SAUDE_VERSION = 2;
+export const SAUDE_VERSION = 3;
 
 export function migrate(state: any, fromVersion: number): any {
   let s = state;
@@ -15,7 +16,7 @@ export function migrate(state: any, fromVersion: number): any {
           name:      'Voce',
           avatar:    '\uD83D\uDC69',
           type:      'adult_f',
-          color:     '#E8799A',
+          color:     PROFILE_COLOR_DEFAULT,
           water:     s.water || { goalMl: 2000, logMl: {} },
           cycle: s.cycle
             ? {
@@ -43,6 +44,15 @@ export function migrate(state: any, fromVersion: number): any {
       })),
     }));
   }
+
+  // v2 -> v3: add moodLog field to all profiles
+  if (fromVersion < 3) {
+    s.profiles = (s.profiles || []).map((p: any) => ({
+      ...p,
+      moodLog: p.moodLog ?? {},
+    }));
+  }
+
 
   return s;
 }

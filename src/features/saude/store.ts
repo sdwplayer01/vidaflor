@@ -145,6 +145,16 @@ export const useSaudeStore = create<Store>()(
             notes: { ...p.notes, [day]: text },
           })),
         })),
+
+      registrarMoodDia: (profileId, day, mood) =>
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => ({
+            ...p,
+            moodLog: mood
+              ? { ...p.moodLog, [day]: mood }
+              : Object.fromEntries(Object.entries(p.moodLog ?? {}).filter(([k]) => k !== day)),
+          })),
+        })),
     }),
     {
       name:    STORAGE_KEYS.saude,

@@ -1,5 +1,9 @@
 // src/features/casa/types.ts
 import type { ID, ISODate } from '@/shared/types/common';
+export type { RecorrenciaTarefa } from '@/shared/types/recorrencia';
+
+// Re-exporta como Recorrencia para não quebrar código existente de casa
+export type { RecorrenciaTarefa as Recorrencia } from '@/shared/types/recorrencia';
 
 export type Ambiente =
   | 'cozinha'
@@ -12,17 +16,11 @@ export type Ambiente =
   | 'escritorio'
   | 'geral';
 
-export type Recorrencia =
-  | { tipo: 'diaria' }
-  | { tipo: 'semanal'; diasSemana: number[] }
-  | { tipo: 'mensal'; diaMes: number }
-  | { tipo: 'avulsa' };
-
 export interface TarefaCasa {
   id:             ID;
   task:           string;
   ambiente:       Ambiente;
-  recorrencia:    Recorrencia;
+  recorrencia:    import('@/shared/types/recorrencia').RecorrenciaTarefa;
   estimativaMin?: number;
   createdAt:      ISODate;
   active:         boolean;

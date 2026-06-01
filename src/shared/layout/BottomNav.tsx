@@ -1,7 +1,5 @@
 // src/shared/layout/BottomNav.tsx -- v2
-// 6 tabs, top indicator pill, FlowerMark for home tab, glassmorphism background.
-
-import { Calendar, Heart, Sparkles, Users, Wallet } from "lucide-react";
+import { CalendarDays, Heart, Sparkles, Users, Wallet, Settings } from "lucide-react";
 import { useNavStore, type TabKey } from "../../features/nav/store";
 import { FlowerMark }               from "../../features/bloom/components/BloomFlower";
 import { useVitality }              from "../../features/bloom/selectors";
@@ -24,11 +22,12 @@ export function BottomNav() {
         </span>
       ),
     },
-    { k: "rotina",     label: "rotina",   icon: <Calendar  size={20} strokeWidth={1.6} /> },
-    { k: "saude",      label: "saude",    icon: <Heart     size={20} strokeWidth={1.6} /> },
-    { k: "espiritual", label: "espirito", icon: <Sparkles  size={20} strokeWidth={1.6} /> },
-    { k: "organiza",   label: "conexao",  icon: <Users     size={20} strokeWidth={1.6} /> },
-    { k: "financas",   label: "financas", icon: <Wallet    size={20} strokeWidth={1.6} /> },
+    { k: "dia",       label: "dia",      icon: <CalendarDays size={20} strokeWidth={1.6} /> },
+    { k: "saude",     label: "saude",    icon: <Heart        size={20} strokeWidth={1.6} /> },
+    { k: "espiritual",label: "espirito", icon: <Sparkles     size={20} strokeWidth={1.6} /> },
+    { k: "organiza",  label: "listas",   icon: <Users        size={20} strokeWidth={1.6} /> },
+    { k: "financas",  label: "financas", icon: <Wallet       size={20} strokeWidth={1.6} /> },
+    { k: "config",    label: "config",   icon: <Settings     size={20} strokeWidth={1.6} /> },
   ];
 
   return (

@@ -16,6 +16,8 @@ export const STORAGE_KEYS = {
   espiritual:  `${STORAGE_NAMESPACE}:espiritual`,
   organiza:    `${STORAGE_NAMESPACE}:organiza`,
   integrations:`${STORAGE_NAMESPACE}:integrations`,
+  agenda:      `${STORAGE_NAMESPACE}:agenda`,
+  auth:        `${STORAGE_NAMESPACE}:auth`,
 } as const;
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS];

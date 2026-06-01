@@ -1,4 +1,5 @@
 // src/features/pets/migrations.ts
+import { PET_COLOR_DEFAULT } from '@/shared/constants/colors';
 
 export const PETS_VERSION = 1;
 
@@ -14,7 +15,7 @@ export function migrate(state: any, fromVersion: number): any {
         especie:     p.especie ?? 'outro',
         raca:        p.raca,
         nascimento:  p.nascimento,
-        color:       p.color ?? '#79E8A0',
+        color:       p.color ?? PET_COLOR_DEFAULT,
         cuidados:    (p.cuidados || []).map((c: any) => ({
           id:            c.id ? String(c.id) : String(Math.random()),
           tipo:          c.tipo ?? 'outros',

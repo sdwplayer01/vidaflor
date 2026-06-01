@@ -31,7 +31,7 @@ export function BloomCelebration({ onDismiss }: Props) {
           <X size={20} />
         </button>
 
-        <Sparkles size={48} color="#D4A853" style={{ marginBottom: 12 }} />
+        <Sparkles size={48} color="var(--vf-champagne)" style={{ marginBottom: 12 }} />
         <h2 style={{ margin: '0 0 8px', fontSize: 22, fontWeight: 800, color: 'var(--vf-t)' }}>
           Bloom Completo!
         </h2>
@@ -42,7 +42,7 @@ export function BloomCelebration({ onDismiss }: Props) {
           onClick={onDismiss}
           style={{
             width: '100%', padding: '14px', borderRadius: 14,
-            border: 'none', background: 'var(--vf-p)', color: '#fff',
+            border: 'none', background: 'var(--vf-rose)', color: 'var(--vf-on-rose)',
             fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
           }}
         >

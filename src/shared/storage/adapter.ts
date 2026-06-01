@@ -63,17 +63,16 @@ export const storageAdapter: StorageAdapter = {
   },
 
   async setItem(key: string, value: string): Promise<void> {
-    // 1. Salva no window.storage (fire-and-forget/paralelo)
-    let pWindow: Promise<void> = Promise.resolve();
+    const writes: Promise<void>[] = [];
+
     if (hasWindowStorage()) {
-      try {
-        pWindow = window.storage!.set(key, value);
-      } catch (err) {
-        console.warn("StorageAdapter: Erro ao escrever em window.storage", err);
-      }
+      writes.push(
+        window.storage!.set(key, value).catch(err => {
+          console.warn("StorageAdapter: Erro ao escrever em window.storage", err);
+        })
+      );
     }
 
-    // 2. Salva no localStorage
     if (hasLocalStorage()) {
       try {
         localStorage.setItem(key, value);
@@ -82,17 +81,18 @@ export const storageAdapter: StorageAdapter = {
       }
     }
 
-    await pWindow;
+    await Promise.all(writes);
   },
 
   async removeItem(key: string): Promise<void> {
-    let pWindow: Promise<void> = Promise.resolve();
+    const deletes: Promise<void>[] = [];
+
     if (hasWindowStorage()) {
-      try {
-        pWindow = window.storage!.delete(key);
-      } catch (err) {
-        console.warn("StorageAdapter: Erro ao deletar de window.storage", err);
-      }
+      deletes.push(
+        window.storage!.delete(key).catch(err => {
+          console.warn("StorageAdapter: Erro ao deletar de window.storage", err);
+        })
+      );
     }
 
     if (hasLocalStorage()) {
@@ -103,7 +103,7 @@ export const storageAdapter: StorageAdapter = {
       }
     }
 
-    await pWindow;
+    await Promise.all(deletes);
   },
 
   async listKeys(prefix?: string): Promise<string[]> {

@@ -1,28 +1,36 @@
 // src/features/organiza/components/AddNoteSheet.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet }  from "@/shared/ui/Sheet";
 import { FInput } from "@/shared/ui/FInput";
 import { Btn }    from "@/shared/ui/Btn";
 import { useOrganizaStore } from "../store";
+import { NOTE_COLORS } from "@/shared/constants/colors";
 import type { Note } from "../types";
 
 interface Props {
-  isOpen:       boolean;
-  onClose:      () => void;
+  isOpen:        boolean;
+  onClose:       () => void;
   notaEditando?: Note | null;
 }
 
-const CORES = ["#FFFFFF", "#FFD6E0", "#C8F7DC", "#C8E6FF", "#FFF3C8", "#EDD9FF"];
-
 export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
-  const adicionarNota  = useOrganizaStore((s) => s.adicionarNota);
-  const atualizarNota  = useOrganizaStore((s) => s.atualizarNota);
+  const adicionarNota = useOrganizaStore((s) => s.adicionarNota);
+  const atualizarNota = useOrganizaStore((s) => s.atualizarNota);
 
   const [form, setForm] = useState({
     title:   notaEditando?.title   ?? "",
     content: notaEditando?.content ?? "",
-    color:   notaEditando?.color   ?? "#FFFFFF",
+    color:   notaEditando?.color   ?? NOTE_COLORS[0],
   });
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setForm({
+      title:   notaEditando?.title   ?? "",
+      content: notaEditando?.content ?? "",
+      color:   notaEditando?.color   ?? NOTE_COLORS[0],
+    });
+  }, [isOpen, notaEditando]);
 
   if (!isOpen) return null;
 
@@ -33,7 +41,7 @@ export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
     } else {
       adicionarNota({ title: form.title, content: form.content, color: form.color });
     }
-    setForm({ title: "", content: "", color: "#FFFFFF" });
+    setForm({ title: "", content: "", color: NOTE_COLORS[0] ?? "" });
     onClose();
   };
 
@@ -54,12 +62,13 @@ export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
           }}
         />
         <div style={{ display: "flex", gap: 8 }}>
-          {CORES.map((c) => (
+          {NOTE_COLORS.map((c) => (
             <button
               key={c}
               onClick={() => setForm((f) => ({ ...f, color: c }))}
               style={{
-                width: 28, height: 28, borderRadius: "50%", background: c === "#FFFFFF" ? "var(--vf-surf)" : c,
+                width: 28, height: 28, borderRadius: "50%",
+                background: c === NOTE_COLORS[0] ? "var(--vf-surf)" : c,
                 border: form.color === c ? "2.5px solid var(--vf-p)" : "1.5px solid var(--vf-bd)",
                 cursor: "pointer",
               }}

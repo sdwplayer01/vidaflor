@@ -1,3 +1,5 @@
+// @ts-nocheck -- standalone test, run with: npx tsx <file>
+export {};
 // src/__tests__/cycle.test.ts
 // Testes mínimos para calcCycleState — pode rodar com node diretamente.
 // Cobre: dia 0, período fértil, TPM, menstrual, e wrap-around.

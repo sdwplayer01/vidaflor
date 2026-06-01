@@ -4,6 +4,7 @@ import { Sheet }  from '@/shared/ui/Sheet';
 import { FInput } from '@/shared/ui/FInput';
 import { Btn }    from '@/shared/ui/Btn';
 import { usePetsStore } from '../store';
+import { PET_COLOR_DEFAULT } from '@/shared/constants/colors';
 import type { EspeciePet } from '../types';
 
 interface Props {
@@ -24,7 +25,7 @@ export function AddPetSheet({ isOpen, onClose }: Props) {
     name:    '',
     especie: 'cao' as EspeciePet,
     avatar:  '\uD83D\uDC36',
-    color:   '#79E8A0',
+    color:   PET_COLOR_DEFAULT,
     raca:    '',
   });
 
@@ -39,7 +40,7 @@ export function AddPetSheet({ isOpen, onClose }: Props) {
       color:   form.color,
       raca:    form.raca || undefined,
     });
-    setForm({ name: '', especie: 'cao', avatar: '\uD83D\uDC36', color: '#79E8A0', raca: '' });
+    setForm({ name: '', especie: 'cao', avatar: '\uD83D\uDC36', color: PET_COLOR_DEFAULT, raca: '' });
     onClose();
   };
 

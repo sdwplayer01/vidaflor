@@ -11,18 +11,13 @@ interface SheetProps {
 
 export function Sheet({ title, onClose, children }: SheetProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
+  // Mount-only: overflow lock, initial focus, tab trap
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
 
     const focusableElements = panelRef.current?.querySelectorAll(
       "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
@@ -53,10 +48,21 @@ export function Sheet({ title, onClose, children }: SheetProps) {
 
     return () => {
       document.body.style.overflow = originalOverflow;
-      document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keydown", handleTabKey);
     };
-  }, [onClose]);
+  }, []);
+
+  // Escape key always uses latest onClose via ref
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onCloseRef.current();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <div className={styles.overlay} onClick={onClose}>
