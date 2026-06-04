@@ -52,16 +52,16 @@ export const useSaudeStore = create<Store>()(
 
       registrarAgua: (profileId, day, ml) =>
         set((s) => ({
-          profiles: updProfile(s.profiles, profileId, (p) => ({
-            ...p,
-            water: {
-              ...p.water,
-              logMl: {
-                ...p.water.logMl,
-                [day]: Math.max(0, (p.water.logMl[day] ?? 0) + ml),
+          profiles: updProfile(s.profiles, profileId, (p) => {
+            const novoTotal = Math.min(10000, Math.max(0, (p.water.logMl[day] ?? 0) + ml));
+            return {
+              ...p,
+              water: {
+                ...p.water,
+                logMl: { ...p.water.logMl, [day]: novoTotal },
               },
-            },
-          })),
+            };
+          }),
         })),
 
       ajustarMetaAgua: (profileId, goalMl) =>

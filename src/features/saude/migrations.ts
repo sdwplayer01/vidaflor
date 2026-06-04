@@ -1,7 +1,10 @@
 // src/features/saude/migrations.ts
 import { PROFILE_COLOR_DEFAULT } from '@/shared/constants/colors';
 
-export const SAUDE_VERSION = 4;
+export const SAUDE_VERSION = 5;
+
+// ID est\u00E1vel para o perfil legado "eu" \u2014 gerado uma vez e reutilizado entre runs.
+const LEGACY_EU_STABLE_ID = 'prf_legacy_eu_default';
 
 export function migrate(state: any, fromVersion: number): any {
   let s = state;
@@ -61,6 +64,17 @@ export function migrate(state: any, fromVersion: number): any {
       stepsLog:   p.stepsLog   ?? {},
       metaPassos: p.metaPassos ?? 8000,
     }));
+  }
+
+  // v4 -> v5: substituir id "eu" por ID est\u00E1vel para evitar conflito com UUID de Auth
+  if (fromVersion < 5) {
+    s.profiles = (s.profiles || []).map((p: any) => {
+      if (p.id !== 'eu') return p;
+      return { ...p, id: LEGACY_EU_STABLE_ID };
+    });
+    if (s.activeProfileId === 'eu') {
+      s.activeProfileId = LEGACY_EU_STABLE_ID;
+    }
   }
 
   return s;
