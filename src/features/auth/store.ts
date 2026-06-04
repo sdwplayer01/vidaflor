@@ -50,8 +50,16 @@ export const useAuthStore = create<Store>()(
     {
       name:    STORAGE_KEYS.auth,
       version: AUTH_VERSION,
-      // Persiste só o essencial; loading/error são efêmeros
-      migrate: (_state, _v) => ({ user: null, isLoggedIn: false }),
+      // Preserva dados do usuário entre versões; rejeita estado corrompido
+      migrate: (persistedState: any, _v) => ({
+        user:       persistedState?.user ?? null,
+        isLoggedIn: !!(persistedState?.user),
+      }),
+      // Exclui campos efêmeros da persistência (loading, error, _hydrated)
+      partialize: (state) => ({
+        user:       state.user,
+        isLoggedIn: state.isLoggedIn,
+      }),
     }
   )
 );

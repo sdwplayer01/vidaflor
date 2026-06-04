@@ -14,6 +14,11 @@ export function App() {
   const currentTab = useNavStore((s) => s.currentTab);
   const irPara     = useNavStore((s) => s.irPara);
 
+  // Aguarda hidratação do storage antes de decidir qual view mostrar.
+  // Sem esse gate, o app pode piscar entre AuthGate e app principal
+  // enquanto o store async carrega dados do localStorage/window.storage.
+  if (!_hydrated) return null;
+
   if (!isLoggedIn) {
     return <AuthGate />;
   }

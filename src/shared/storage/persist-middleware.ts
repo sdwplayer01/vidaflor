@@ -3,7 +3,6 @@ import { StateCreator } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { storageAdapter } from "./adapter";
 
-// Debounce helper to prevent writing to storage on every rapid state change
 function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number): (...args: T) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   return function (...args: T) {
@@ -17,6 +16,7 @@ export interface PersistVidaFlorOptions<S> {
   version: number;
   migrate?: (persistedState: unknown, version: number) => any;
   onHydrated?: (state: S) => void;
+  partialize?: (state: S) => Partial<S>;
 }
 
 /**
@@ -25,12 +25,21 @@ export interface PersistVidaFlorOptions<S> {
  * - Debounce de 300ms nas gravações para otimizar performance.
  * - Integra com o StorageAdapter (window.storage + localStorage fallback).
  * - Suporta versionamento e migrações.
+ * - Auto-exclui _hydrated da persistência e o seta como true após hidratação.
  */
 export function persistVidaFlor<S>(
   creator: StateCreator<S, [], []>,
   options: PersistVidaFlorOptions<S>
 ) {
-  // Gravação debotada com 300ms de delay para evitar overhead de I/O
+  // Captura o set do creator para poder setar _hydrated: true após hidratação
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let storeSet: ((partial: any) => void) | null = null;
+
+  const wrappedCreator: StateCreator<S, [], []> = (set, get, api) => {
+    storeSet = set;
+    return creator(set, get, api);
+  };
+
   const debouncedSetItem = debounce((key: string, value: string) => {
     storageAdapter.setItem(key, value).catch(err => {
       console.error("persistVidaFlor: Falha ao persistir estado", { key, err });
@@ -56,14 +65,27 @@ export function persistVidaFlor<S>(
     }
   };
 
-  return persist(creator, {
+  // Partialize padrão: exclui _hydrated da persistência (é flag de runtime, não dado)
+  const defaultPartialize = options.partialize ?? ((state: S): Partial<S> => {
+    const copy = { ...(state as object) } as Record<string, unknown>;
+    delete copy._hydrated;
+    return copy as Partial<S>;
+  });
+
+  return persist(wrappedCreator, {
     name: options.name,
     version: options.version,
     migrate: options.migrate,
     storage: createJSONStorage(() => customStorage),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    partialize: defaultPartialize as any,
     onRehydrateStorage: () => (state) => {
       if (state && options.onHydrated) {
         options.onHydrated(state);
+      }
+      // Marca hidratação completa para gates de renderização (ex: App.tsx)
+      if (storeSet && state != null && '_hydrated' in (state as object)) {
+        storeSet({ _hydrated: true });
       }
     }
   });
