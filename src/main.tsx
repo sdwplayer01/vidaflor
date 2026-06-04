@@ -8,6 +8,7 @@ import "./styles/global.css";
 import "./index.css";
 import { App } from "./App";
 import { ThemeProvider } from "./app/theme-provider";
+import { ErrorBoundary } from "@/shared/ui/ErrorBoundary/ErrorBoundary";
 import { boot } from "./app/boot";
 import { getSession } from "@/features/auth/api/supabase";
 import { useAuthStore } from "@/features/auth/store";
@@ -15,16 +16,22 @@ import { useAuthStore } from "@/features/auth/store";
 (async () => {
   boot();
 
-  const session = await getSession();
-  if (session) {
-    useAuthStore.getState().hydrateFromSession(session);
+  try {
+    const session = await getSession();
+    if (session) {
+      useAuthStore.getState().hydrateFromSession(session);
+    }
+  } catch {
+    // Supabase não configurado ou falha de rede — app roda em modo offline
   }
 
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
+      </ErrorBoundary>
     </StrictMode>
   );
 })();

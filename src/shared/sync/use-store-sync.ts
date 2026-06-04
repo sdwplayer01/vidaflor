@@ -23,6 +23,10 @@ export function useStoreSync({
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const userId     = useAuthStore((s) => s.user?.id ?? null);
 
+  // Intencional: subscribe/getState/setState/feature são estáveis por contrato do caller
+  // (referências ao store Zustand e string literal). Não incluir como deps evita
+  // re-hidratação a cada re-render do SyncBoot quando stores não-auth mudam.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!isLoggedIn || !userId) return;
 
@@ -34,8 +38,9 @@ export function useStoreSync({
 
       isApplyingRemote.current = true;
       setState(remote);
-      // Reseta após todos os subscribers síncronos do Zustand dispararem
-      queueMicrotask(() => { isApplyingRemote.current = false; });
+      // setTimeout(0) em vez de queueMicrotask: dá ao scheduler do React 18
+      // tempo para processar o batch antes de liberar novos pushes ao Supabase.
+      setTimeout(() => { isApplyingRemote.current = false; }, 0);
     }
 
     hydrate();
@@ -55,5 +60,5 @@ export function useStoreSync({
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
       if (unsubRef.current)      unsubRef.current();
     };
-  }, [isLoggedIn, userId]);
+  }, [isLoggedIn, userId]); // eslint-disable-line react-hooks/exhaustive-deps
 }
