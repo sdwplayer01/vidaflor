@@ -3,8 +3,10 @@
 
 import { useState } from "react";
 import {
-  Palette, User, LayoutDashboard, Flower,
+  Palette, User, LayoutDashboard, Flower, LogOut,
 } from "lucide-react";
+import { useAuth }       from "@/features/auth/hooks/useAuth";
+import { useSyncStatus } from "@/shared/sync/personal-sync";
 import type { ThemeKey } from "@/shared/types/theme";
 import type { DashConfig } from "@/features/config/types";
 import { Card }         from "@/shared/ui/Card";
@@ -31,7 +33,14 @@ const DASH_LABELS: { key: keyof DashConfig; label: string; emoji: string }[] = [
   { key: "pets",      label: "Rotina dos Pets",     emoji: "\uD83D\uDC3E" },
 ];
 
+function formataHora(ts: number): string {
+  return new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
 export function ConfigScreen() {
+  const { user, signOut } = useAuth();
+  const syncStatus   = useSyncStatus((s) => s.status);
+  const lastSyncAt   = useSyncStatus((s) => s.lastSyncAt);
   const theme      = useConfigStore((s) => s.theme);
   const name       = useConfigStore((s) => s.name);
   const dash       = useConfigStore((s) => s.dash);
@@ -158,6 +167,28 @@ export function ConfigScreen() {
               <Toggle val={dash[d.key]} onChange={() => toggleDash(d.key)} />
             </div>
           ))}
+        </Card>
+      </div>
+
+      {/* Conta */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <LogOut size={18} color="var(--vf-p)" />
+          <p style={{ margin: 0, fontSize: 15, fontWeight: 800, color: "var(--vf-tx)" }}>Conta</p>
+        </div>
+        <Card style={{ padding: "14px 18px" }}>
+          {user?.email && (
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--vf-tm)" }}>
+              {user.email}
+            </p>
+          )}
+          <Btn variant="danger" onClick={signOut}>
+            Sair da conta
+          </Btn>
+          <p style={{ margin: "10px 0 0", fontSize: 12, color: "var(--vf-tm)" }}>
+            Sincronizacao: {syncStatus}
+            {lastSyncAt ? ` — ultima: ${formataHora(lastSyncAt)}` : ''}
+          </p>
         </Card>
       </div>
 

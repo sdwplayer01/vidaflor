@@ -1,5 +1,5 @@
 // src/main.tsx — Entry point do VidaFlor v2.
-// Inicializa o app, carrega estilos globais e renderiza a árvore React.
+// Inicializa o app, restaura sessão Supabase e renderiza a árvore React.
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -9,15 +9,22 @@ import "./index.css";
 import { App } from "./App";
 import { ThemeProvider } from "./app/theme-provider";
 import { boot } from "./app/boot";
+import { getSession } from "@/features/auth/api/supabase";
+import { useAuthStore } from "@/features/auth/store";
 
-// 1. Inicializa o aplicativo e roda as migrações necessárias de dados legados
-boot();
+(async () => {
+  boot();
 
-// 2. Renderiza a aplicação com o ThemeProvider v2
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
-  </StrictMode>
-);
+  const session = await getSession();
+  if (session) {
+    useAuthStore.getState().hydrateFromSession(session);
+  }
+
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </StrictMode>
+  );
+})();

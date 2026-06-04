@@ -1,12 +1,21 @@
-// src/App.tsx — v2
-// No separate Header — each screen renders its own header.
-// AppShell provides ambient gradient background + BottomNav padding.
+// src/App.tsx — v3
+// Gate de autenticação real via useAuthStore.
 
-import { useNavStore } from "./features/nav/store";
-import { AppShell, BottomNav } from "./shared/layout";
-import { ROUTES } from "./app/routes";
+import { useNavStore }              from "./features/nav/store";
+import { AppShell, BottomNav }      from "./shared/layout";
+import { ROUTES }                   from "./app/routes";
+import { useAuthStore }             from "./features/auth/store";
+import { AuthGate }                 from "./features/auth/AuthGate";
+import { SyncBoot }                 from "./features/auth/SyncBoot";
 
 export function App() {
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const _hydrated  = useAuthStore((s) => s._hydrated);
+
+  if (!isLoggedIn) {
+    return <AuthGate />;
+  }
+
   const currentTab = useNavStore((s) => s.currentTab);
   const irPara     = useNavStore((s) => s.irPara);
 
@@ -14,13 +23,16 @@ export function App() {
   const RouteComponent = routeDef.component;
 
   return (
-    <AppShell>
-      {currentTab === "home" ? (
-        <RouteComponent setTab={irPara} />
-      ) : (
-        <RouteComponent />
-      )}
-      <BottomNav />
-    </AppShell>
+    <>
+      <SyncBoot />
+      <AppShell>
+        {currentTab === "home" ? (
+          <RouteComponent setTab={irPara} />
+        ) : (
+          <RouteComponent />
+        )}
+        <BottomNav />
+      </AppShell>
+    </>
   );
 }
