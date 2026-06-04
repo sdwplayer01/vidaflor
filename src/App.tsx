@@ -11,13 +11,12 @@ import { SyncBoot }                 from "./features/auth/SyncBoot";
 export function App() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const _hydrated  = useAuthStore((s) => s._hydrated);
+  const currentTab = useNavStore((s) => s.currentTab);
+  const irPara     = useNavStore((s) => s.irPara);
 
   if (!isLoggedIn) {
     return <AuthGate />;
   }
-
-  const currentTab = useNavStore((s) => s.currentTab);
-  const irPara     = useNavStore((s) => s.irPara);
 
   const routeDef       = ROUTES[currentTab] ?? ROUTES.home;
   const RouteComponent = routeDef.component;
