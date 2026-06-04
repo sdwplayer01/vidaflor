@@ -32,11 +32,17 @@ export async function pullPersonal(
     .from(TABLE[feature])
     .select('data')
     .eq('user_id', userId)
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    if (import.meta.env.DEV) console.warn('[sync] pull error', feature, error?.message);
+  if (error) {
+    if (import.meta.env.DEV) console.warn('[sync] pull error', feature, error.message);
     useSyncStatus.getState().set({ status: 'error' });
+    return null;
+  }
+
+  // null = nenhuma linha ainda (usuário novo) — não é erro
+  if (!data) {
+    useSyncStatus.getState().set({ status: 'idle', lastSyncAt: Date.now() });
     return null;
   }
 

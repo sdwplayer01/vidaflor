@@ -34,8 +34,8 @@ export function useStoreSync({
 
       isApplyingRemote.current = true;
       setState(remote);
-      // Permite o subscriber ignorar este ciclo antes de resetar a flag
-      setTimeout(() => { isApplyingRemote.current = false; }, 0);
+      // Reseta após todos os subscribers síncronos do Zustand dispararem
+      queueMicrotask(() => { isApplyingRemote.current = false; });
     }
 
     hydrate();

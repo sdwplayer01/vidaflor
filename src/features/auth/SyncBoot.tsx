@@ -11,21 +11,21 @@ export function SyncBoot() {
   useStoreSync({
     feature:   'saude',
     getState:  () => useSaudeStore.getState(),
-    setState:  (d) => useSaudeStore.setState(d as Parameters<typeof useSaudeStore.setState>[0], true),
+    setState:  (d) => useSaudeStore.setState(d as Parameters<typeof useSaudeStore.setState>[0]),
     subscribe: (cb) => useSaudeStore.subscribe(cb),
   });
 
   useStoreSync({
     feature:   'espiritual',
     getState:  () => useEspiritualStore.getState(),
-    setState:  (d) => useEspiritualStore.setState(d as Parameters<typeof useEspiritualStore.setState>[0], true),
+    setState:  (d) => useEspiritualStore.setState(d as Parameters<typeof useEspiritualStore.setState>[0]),
     subscribe: (cb) => useEspiritualStore.subscribe(cb),
   });
 
   useStoreSync({
     feature:   'config',
     getState:  () => useConfigStore.getState(),
-    setState:  (d) => useConfigStore.setState(d as Parameters<typeof useConfigStore.setState>[0], true),
+    setState:  (d) => useConfigStore.setState(d as Parameters<typeof useConfigStore.setState>[0]),
     subscribe: (cb) => useConfigStore.subscribe(cb),
   });
 
