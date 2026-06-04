@@ -50,7 +50,7 @@ export function useComprasPorSecao(): Array<{ secao: string; items: ShoppingItem
       }
       // Seções não previstas (dados legados)
       for (const [secao, items] of Object.entries(map)) {
-        if (!SECOES_MERCADO.includes(secao as any) && items.length) {
+        if (!(SECOES_MERCADO as readonly string[]).includes(secao) && items.length) {
           result.push({ secao, items });
         }
       }

@@ -1,8 +1,8 @@
 // src/shared/layout/BottomNav.tsx -- v2
-import { CalendarDays, Heart, Sparkles, Users, Wallet, Settings } from "lucide-react";
-import { useNavStore, type TabKey } from "../../features/nav/store";
-import { FlowerMark }               from "../../features/bloom/components/BloomFlower";
-import { useVitality }              from "../../features/bloom/selectors";
+import { CalendarDays, Heart, Sparkles, Users, Wallet, Settings, Home } from "lucide-react";
+import { useNavStore, type TabKey } from "@/features/nav/store";
+import { FlowerMark }               from "@/features/bloom/components/BloomFlower";
+import { useVitality }              from "@/features/bloom/selectors";
 import styles from "./BottomNav.module.css";
 
 interface NavItem { k: TabKey; label: string; icon: React.ReactNode; }
@@ -27,6 +27,7 @@ export function BottomNav() {
     { k: "espiritual",label: "espirito", icon: <Sparkles     size={20} strokeWidth={1.6} /> },
     { k: "organiza",  label: "listas",   icon: <Users        size={20} strokeWidth={1.6} /> },
     { k: "financas",  label: "financas", icon: <Wallet       size={20} strokeWidth={1.6} /> },
+    { k: "familia",   label: "familia",  icon: <Home         size={20} strokeWidth={1.6} /> },
     { k: "config",    label: "config",   icon: <Settings     size={20} strokeWidth={1.6} /> },
   ];
 

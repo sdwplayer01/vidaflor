@@ -155,6 +155,30 @@ export const useSaudeStore = create<Store>()(
               : Object.fromEntries(Object.entries(p.moodLog ?? {}).filter(([k]) => k !== day)),
           })),
         })),
+
+      registrarSono: (profileId, day, hours) =>
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => ({
+            ...p,
+            sleepLog: { ...p.sleepLog, [day]: hours },
+          })),
+        })),
+
+      registrarPassos: (profileId, day, steps) =>
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => ({
+            ...p,
+            stepsLog: { ...p.stepsLog, [day]: steps },
+          })),
+        })),
+
+      ajustarMetaPassos: (profileId, meta) =>
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => ({
+            ...p,
+            metaPassos: meta,
+          })),
+        })),
     }),
     {
       name:    STORAGE_KEYS.saude,

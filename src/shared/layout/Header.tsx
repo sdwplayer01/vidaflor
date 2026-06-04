@@ -1,6 +1,6 @@
 // src/shared/layout/Header.tsx
 import { Settings, Flower } from "lucide-react";
-import { useNavStore, TabKey } from "../../features/nav/store";
+import { useNavStore, TabKey } from "@/features/nav/store";
 
 const SCREEN_LABELS: Record<TabKey, string> = {
   home:       "Início",
@@ -9,6 +9,7 @@ const SCREEN_LABELS: Record<TabKey, string> = {
   espiritual: "Conexão",
   organiza:   "Organização",
   financas:   "Finanças",
+  familia:    "Família",
   config:     "Configurações",
 };
 

@@ -28,5 +28,5 @@
 .hero {
   background: var(--vf-gh);
   border:     none;
-  color:      #fff;
+  color:      var(--vf-white);
 }

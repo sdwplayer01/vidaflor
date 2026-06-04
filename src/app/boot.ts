@@ -30,7 +30,7 @@ export function boot(): void {
       const value = localStorage.getItem(oldKey);
       if (value && !localStorage.getItem(newKey)) {
         void storageAdapter.setItem(newKey, value);
-        console.log(`boot: Migrado ${oldKey} -> ${newKey}`);
+        if (import.meta.env.DEV) console.log(`boot: Migrado ${oldKey} -> ${newKey}`);
       }
     }
 
@@ -53,7 +53,7 @@ export function boot(): void {
       for (const [key, val] of Object.entries(storeKeys)) {
         if (!localStorage.getItem(key)) {
           void storageAdapter.setItem(key, JSON.stringify(val));
-          console.log(`boot: Criado store individual ${key} a partir de dados monolíticos`);
+          if (import.meta.env.DEV) console.log(`boot: Criado store individual ${key} a partir de dados monolíticos`);
         }
       }
 
@@ -68,7 +68,7 @@ export function boot(): void {
       const configKey = STORAGE_KEYS.config;
       if (!localStorage.getItem(configKey)) {
         void storageAdapter.setItem(configKey, JSON.stringify({ state: migratedCfg, version: 1 }));
-        console.log(`boot: Migrada config ${STORAGE_CFG} -> ${configKey}`);
+        if (import.meta.env.DEV) console.log(`boot: Migrada config ${STORAGE_CFG} -> ${configKey}`);
       }
     }
   } catch (err) {

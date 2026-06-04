@@ -9,6 +9,7 @@ import { MedicationList }       from './components/MedicationList';
 import { AddMedSheet }          from './components/AddMedSheet';
 import { CycleConfigSheet }     from './components/CycleConfigSheet';
 import { DailyNoteCard }        from './components/DailyNoteCard';
+import { SleepStepsCard }       from './components/SleepStepsCard';
 import { usePerfilAtivo }       from './selectors';
 
 type Tab = 'saude' | 'medicamentos' | 'anotacao';
@@ -90,6 +91,7 @@ export function SaudeScreen() {
       {tab === 'saude' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <WaterCard />
+          <SleepStepsCard />
           {perfil?.type === 'adult_f' && (
             <>
               <CycleCard />

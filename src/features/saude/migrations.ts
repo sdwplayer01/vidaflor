@@ -1,7 +1,7 @@
 // src/features/saude/migrations.ts
 import { PROFILE_COLOR_DEFAULT } from '@/shared/constants/colors';
 
-export const SAUDE_VERSION = 3;
+export const SAUDE_VERSION = 4;
 
 export function migrate(state: any, fromVersion: number): any {
   let s = state;
@@ -53,6 +53,15 @@ export function migrate(state: any, fromVersion: number): any {
     }));
   }
 
+  // v3 -> v4: add sleepLog, stepsLog, metaPassos
+  if (fromVersion < 4) {
+    s.profiles = (s.profiles || []).map((p: any) => ({
+      ...p,
+      sleepLog:   p.sleepLog   ?? {},
+      stepsLog:   p.stepsLog   ?? {},
+      metaPassos: p.metaPassos ?? 8000,
+    }));
+  }
 
   return s;
 }

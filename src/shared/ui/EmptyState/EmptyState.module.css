@@ -7,7 +7,7 @@
   justify-content: center;
   text-align:     center;
   padding:        40px 24px;
-  background:     rgba(255, 255, 255, 0.4);
+  background:     var(--vf-glass);
   border:         1.5px dashed var(--vf-bd);
   border-radius:  var(--vf-r-xl);
   margin:         16px 0;

@@ -1,10 +1,10 @@
 // src/features/nav/store.ts
 import { create } from "zustand";
-import { persistVidaFlor } from "../../shared/storage/persist-middleware";
-import { STORAGE_KEYS } from "../../shared/storage/keys";
+import { persistVidaFlor } from "@/shared/storage/persist-middleware";
+import { STORAGE_KEYS } from "@/shared/storage/keys";
 import { NAV_VERSION, migrateNav } from "./migrations";
 
-export type TabKey = "home" | "dia" | "saude" | "espiritual" | "organiza" | "financas" | "config";
+export type TabKey = "home" | "dia" | "saude" | "espiritual" | "organiza" | "financas" | "familia" | "config";
 
 interface NavState {
   currentTab: TabKey;

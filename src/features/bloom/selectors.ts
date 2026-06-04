@@ -20,9 +20,16 @@ export function useBloomDoDia(day?: ISODate): BloomBreakdown {
   const tasksPct  = useRotinaStore((s) => calcRotinaPct(s, d));
   const waterPct  = useSaudeStore((s)  => calcAguaPctPerfilAtivo(s, d));
 
-  // sleep and steps: not yet in store schema → use neutral defaults
-  const sleepHours = 7;
-  const stepsPct   = 0;
+  const sleepHours = useSaudeStore((s) => {
+    const p = s.profiles.find((pr) => pr.id === s.activeProfileId);
+    return p?.sleepLog?.[d] ?? 0;
+  });
+  const stepsPct = useSaudeStore((s) => {
+    const p = s.profiles.find((pr) => pr.id === s.activeProfileId);
+    const steps = p?.stepsLog?.[d] ?? 0;
+    const meta  = p?.metaPassos ?? 8000;
+    return meta > 0 ? Math.min(100, Math.round((steps / meta) * 100)) : 0;
+  });
 
   const moodPct = useSaudeStore((s) => {
     const p = s.profiles.find((pr) => pr.id === s.activeProfileId);
@@ -77,13 +84,19 @@ export function useBloomUltimos7Dias(): BloomHistoricoItem[] {
       const dow = d.getDay();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ativoPerfil = saudeState.profiles.find((pr) => pr.id === saudeState.activeProfileId);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const tasksPct  = calcRotinaPct(rotinaState as any, iso);
       const waterPct  = calcAguaPctPerfilAtivo(saudeState, iso);
-      const moodPct   = saudeState.profiles.find((pr) => pr.id === saudeState.activeProfileId)?.moodLog?.[iso] ? 80 : 0;
-      const sleepPct  = calcSleepPct(7);
+      const moodPct   = ativoPerfil?.moodLog?.[iso] ? 80 : 0;
+      const sleepHrs  = ativoPerfil?.sleepLog?.[iso] ?? 0;
+      const stepCount = ativoPerfil?.stepsLog?.[iso] ?? 0;
+      const metaP     = ativoPerfil?.metaPassos ?? 8000;
+      const sleepPct  = calcSleepPct(sleepHrs);
+      const stepsPct  = metaP > 0 ? Math.min(100, Math.round((stepCount / metaP) * 100)) : 0;
       const spiritPct = calcEspiritualPct({ gratidao: espiritualState.gratidao, leituras: espiritualState.leituras, oracoes: [], _version: 0, _hydrated: false }, iso);
 
-      const { total } = calcBloom({ tasksPct, waterPct, stepsPct: 0, sleepPct, moodPct, spiritPct });
+      const { total } = calcBloom({ tasksPct, waterPct, stepsPct, sleepPct, moodPct, spiritPct });
       days.push({ date: iso, label: DIA_SEMANA[dow] ?? '', total });
     }
     return days;

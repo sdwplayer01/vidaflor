@@ -38,7 +38,7 @@
   width:         20px;
   height:        20px;
   border-radius: var(--vf-r-full);
-  background:    #fff;
+  background:    var(--vf-white);
   box-shadow:    0 1px 4px rgba(0, 0, 0, .25);
   transition:    left var(--vf-trans-normal);
 }

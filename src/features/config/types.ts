@@ -1,5 +1,5 @@
 // src/features/config/types.ts
-import { ThemeKey } from "../../shared/types/theme";
+import { ThemeKey } from "@/shared/types/theme";
 
 export interface DashConfig {
   bloom:     boolean;

@@ -20,7 +20,7 @@
 /* ── Primary ── */
 .primary {
   background:  var(--vf-p);
-  color:       #fff;
+  color:       var(--vf-on-rose);
   box-shadow:  var(--vf-shadow-btn);
 }
 
@@ -42,7 +42,7 @@
 /* ── Danger ── */
 .danger {
   background: var(--vf-er);
-  color:      #fff;
+  color:      var(--vf-on-rose);
 }
 
 .danger:hover {
@@ -59,8 +59,8 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid color-mix(in srgb, var(--vf-on-rose) 30%, transparent);
+  border-top-color: color-mix(in srgb, var(--vf-on-rose) 90%, transparent);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }

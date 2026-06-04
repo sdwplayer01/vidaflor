@@ -1,5 +1,7 @@
 # Dependências e build
 node_modules
+ruvector.db
+.claude/
 dist
 .env
 .env.local

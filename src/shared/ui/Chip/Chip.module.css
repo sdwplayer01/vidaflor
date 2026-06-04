@@ -27,11 +27,11 @@
 .active {
   background:   var(--vf-p);
   border-color: var(--vf-p);
-  color:        #fff;
+  color:        var(--vf-on-rose);
   font-weight:  700;
 }
 
 .active:hover {
   filter: brightness(1.05);
-  color:  #fff;
+  color:  var(--vf-on-rose);
 }
