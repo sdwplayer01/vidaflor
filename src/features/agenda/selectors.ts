@@ -54,9 +54,11 @@ export function useDia(date: ISODate): DiaItem[] {
     useShallow((s) => s.reminders.list.filter((r) => r.date === date))
   );
 
-  const agendaRaw = useAgendaStore(useShallow((s) => {
-    const doneIds = s.done[date] ?? EMPTY_IDS;
-    const tarefas = s.tarefas.filter((t) => {
+  // Separados — useShallow comparando ARRAY (elementos store-estáveis) em vez de
+  // OBJETO wrapper. Wrapper { tarefas: arrayNova } quebra useShallow porque
+  // Object.is(prev.tarefas, next.tarefas) é sempre false quando tarefas vem de .filter().
+  const agendaTarefas = useAgendaStore(useShallow((s) =>
+    s.tarefas.filter((t) => {
       if (!t.recorrencia) return t.date === date;
       const rec = t.recorrencia;
       const d   = new Date(date + 'T00:00:00');
@@ -65,9 +67,9 @@ export function useDia(date: ISODate): DiaItem[] {
       if (rec.tipo === 'mensal')  return rec.diaMes === d.getDate();
       if (rec.tipo === 'avulsa')  return t.date === date;
       return false;
-    });
-    return { tarefas, doneIds };
-  }));
+    })
+  ));
+  const agendaDoneIds = useAgendaStore((s) => s.done[date] ?? EMPTY_IDS);
 
   return useMemo((): DiaItem[] => {
     const items: DiaItem[] = [];
@@ -149,7 +151,7 @@ export function useDia(date: ISODate): DiaItem[] {
     }
 
     // ── tarefas avulsas/agenda ────────────────────────────────────────────────
-    for (const t of agendaRaw.tarefas) {
+    for (const t of agendaTarefas) {
       items.push({
         id:       makeId('tarefa', t.id),
         nativeId: t.id,
@@ -158,7 +160,7 @@ export function useDia(date: ISODate): DiaItem[] {
         title:    t.title,
         time:     t.time,
         assignee: t.assignee !== 'voce' ? t.assignee : undefined,
-        done:     agendaRaw.doneIds.includes(t.id),
+        done:     agendaDoneIds.includes(t.id),
       });
     }
 
@@ -173,7 +175,7 @@ export function useDia(date: ISODate): DiaItem[] {
       return 0;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date, rotina, casa, kids, pets, reminders, agendaRaw]);
+  }, [date, rotina, casa, kids, pets, reminders, agendaTarefas, agendaDoneIds]);
 }
 
 // useDiaPct — percentual de itens concluídos no dia
