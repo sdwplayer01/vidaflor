@@ -1,8 +1,9 @@
 // src/features/agenda/DiaScreen.tsx — Fase 4 completa (4b+4c+4d+4e)
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Plus } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useAgendaStore }   from './store';
-import { useDia, useDiaPct, useDiaActions } from './selectors';
+import { useDia, useDiaActions } from './selectors';
 import { today, formatBR, addDays } from '@/shared/utils/date';
 import { AddTarefaDiaSheet } from './components/AddTarefaDiaSheet';
 import { CapturaRapida }     from './components/CapturaRapida';
@@ -122,10 +123,13 @@ export function DiaScreen() {
   const [view,       setView]       = useState<'hoje' | 'semana'>('hoje');
   const [dataSel,    setDataSel]    = useState<ISODate>(today());
   const [addOpen,    setAddOpen]    = useState(false);
+  const initialized = useRef(false);
 
   const date = view === 'hoje' ? today() : dataSel;
   const items = useDia(date);
-  const { feitos, total, pct } = useDiaPct(date);
+  const total  = items.length;
+  const feitos = items.filter((i) => i.done).length;
+  const pct    = total > 0 ? Math.round((feitos / total) * 100) : 0;
 
   const handleToggle = useDiaActions(date);
 
