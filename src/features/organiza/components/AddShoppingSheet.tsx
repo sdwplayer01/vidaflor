@@ -35,7 +35,7 @@ export function AddShoppingSheet({ isOpen, onClose, editItem }: Props) {
     } else if (isOpen && !editItem) {
       setName(""); setSecao(DEFAULT_SECAO); setQty(""); setPreco("");
     }
-  }, [isOpen, editItem]);
+  }, [isOpen, editItem?.id]);
 
   if (!isOpen) return null;
 

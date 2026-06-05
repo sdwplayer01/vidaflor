@@ -83,8 +83,9 @@ export function persistVidaFlor<S>(
       if (state && options.onHydrated) {
         options.onHydrated(state);
       }
-      // Marca hidratação completa para gates de renderização (ex: App.tsx)
-      if (storeSet && state != null && '_hydrated' in (state as object)) {
+      // Marca hidratação como completa independente do shape do state.
+      // Garante que o app nunca fique travado em _hydrated: false.
+      if (storeSet) {
         storeSet({ _hydrated: true });
       }
     }

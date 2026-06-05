@@ -30,7 +30,7 @@ export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
       content: notaEditando?.content ?? "",
       color:   notaEditando?.color   ?? NOTE_COLORS[0],
     });
-  }, [isOpen, notaEditando]);
+  }, [isOpen, notaEditando?.id]);
 
   if (!isOpen) return null;
 
