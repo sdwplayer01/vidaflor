@@ -14,6 +14,8 @@ export const useEspiritualStore = create<EspiritualState & EspiritualActions>()(
     (set) => ({
       ...seedEspiritual,
 
+      resetParaUsuarioReal: () => set({ gratidao: {}, oracoes: [], leituras: [] }),
+
       // ── Gratidão ──────────────────────────────────────────────────────────
 
       adicionarGratidao: (day: ISODate, text: string) =>

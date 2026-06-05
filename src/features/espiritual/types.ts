@@ -35,6 +35,8 @@ export interface EspiritualState {
 }
 
 export interface EspiritualActions {
+  resetParaUsuarioReal: () => void;
+
   // Gratidão
   adicionarGratidao:   (day: ISODate, text: string) => void;
   removerGratidao:     (day: ISODate, id: ID) => void;

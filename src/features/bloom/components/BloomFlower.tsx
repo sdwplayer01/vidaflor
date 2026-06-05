@@ -124,9 +124,8 @@ function Leaves({ pct }: { pct: number }) {
 }
 
 function Particles({ pct }: { pct: number }) {
-  if (pct < 70) return null;
-  const intensity = clamp((pct - 70) / 30, 0, 1);
-  const count = Math.floor(lerp(3, 9, intensity));
+  const intensity = pct >= 70 ? clamp((pct - 70) / 30, 0, 1) : 0;
+  const count = pct >= 70 ? Math.floor(lerp(3, 9, intensity)) : 0;
   const dots = useMemo(
     () =>
       Array.from({ length: count }).map(() => ({
@@ -139,6 +138,8 @@ function Particles({ pct }: { pct: number }) {
       })),
     [count]
   );
+
+  if (pct < 70) return null;
   return (
     <g>
       {dots.map((d, i) => (

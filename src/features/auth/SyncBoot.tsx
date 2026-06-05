@@ -10,7 +10,7 @@ const emptySaude = () => ({
   activeProfileId: '',
   profiles: [],
   _version: SAUDE_VERSION,
-  _hydrated: false,
+  _hydrated: true,
 });
 
 const emptyEspiritual = () => ({
@@ -18,7 +18,7 @@ const emptyEspiritual = () => ({
   oracoes: [],
   leituras: [],
   _version: ESPIRITUAL_VERSION,
-  _hydrated: false,
+  _hydrated: true,
 });
 
 export function SyncBoot() {
