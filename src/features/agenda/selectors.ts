@@ -181,10 +181,12 @@ export function useDia(date: ISODate): DiaItem[] {
 // useDiaPct — percentual de itens concluídos no dia
 export function useDiaPct(date: ISODate): { feitos: number; total: number; pct: number } {
   const items = useDia(date);
-  const total = items.length;
-  const feitos = items.filter((i) => i.done).length;
-  const pct = total > 0 ? Math.round((feitos / total) * 100) : 0;
-  return { feitos, total, pct };
+  return useMemo(() => {
+    const total  = items.length;
+    const feitos = items.filter((i) => i.done).length;
+    const pct    = total > 0 ? Math.round((feitos / total) * 100) : 0;
+    return { feitos, total, pct };
+  }, [items]);
 }
 
 // useDiaActions — toggle handler cross-feature para DiaScreen

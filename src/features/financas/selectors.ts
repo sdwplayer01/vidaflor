@@ -1,5 +1,6 @@
 // src/features/financas/selectors.ts
 import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 import { useFinancasStore } from './store';
 import {
   calcSaldoMes, calcFatura, proximasContas, projecaoMeses,
@@ -15,14 +16,13 @@ function currentMonth(): IsoMonth {
 
 // Item 8: inclui recorrentes expandidas para o mes
 export function useTransacoesDoMes(mes?: IsoMonth): Transaction[] {
-  return useFinancasStore(
-    useShallow((s) => {
-      const m        = mes ?? currentMonth();
-      const proprias = s.transactions.filter((t) => t.date.startsWith(m));
-      const virtuais = expandirRecorrentes(s.transactions, m);
-      return [...proprias, ...virtuais];
-    })
-  );
+  const transactions = useFinancasStore((s) => s.transactions);
+  return useMemo(() => {
+    const m        = mes ?? currentMonth();
+    const proprias = transactions.filter((t) => t.date.startsWith(m));
+    const virtuais = expandirRecorrentes(transactions, m);
+    return [...proprias, ...virtuais];
+  }, [transactions, mes]);
 }
 
 export function useSaldoDoMes(mes?: IsoMonth) {
@@ -58,8 +58,10 @@ export function useFaturaCartao(card: Card, mes?: IsoMonth): Money {
 
 // Item 6: fatura como entidade
 export function useFatura(card: Card, mes?: IsoMonth): Fatura {
-  return useFinancasStore(
-    useShallow((s) => montarFatura(card, mes ?? currentMonth(), s.transactions))
+  const transactions = useFinancasStore((s) => s.transactions);
+  return useMemo(
+    () => montarFatura(card, mes ?? currentMonth(), transactions),
+    [card, mes, transactions]
   );
 }
 
@@ -116,29 +118,29 @@ export interface EnvelopeInfo {
 }
 
 export function useEnvelopesDoMes(mes?: IsoMonth): EnvelopeInfo[] {
-  return useFinancasStore(
-    useShallow((s) => {
-      const m   = mes ?? currentMonth();
-      const por = s.budget[m]?.porCategoria ?? {};
-      return Object.entries(por)
-        .filter(([, limite]) => (limite ?? 0) > 0)
-        .map(([categoria, limiteRaw]) => {
-          const limite  = limiteRaw ?? 0;
-          const gasto   = s.transactions
-            .filter(
-              (t) =>
-                t.date.startsWith(m) &&
-                t.type === 'expense' &&
-                t.category === categoria &&
-                t.cardId === null
-            )
-            .reduce((acc, t) => acc + t.amount, 0);
-          const restante = limite - gasto;
-          const pct      = limite > 0 ? Math.min(100, Math.round((gasto / limite) * 100)) : 0;
-          return { categoria, limite, gasto, restante, pct };
-        });
-    })
-  );
+  const transactions = useFinancasStore((s) => s.transactions);
+  const budget       = useFinancasStore((s) => s.budget);
+  return useMemo(() => {
+    const m   = mes ?? currentMonth();
+    const por = budget[m]?.porCategoria ?? {};
+    return Object.entries(por)
+      .filter(([, limite]) => (limite ?? 0) > 0)
+      .map(([categoria, limiteRaw]) => {
+        const limite  = limiteRaw ?? 0;
+        const gasto   = transactions
+          .filter(
+            (t) =>
+              t.date.startsWith(m) &&
+              t.type === 'expense' &&
+              t.category === categoria &&
+              t.cardId === null
+          )
+          .reduce((acc, t) => acc + t.amount, 0);
+        const restante = limite - gasto;
+        const pct      = limite > 0 ? Math.min(100, Math.round((gasto / limite) * 100)) : 0;
+        return { categoria, limite, gasto, restante, pct };
+      });
+  }, [transactions, budget, mes]);
 }
 
 export function useProximasContas(dias = 7): Transaction[] {
@@ -148,7 +150,9 @@ export function useProximasContas(dias = 7): Transaction[] {
 }
 
 export function useProjecaoMeses(qtd = 3) {
-  return useFinancasStore(
-    useShallow((s) => projecaoMeses(s.transactions, currentMonth(), qtd))
+  const transactions = useFinancasStore((s) => s.transactions);
+  return useMemo(
+    () => projecaoMeses(transactions, currentMonth(), qtd),
+    [transactions, qtd]
   );
 }

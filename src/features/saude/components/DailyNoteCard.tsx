@@ -1,27 +1,18 @@
 // src/features/saude/components/DailyNoteCard.tsx
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NotebookPen } from 'lucide-react';
 import { useAnotacaoDoDia, usePerfilAtivo } from '../selectors';
 import { useSaudeStore } from '../store';
 import { today } from '@/shared/utils/date';
 
-export function DailyNoteCard() {
-  const perfil          = usePerfilAtivo();
-  const nota            = useAnotacaoDoDia();
-  const registrarNota   = useSaudeStore((s) => s.registrarAnotacaoDia);
-  const [texto, setTexto] = useState(nota);
-  const [saved, setSaved]  = useState(false);
-
-  // Idempotente: evita re-render extra durante a janela de sync,
-  // quando `nota` pode oscilar (ex.: 'olá' → '' → 'olá').
-  useEffect(() => {
-    setTexto((prev) => (prev === nota ? prev : nota));
-  }, [nota]);
-
-  if (!perfil) return null;
+// Editor interno: recebe valor inicial via prop + key de remount (§6.1).
+// Sem useEffect de espelho — key troca quando perfil/dia muda, remontando limpo.
+function NoteEditor({ inicial, onSalvar }: { inicial: string; onSalvar: (t: string) => void }) {
+  const [texto, setTexto] = useState(inicial);
+  const [saved, setSaved] = useState(false);
 
   const salvar = () => {
-    registrarNota(perfil.id, today(), texto);
+    onSalvar(texto);
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   };
@@ -56,5 +47,22 @@ export function DailyNoteCard() {
         }}
       />
     </div>
+  );
+}
+
+export function DailyNoteCard() {
+  const perfil        = usePerfilAtivo();
+  const nota          = useAnotacaoDoDia();
+  const registrarNota = useSaudeStore((s) => s.registrarAnotacaoDia);
+
+  if (!perfil) return null;
+
+  const dia = today();
+  return (
+    <NoteEditor
+      key={`${perfil.id}:${dia}`}
+      inicial={nota}
+      onSalvar={(texto) => registrarNota(perfil.id, dia, texto)}
+    />
   );
 }

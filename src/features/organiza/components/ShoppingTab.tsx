@@ -230,6 +230,7 @@ export function ShoppingTab() {
 
       {concluirOpen && (
         <ConcluirCompraSheet
+          key={String(estimativa)}
           estimativa={estimativa}
           onClose={() => setConcluirOpen(false)}
           onConfirm={handleConcluir}

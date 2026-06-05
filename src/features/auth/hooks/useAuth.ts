@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore } from '@/features/auth/store';
 import * as api from '@/features/auth/api/supabase';
 
 export function useAuth() {
-  const user       = useAuthStore((s) => s.user);
+  const user       = useAuthStore(useShallow((s) => s.user));
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const loading    = useAuthStore((s) => s.loading);
   const error      = useAuthStore((s) => s.error);

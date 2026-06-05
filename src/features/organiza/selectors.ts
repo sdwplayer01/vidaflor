@@ -1,5 +1,6 @@
 // src/features/organiza/selectors.ts
 import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 import { today } from "@/shared/utils/date";
 import { useOrganizaStore } from "./store";
 import { SECOES_MERCADO } from "./types";
@@ -19,44 +20,43 @@ export function useShoppingComprados(): ShoppingItem[] {
 
 // Legado — mantido para compatibilidade
 export function useShoppingPorCategoria(): Record<string, ShoppingItem[]> {
-  return useOrganizaStore(
-    useShallow((s) => {
-      const items = s.shopping.items.filter((i) => !i.done);
-      return items.reduce<Record<string, ShoppingItem[]>>((acc, item) => {
+  const shoppingItems = useOrganizaStore((s) => s.shopping.items);
+  return useMemo(() => {
+    return shoppingItems
+      .filter((i) => !i.done)
+      .reduce<Record<string, ShoppingItem[]>>((acc, item) => {
         const cat = item.category || "Outros";
         if (!acc[cat]) acc[cat] = [];
         acc[cat].push(item);
         return acc;
       }, {});
-    })
-  );
+  }, [shoppingItems]);
 }
 
 // Fase 3: itens pendentes agrupados na ordem de SECOES_MERCADO
 export function useComprasPorSecao(): Array<{ secao: string; items: ShoppingItem[] }> {
-  return useOrganizaStore(
-    useShallow((s) => {
-      const pendentes = s.shopping.items.filter((i) => !i.done);
-      const map: Record<string, ShoppingItem[]> = {};
-      for (const item of pendentes) {
-        const sec = item.category || "Outros";
-        if (!map[sec]) map[sec] = [];
-        map[sec].push(item);
+  const shoppingItems = useOrganizaStore((s) => s.shopping.items);
+  return useMemo(() => {
+    const pendentes = shoppingItems.filter((i) => !i.done);
+    const map: Record<string, ShoppingItem[]> = {};
+    for (const item of pendentes) {
+      const sec = item.category || "Outros";
+      if (!map[sec]) map[sec] = [];
+      map[sec].push(item);
+    }
+    // Ordem fixa de SECOES_MERCADO; seções extras vão no fim
+    const result: Array<{ secao: string; items: ShoppingItem[] }> = [];
+    for (const secao of SECOES_MERCADO) {
+      if (map[secao]?.length) result.push({ secao, items: map[secao] });
+    }
+    // Seções não previstas (dados legados)
+    for (const [secao, items] of Object.entries(map)) {
+      if (!(SECOES_MERCADO as readonly string[]).includes(secao) && items.length) {
+        result.push({ secao, items });
       }
-      // Ordem fixa de SECOES_MERCADO; seções extras vão no fim
-      const result: Array<{ secao: string; items: ShoppingItem[] }> = [];
-      for (const secao of SECOES_MERCADO) {
-        if (map[secao]?.length) result.push({ secao, items: map[secao] });
-      }
-      // Seções não previstas (dados legados)
-      for (const [secao, items] of Object.entries(map)) {
-        if (!(SECOES_MERCADO as readonly string[]).includes(secao) && items.length) {
-          result.push({ secao, items });
-        }
-      }
-      return result;
-    })
-  );
+    }
+    return result;
+  }, [shoppingItems]);
 }
 
 // Fase 3: soma dos preços dos itens pendentes (centavos)

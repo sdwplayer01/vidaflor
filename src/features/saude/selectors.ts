@@ -1,5 +1,6 @@
 // src/features/saude/selectors.ts
 import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 import { useSaudeStore } from './store';
 import { calcAguaPctDoDia, calcCycleState, calcAdesaoMedicamentos } from './utils';
 import { today } from '@/shared/utils/date';
@@ -92,19 +93,18 @@ export function useMedicamentosDoDia(profileId?: ID): Medication[] {
 }
 
 export function useMedicamentosPendentesHoje(): { profile: HealthProfile; meds: Medication[] }[] {
-  return useSaudeStore(
-    useShallow((s) => {
-      const day = today();
-      return s.profiles
-        .map((p) => ({
-          profile: p,
-          meds: p.meds.filter(
-            (m) => m.active && m.schedule === 'diario' && !m.log[day]
-          ),
-        }))
-        .filter(({ meds }) => meds.length > 0);
-    })
-  );
+  const profiles = useSaudeStore((s) => s.profiles);
+  return useMemo(() => {
+    const day = today();
+    return profiles
+      .map((p) => ({
+        profile: p,
+        meds: p.meds.filter(
+          (m) => m.active && m.schedule === 'diario' && !m.log[day]
+        ),
+      }))
+      .filter(({ meds }) => meds.length > 0);
+  }, [profiles]);
 }
 
 export function useAdesaoMedicamentosHoje(profileId?: ID): {

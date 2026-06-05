@@ -5,10 +5,12 @@ import { today } from '@/shared/utils/date';
 import { useEspiritualStore } from './store';
 import type { GratidaoEntry, Oracao, Leitura } from './types';
 
+const EMPTY_GRATIDAO = Object.freeze([]) as unknown as GratidaoEntry[];
+
 // Gratidoes do dia atual
 export function useGratidoesDoDia(): GratidaoEntry[] {
   return useEspiritualStore(
-    useShallow((s) => s.gratidao[today()] ?? [])
+    useShallow((s) => s.gratidao[today()] ?? EMPTY_GRATIDAO)
   );
 }
 
