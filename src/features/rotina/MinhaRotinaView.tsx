@@ -1,20 +1,20 @@
 // src/features/rotina/MinhaRotinaView.tsx
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, CheckSquare } from 'lucide-react';
+import { useShallow }            from 'zustand/react/shallow';
 import { TurnoSection }         from './components/TurnoSection';
 import { AddTaskSheet }         from './components/AddTaskSheet';
 import { EssentialModeToggle }  from './components/EssentialModeToggle';
 import { useProgressoDoDia }    from './selectors';
 import { useRotinaStore }       from './store';
 import { EmptyState }           from '@/shared/ui/EmptyState';
-import { CheckSquare }          from 'lucide-react';
 
 export function MinhaRotinaView() {
   const [addOpen, setAddOpen] = useState(false);
   const { feitas, total, pct } = useProgressoDoDia();
   const essMode = useRotinaStore((s) => s.essMode);
-  const essential = useRotinaStore((s) => s.essential);
-  const tarefas   = useRotinaStore((s) => s.tarefas);
+  const essential = useRotinaStore(useShallow((s) => s.essential));
+  const tarefas   = useRotinaStore(useShallow((s) => s.tarefas));
   const totalTarefas = essMode
     ? essential.length
     : tarefas.manha.length + tarefas.tarde.length + tarefas.noite.length;

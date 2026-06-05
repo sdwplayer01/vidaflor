@@ -5,7 +5,9 @@ import { today } from '@/shared/utils/date';
 import type { Pet, CuidadoPet } from './types';
 
 export function usePetAtivo(): Pet | undefined {
-  return usePetsStore((s) => s.pets.find((p) => p.id === s.activePetId));
+  return usePetsStore(
+    useShallow((s) => s.pets.find((p) => p.id === s.activePetId))
+  );
 }
 
 export function useCuidadosPendentesHoje(): { pet: Pet; cuidado: CuidadoPet; faltam: number }[] {

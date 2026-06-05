@@ -7,8 +7,8 @@ import type { Crianca } from './types';
 import type { ID, ISODate } from '@/shared/types/common';
 
 export function useCriancaAtiva(): Crianca | undefined {
-  return useKidsStore((s) =>
-    s.criancas.find((k) => k.id === s.activeKidId)
+  return useKidsStore(
+    useShallow((s) => s.criancas.find((k) => k.id === s.activeKidId))
   );
 }
 

@@ -10,7 +10,7 @@ import type { ISODate, ID } from '@/shared/types/common';
 const EMPTY_IDS: ID[] = [];
 
 export function useTarefasDoTurno(turno: Turno) {
-  return useRotinaStore((s) => s.tarefas[turno]);
+  return useRotinaStore(useShallow((s) => s.tarefas[turno]));
 }
 
 export function useTarefasFeitasDoDia(day?: ISODate): ID[] {

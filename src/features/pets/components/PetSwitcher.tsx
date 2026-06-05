@@ -1,8 +1,9 @@
 // src/features/pets/components/PetSwitcher.tsx
+import { useShallow } from 'zustand/react/shallow';
 import { usePetsStore } from '../store';
 
 export function PetSwitcher() {
-  const pets      = usePetsStore((s) => s.pets);
+  const pets      = usePetsStore(useShallow((s) => s.pets));
   const activeId  = usePetsStore((s) => s.activePetId);
   const trocar    = usePetsStore((s) => s.trocarPetAtivo);
 

@@ -1,8 +1,9 @@
 // src/features/kids/components/KidSwitcher.tsx
+import { useShallow } from 'zustand/react/shallow';
 import { useKidsStore } from '../store';
 
 export function KidSwitcher() {
-  const criancas    = useKidsStore((s) => s.criancas);
+  const criancas    = useKidsStore(useShallow((s) => s.criancas));
   const activeKidId = useKidsStore((s) => s.activeKidId);
   const trocar      = useKidsStore((s) => s.trocarCriancaAtiva);
 

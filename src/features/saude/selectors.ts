@@ -8,11 +8,13 @@ import type { HealthProfile, Medication, ProfileType } from './types';
 import type { CycleState } from './utils';
 
 export function usePerfilAtivo(): HealthProfile | undefined {
-  return useSaudeStore((s) => s.profiles.find((p) => p.id === s.activeProfileId));
+  return useSaudeStore(
+    useShallow((s) => s.profiles.find((p) => p.id === s.activeProfileId))
+  );
 }
 
 export function usePerfis(): HealthProfile[] {
-  return useSaudeStore((s) => s.profiles);
+  return useSaudeStore(useShallow((s) => s.profiles));
 }
 
 export function usePerfisPorTipo(tipo: ProfileType): HealthProfile[] {
