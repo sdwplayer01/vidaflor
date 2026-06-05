@@ -11,6 +11,10 @@ import { tarefaAtivaNoDia } from '@/features/casa/utils';
 import type { ISODate } from '@/shared/types/common';
 import type { DiaItem, DiaSource, Turno } from './types';
 
+// Sentinelas estáveis — evitam novo [] / {} por render dentro de useShallow.
+const EMPTY_IDS: string[] = [];
+const EMPTY_DONE_MAP: Record<string, number> = {};
+
 // ── helpers ───────────────────────────────────────────────────────────────────
 function turnoFromTime(time?: string): Turno {
   if (!time) return 'manha';
@@ -28,44 +32,41 @@ function makeId(source: DiaSource, nativeId: string): string {
 export function useDia(date: ISODate): DiaItem[] {
   const rotina  = useRotinaStore(useShallow((s) => ({
     manha: s.tarefas.manha, tarde: s.tarefas.tarde, noite: s.tarefas.noite,
-    done:  s.done[date] ?? [],
+    done:  s.done[date] ?? EMPTY_IDS,
   })));
 
   const casa    = useCasaStore(useShallow((s) => ({
     tarefas: s.tarefas,
-    done:    s.done[date] ?? [],
+    done:    s.done[date] ?? EMPTY_IDS,
   })));
 
   const kids    = useKidsStore(useShallow((s) => ({
     criancas: s.criancas,
-    done:     s.done[date] ?? [],
+    done:     s.done[date] ?? EMPTY_IDS,
   })));
 
   const pets    = usePetsStore(useShallow((s) => ({
     pets: s.pets,
-    done: s.done[date] ?? {},
+    done: s.done[date] ?? EMPTY_DONE_MAP,
   })));
 
   const reminders = useOrganizaStore(
     useShallow((s) => s.reminders.list.filter((r) => r.date === date))
   );
 
-  const agenda  = useAgendaStore(useShallow((s) => {
-    // Tarefas que ocorrem nesta data (avulsas ou recorrentes que casam)
-    const doneIds = s.done[date] ?? [];
-    return s.tarefas
-      .filter((t) => {
-        if (!t.recorrencia) return t.date === date;
-        // recorrente: usa a mesma lógica que casa/utils com tipo compatível
-        const rec = t.recorrencia;
-        const d   = new Date(date + 'T00:00:00');
-        if (rec.tipo === 'diaria')  return true;
-        if (rec.tipo === 'semanal') return rec.diasSemana.includes(d.getDay());
-        if (rec.tipo === 'mensal')  return rec.diaMes === d.getDate();
-        if (rec.tipo === 'avulsa')  return t.date === date;
-        return false;
-      })
-      .map((t) => ({ ...t, doneHoje: doneIds.includes(t.id) }));
+  const agendaRaw = useAgendaStore(useShallow((s) => {
+    const doneIds = s.done[date] ?? EMPTY_IDS;
+    const tarefas = s.tarefas.filter((t) => {
+      if (!t.recorrencia) return t.date === date;
+      const rec = t.recorrencia;
+      const d   = new Date(date + 'T00:00:00');
+      if (rec.tipo === 'diaria')  return true;
+      if (rec.tipo === 'semanal') return rec.diasSemana.includes(d.getDay());
+      if (rec.tipo === 'mensal')  return rec.diaMes === d.getDate();
+      if (rec.tipo === 'avulsa')  return t.date === date;
+      return false;
+    });
+    return { tarefas, doneIds };
   }));
 
   return useMemo((): DiaItem[] => {
@@ -148,7 +149,7 @@ export function useDia(date: ISODate): DiaItem[] {
     }
 
     // ── tarefas avulsas/agenda ────────────────────────────────────────────────
-    for (const t of agenda) {
+    for (const t of agendaRaw.tarefas) {
       items.push({
         id:       makeId('tarefa', t.id),
         nativeId: t.id,
@@ -157,7 +158,7 @@ export function useDia(date: ISODate): DiaItem[] {
         title:    t.title,
         time:     t.time,
         assignee: t.assignee !== 'voce' ? t.assignee : undefined,
-        done:     t.doneHoje,
+        done:     agendaRaw.doneIds.includes(t.id),
       });
     }
 
@@ -172,7 +173,7 @@ export function useDia(date: ISODate): DiaItem[] {
       return 0;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date, rotina, casa, kids, pets, reminders, agenda]);
+  }, [date, rotina, casa, kids, pets, reminders, agendaRaw]);
 }
 
 // useDiaPct — percentual de itens concluídos no dia
