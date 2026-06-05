@@ -10,6 +10,8 @@ import { LeituraList }      from './components/LeituraList';
 import { AddGratidaoSheet } from './components/AddGratidaoSheet';
 import { AddOracaoSheet }   from './components/AddOracaoSheet';
 import { AddLeituraSheet }  from './components/AddLeituraSheet';
+import { useEspiritualStore } from './store';
+import { useAuthStore }       from '@/features/auth/store';
 
 type SubTab = 'gratidao' | 'leituras' | 'oracoes';
 
@@ -20,6 +22,7 @@ const TABS: { key: SubTab; label: string; emoji: string }[] = [
 ];
 
 export function EspiritualScreen() {
+  // ── Hooks (sempre antes de qualquer return — Rules of Hooks) ──
   const [sub, setSub]             = useState<SubTab>('gratidao');
   const [sheetGrat, setSheetGrat] = useState(false);
   const [sheetOrac, setSheetOrac] = useState(false);
@@ -27,12 +30,40 @@ export function EspiritualScreen() {
 
   const gratCount      = useGratidoesDoDiaCount();
   const pendentesCount = useOracoesPendentes().length;
+  const hydrated       = useEspiritualStore((s) => s._hydrated);
+  const isLoggedIn     = useAuthStore((s) => s.isLoggedIn);
 
   const abrirSheet = () => {
     if (sub === 'gratidao') setSheetGrat(true);
     else if (sub === 'oracoes') setSheetOrac(true);
     else setSheetLeit(true);
   };
+
+  // ── Guard de consistência: logado mas sync ainda não terminou ──
+  if (isLoggedIn && !hydrated) {
+    return (
+      <div style={{ padding: '24px 20px 20px' }}>
+        <div
+          style={{
+            padding: 24, textAlign: 'center',
+            color: 'var(--vf-tx-soft)', fontSize: 15,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--vf-font-display)', fontStyle: 'italic',
+              fontSize: 20, color: 'var(--vf-tx)', marginBottom: 8,
+            }}
+          >
+            Carregando seu jardim interior
+          </div>
+          <div style={{ fontSize: 14, lineHeight: 1.5 }}>
+            um instante, recolhendo as flores do dia…
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '24px 20px 20px' }}>

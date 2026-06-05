@@ -1,5 +1,5 @@
-// src/App.tsx — v3
-// Gate de autenticação real via useAuthStore.
+// src/App.tsx — v4
+// Gate de autenticação + gate central de sync (CAMADA 1).
 
 import { useNavStore }              from "./features/nav/store";
 import { AppShell, BottomNav }      from "./shared/layout";
@@ -7,16 +7,34 @@ import { ROUTES }                   from "./app/routes";
 import { useAuthStore }             from "./features/auth/store";
 import { AuthGate }                 from "./features/auth/AuthGate";
 import { SyncBoot }                 from "./features/auth/SyncBoot";
+import { useSyncReady }             from "./shared/sync/sync-ready-store";
+
+function SplashSincronizando() {
+  return (
+    <div
+      style={{
+        minHeight:       "100vh",
+        display:         "flex",
+        alignItems:      "center",
+        justifyContent:  "center",
+        background:      "var(--vf-bg)",
+        color:           "var(--vf-tx-soft)",
+        fontSize:        14,
+        letterSpacing:   0.2,
+      }}
+    >
+      Sincronizando...
+    </div>
+  );
+}
 
 export function App() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const _hydrated  = useAuthStore((s) => s._hydrated);
   const currentTab = useNavStore((s) => s.currentTab);
   const irPara     = useNavStore((s) => s.irPara);
+  const syncReady  = useSyncReady((s) => s.ready);
 
-  // Aguarda hidratação do storage antes de decidir qual view mostrar.
-  // Sem esse gate, o app pode piscar entre AuthGate e app principal
-  // enquanto o store async carrega dados do localStorage/window.storage.
   if (!_hydrated) return null;
 
   if (!isLoggedIn) {
@@ -29,14 +47,18 @@ export function App() {
   return (
     <>
       <SyncBoot />
-      <AppShell>
-        {currentTab === "home" ? (
-          <RouteComponent setTab={irPara} />
-        ) : (
-          <RouteComponent />
-        )}
-        <BottomNav />
-      </AppShell>
+      {syncReady ? (
+        <AppShell>
+          {currentTab === "home" ? (
+            <RouteComponent setTab={irPara} />
+          ) : (
+            <RouteComponent />
+          )}
+          <BottomNav />
+        </AppShell>
+      ) : (
+        <SplashSincronizando />
+      )}
     </>
   );
 }

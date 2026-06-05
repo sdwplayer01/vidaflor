@@ -11,6 +11,8 @@ import { CycleConfigSheet }     from './components/CycleConfigSheet';
 import { DailyNoteCard }        from './components/DailyNoteCard';
 import { SleepStepsCard }       from './components/SleepStepsCard';
 import { usePerfilAtivo }       from './selectors';
+import { useSaudeStore }        from './store';
+import { useAuthStore }         from '@/features/auth/store';
 
 type Tab = 'saude' | 'medicamentos' | 'anotacao';
 
@@ -21,10 +23,80 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 export function SaudeScreen() {
+  // ── Hooks (sempre antes de qualquer return — Rules of Hooks) ──
   const [tab, setTab]             = useState<Tab>('saude');
   const [addMed, setAddMed]       = useState(false);
   const [cycleConf, setCycleConf] = useState(false);
-  const perfil = usePerfilAtivo();
+  const perfil           = usePerfilAtivo();
+  const profilesCount    = useSaudeStore((s) => s.profiles.length);
+  const activeProfileId  = useSaudeStore((s) => s.activeProfileId);
+  const isLoggedIn       = useAuthStore((s) => s.isLoggedIn);
+
+  // ── Guards de consistência (janela de transição demo → real) ──
+  // 1) Logado e ainda sem perfis cadastrados: convida a criar o primeiro.
+  if (isLoggedIn && profilesCount === 0) {
+    return (
+      <div style={{ padding: '24px 20px 20px' }}>
+        <div style={{ marginBottom: 20 }}>
+          <div className="vf-eyebrow">saúde</div>
+          <h1
+            style={{
+              margin: '4px 0 0', fontSize: 30, lineHeight: 1.05,
+              fontFamily: 'var(--vf-font-display)', fontWeight: 400,
+              color: 'var(--vf-tx)',
+            }}
+          >
+            Corpo em florescimento
+          </h1>
+        </div>
+        <div
+          style={{
+            padding: 24, textAlign: 'center',
+            color: 'var(--vf-tx-soft)', fontSize: 15,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--vf-font-display)', fontStyle: 'italic',
+              fontSize: 20, color: 'var(--vf-tx)', marginBottom: 8,
+            }}
+          >
+            Bem-vinda ao seu jardim
+          </div>
+          <div style={{ fontSize: 14, lineHeight: 1.5 }}>
+            Cadastre seu primeiro perfil para começar a cultivar seus cuidados.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2) Logado, há um id ativo mas o perfil correspondente ainda não chegou
+  //    (sync em curso): mostra splash em vez de quebrar sub-componentes.
+  if (isLoggedIn && activeProfileId !== '' && !perfil) {
+    return (
+      <div style={{ padding: '24px 20px 20px' }}>
+        <div
+          style={{
+            padding: 24, textAlign: 'center',
+            color: 'var(--vf-tx-soft)', fontSize: 15,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--vf-font-display)', fontStyle: 'italic',
+              fontSize: 20, color: 'var(--vf-tx)', marginBottom: 8,
+            }}
+          >
+            Carregando seus dados
+          </div>
+          <div style={{ fontSize: 14, lineHeight: 1.5 }}>
+            um instante, regando o jardim…
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '24px 20px 20px' }}>

@@ -12,7 +12,11 @@ export function DailyNoteCard() {
   const [texto, setTexto] = useState(nota);
   const [saved, setSaved]  = useState(false);
 
-  useEffect(() => { setTexto(nota); }, [nota]);
+  // Idempotente: evita re-render extra durante a janela de sync,
+  // quando `nota` pode oscilar (ex.: 'olá' → '' → 'olá').
+  useEffect(() => {
+    setTexto((prev) => (prev === nota ? prev : nota));
+  }, [nota]);
 
   if (!perfil) return null;
 

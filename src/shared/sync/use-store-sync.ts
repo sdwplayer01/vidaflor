@@ -4,11 +4,12 @@ import { pullPersonal, pushPersonal } from '@/shared/sync/personal-sync';
 import type { PersonalFeature }       from '@/shared/sync/personal-sync';
 
 export interface UseStoreSyncOptions {
-  feature:        PersonalFeature;
-  getState:       () => unknown;
-  setState:       (s: unknown) => void;
-  subscribe:      (cb: () => void) => () => void;
-  getEmptyState?: () => unknown;
+  feature:          PersonalFeature;
+  getState:         () => unknown;
+  setState:         (s: unknown) => void;
+  subscribe:        (cb: () => void) => () => void;
+  getEmptyState?:   () => unknown;
+  onFirstPullDone?: () => void;
 }
 
 export function useStoreSync({
@@ -17,10 +18,12 @@ export function useStoreSync({
   setState,
   subscribe,
   getEmptyState,
+  onFirstPullDone,
 }: UseStoreSyncOptions): void {
   const isApplyingRemote = useRef(false);
   const debounceTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unsubRef         = useRef<(() => void) | null>(null);
+  const firstPullFired   = useRef(false);
 
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const userId     = useAuthStore((s) => s.user?.id ?? null);
@@ -30,21 +33,34 @@ export function useStoreSync({
   // re-hidratação a cada re-render do SyncBoot quando stores não-auth mudam.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!isLoggedIn || !userId) return;
+    if (!isLoggedIn || !userId) {
+      firstPullFired.current = false;
+      return;
+    }
 
     let active = true;
 
-    async function hydrate() {
-      const remote = await pullPersonal(feature, userId as string);
-      if (!active) return;
+    const fireFirstPullDone = () => {
+      if (firstPullFired.current) return;
+      firstPullFired.current = true;
+      onFirstPullDone?.();
+    };
 
-      isApplyingRemote.current = true;
-      if (remote !== null) {
-        setState(remote);
-      } else if (getEmptyState) {
-        setState(getEmptyState());
+    async function hydrate() {
+      try {
+        const remote = await pullPersonal(feature, userId as string);
+        if (!active) return;
+
+        isApplyingRemote.current = true;
+        if (remote !== null) {
+          setState(remote);
+        } else if (getEmptyState) {
+          setState(getEmptyState());
+        }
+        setTimeout(() => { isApplyingRemote.current = false; }, 0);
+      } finally {
+        if (active) fireFirstPullDone();
       }
-      setTimeout(() => { isApplyingRemote.current = false; }, 0);
     }
 
     hydrate();
