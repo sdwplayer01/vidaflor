@@ -53,7 +53,7 @@ export function calcAdesaoMedicamentos(
 }
 
 export function calcAguaPctPerfilAtivo(
-  state: { profiles: HealthProfile[]; activeProfileId: string },
+  state: { profiles: HealthProfile[]; activeProfileId: string | null },
   day: ISODate
 ): number {
   const p = state.profiles.find((pr) => pr.id === state.activeProfileId);

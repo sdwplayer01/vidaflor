@@ -6,29 +6,32 @@ import { Btn }    from '@/shared/ui/Btn';
 import { usePerfilAtivo } from '../selectors';
 import { useSaudeStore } from '../store';
 import { today } from '@/shared/utils/date';
+import type { CycleConfig } from '../types';
 
 interface Props {
   isOpen:  boolean;
   onClose: () => void;
 }
 
-export function CycleConfigSheet({ isOpen, onClose }: Props) {
-  const perfil         = usePerfilAtivo();
-  const configurarCiclo = useSaudeStore((s) => s.configurarCiclo);
-  const [form, setForm] = useState({
-    start:   perfil?.cycle?.start   ?? today(),
-    lenDays: String(perfil?.cycle?.lenDays ?? 28),
-    menses:  String(perfil?.cycle?.menses  ?? 5),
-  });
+interface FormProps {
+  perfilId: string;
+  cycle:    CycleConfig | undefined;
+  onSave:   (cfg: CycleConfig) => void;
+  onClose:  () => void;
+}
 
-  if (!isOpen || !perfil) return null;
+function CycleConfigForm({ perfilId: _perfilId, cycle, onSave, onClose }: FormProps) {
+  const [form, setForm] = useState({
+    start:   cycle?.start   ?? today(),
+    lenDays: String(cycle?.lenDays ?? 28),
+    menses:  String(cycle?.menses  ?? 5),
+  });
 
   const salvar = () => {
     const len = parseInt(form.lenDays, 10);
     const men = parseInt(form.menses, 10);
     if (!form.start || isNaN(len) || isNaN(men)) return;
-    configurarCiclo(perfil.id, { start: form.start, lenDays: len, menses: men });
-    onClose();
+    onSave({ start: form.start, lenDays: len, menses: men });
   };
 
   const valido =
@@ -61,5 +64,22 @@ export function CycleConfigSheet({ isOpen, onClose }: Props) {
         <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
+  );
+}
+
+export function CycleConfigSheet({ isOpen, onClose }: Props) {
+  const perfil          = usePerfilAtivo();
+  const configurarCiclo = useSaudeStore((s) => s.configurarCiclo);
+
+  if (!isOpen || !perfil) return null;
+
+  return (
+    <CycleConfigForm
+      key={perfil.id}
+      perfilId={perfil.id}
+      cycle={perfil.cycle}
+      onSave={(cfg) => { configurarCiclo(perfil.id, cfg); onClose(); }}
+      onClose={onClose}
+    />
   );
 }

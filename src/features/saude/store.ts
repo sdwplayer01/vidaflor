@@ -26,7 +26,9 @@ export const useSaudeStore = create<Store>()(
 
       trocarPerfilAtivo: (id) => set({ activeProfileId: id }),
 
-      resetParaUsuarioReal: () => set({ activeProfileId: '', profiles: [] }),
+      // Não limpa para estado vazio — a hidratação atômica em use-store-sync
+      // substituirá o estado inteiro de uma só vez, sem janela inválida.
+      resetParaUsuarioReal: () => { /* no-op: hidratação atômica é a via correta */ },
 
       adicionarPerfil: (profile) => {
         const novo: HealthProfile = {
@@ -42,8 +44,8 @@ export const useSaudeStore = create<Store>()(
       removerPerfil: (id) =>
         set((s) => {
           const filtered = s.profiles.filter((p) => p.id !== id);
-          const newActive =
-            s.activeProfileId === id ? (filtered[0]?.id ?? '') : s.activeProfileId;
+          const newActive: string | null =
+            s.activeProfileId === id ? (filtered[0]?.id ?? null) : s.activeProfileId;
           return { profiles: filtered, activeProfileId: newActive };
         }),
 

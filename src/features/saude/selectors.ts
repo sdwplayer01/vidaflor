@@ -7,9 +7,40 @@ import type { ID, ISODate } from '@/shared/types/common';
 import type { HealthProfile, Medication, ProfileType } from './types';
 import type { CycleState } from './utils';
 
+// ── Sentinelas congeladas: SEMPRE a mesma referência ─────────────────────────
+export const EMPTY_OBJ = Object.freeze({}) as Record<string, never>;
+export const EMPTY_ARR = Object.freeze([]) as never[];
+
+export const PERFIL_VAZIO: HealthProfile = Object.freeze({
+  id:          '',
+  name:        '',
+  avatar:      '',
+  type:        'adult_f' as const,
+  color:       '',
+  water:       Object.freeze({ goalMl: 2000, logMl: EMPTY_OBJ }) as HealthProfile['water'],
+  meds:        EMPTY_ARR as HealthProfile['meds'],
+  notes:       EMPTY_OBJ as HealthProfile['notes'],
+  moodLog:     EMPTY_OBJ as HealthProfile['moodLog'],
+  sleepLog:    EMPTY_OBJ as HealthProfile['sleepLog'],
+  stepsLog:    EMPTY_OBJ as HealthProfile['stepsLog'],
+  metaPassos:  8000,
+  createdAt:   '',
+}) as HealthProfile;
+
+// usePerfilAtivo retorna undefined quando não há perfil ativo (undefined é
+// referência estável — Object.is passa — sem risco de loop).
+// Callers com `if (!perfil)` continuam funcionando.
 export function usePerfilAtivo(): HealthProfile | undefined {
   return useSaudeStore(
     useShallow((s) => s.profiles.find((p) => p.id === s.activeProfileId))
+  );
+}
+
+// usePerfilAtivoSeguro retorna PERFIL_VAZIO (referência congelada) em vez de
+// undefined — use em seletores derivados para evitar fallback inline instável.
+export function usePerfilAtivoSeguro(): HealthProfile {
+  return useSaudeStore(
+    (s) => s.profiles.find((p) => p.id === s.activeProfileId) ?? PERFIL_VAZIO
   );
 }
 

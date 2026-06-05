@@ -1,7 +1,7 @@
 // src/features/financas/components/AddTransactionSheet.tsx
 // Item 9: modo de edicao via txId opcional
 // Item 11: campo valorBruto para parceladas com juros
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Sheet }         from '@/shared/ui/Sheet';
 import { FInput }        from '@/shared/ui/FInput';
 import { Btn }           from '@/shared/ui/Btn';
@@ -10,7 +10,7 @@ import { useFinancasStore } from '../store';
 import { useCartoes, useTransacao } from '../selectors';
 import { today }         from '@/shared/utils/date';
 import { parseBRL, formatBRL } from '@/shared/utils/money';
-import type { TransactionType } from '../types';
+import type { Transaction, TransactionType } from '../types';
 import type { ID } from '@/shared/types/common';
 
 interface Props {
@@ -32,36 +32,30 @@ const emptyForm = () => ({
   cardId:      null as string | null,
 });
 
-export function AddTransactionSheet({ isOpen, onClose, txId }: Props) {
-  const adicionarTransacao  = useFinancasStore((s) => s.adicionarTransacao);
-  const adicionarParcelada  = useFinancasStore((s) => s.adicionarParcelada);
-  const atualizarTransacao  = useFinancasStore((s) => s.atualizarTransacao);
-  const txParaEditar        = useTransacao(txId);
-  const cartoes             = useCartoes();
-  const [form, setForm]     = useState(emptyForm);
-  const modoEdicao          = !!txId;
+const fromTx = (tx: Transaction) => ({
+  desc:       tx.desc,
+  amount:     formatBRL(tx.amount),
+  valorBruto: '',
+  type:       tx.type,
+  category:   tx.category,
+  date:       tx.date,
+  due:        tx.due ?? '',
+  parcelado:  false,
+  parcelas:   '1',
+  cardId:     tx.cardId,
+});
 
-  // Preenche form quando abre em modo edicao
-  useEffect(() => {
-    if (!isOpen) return;
-    if (!txId) { setForm(emptyForm()); return; }
-    const tx = txParaEditar;
-    if (!tx) return;
-    setForm({
-      desc:       tx.desc,
-      amount:     formatBRL(tx.amount),
-      valorBruto: '',
-      type:       tx.type,
-      category:   tx.category,
-      date:       tx.date,
-      due:        tx.due ?? '',
-      parcelado:  false,
-      parcelas:   '1',
-      cardId:     tx.cardId,
-    });
-  }, [isOpen, txId]);
+interface FormProps {
+  modoEdicao:  boolean;
+  txId:        ID | undefined;
+  initial:     ReturnType<typeof emptyForm>;
+  onSave:      (form: ReturnType<typeof emptyForm>) => void;
+  onClose:     () => void;
+}
 
-  if (!isOpen) return null;
+function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: FormProps) {
+  const cartoes         = useCartoes();
+  const [form, setForm] = useState(initial);
 
   // Bug 4 fix: parseBRL suporta "1.250,00"
   const amountCents     = parseBRL(form.amount);
@@ -70,41 +64,7 @@ export function AddTransactionSheet({ isOpen, onClose, txId }: Props) {
 
   const salvar = () => {
     if (!valido) return;
-
-    if (modoEdicao && txId) {
-      // Item 9: modo edicao — apenas atualiza campos editaveis
-      atualizarTransacao(txId, {
-        desc:     form.desc.trim(),
-        amount:   amountCents,
-        type:     form.type,
-        category: form.category,
-        date:     form.date,
-        due:      form.due || undefined,
-        cardId:   form.cardId,
-      });
-    } else if (form.parcelado && parseInt(form.parcelas) > 1) {
-      adicionarParcelada({
-        desc:          form.desc.trim(),
-        totalAmount:   amountCents,
-        valorBruto:    valorBrutoCents > 0 && valorBrutoCents < amountCents ? valorBrutoCents : undefined,
-        totalParcelas: parseInt(form.parcelas),
-        firstDate:     form.date,
-        category:      form.category,
-        cardId:        form.cardId,
-      });
-    } else {
-      adicionarTransacao({
-        desc:     form.desc.trim(),
-        amount:   amountCents,
-        type:     form.type,
-        category: form.category,
-        date:     form.date,
-        due:      form.due || undefined,
-        paid:     false,
-        cardId:   form.cardId,
-      });
-    }
-    setForm(emptyForm());
+    onSave(form);
     onClose();
   };
 
@@ -238,5 +198,66 @@ export function AddTransactionSheet({ isOpen, onClose, txId }: Props) {
         <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
+  );
+}
+
+export function AddTransactionSheet({ isOpen, onClose, txId }: Props) {
+  const adicionarTransacao = useFinancasStore((s) => s.adicionarTransacao);
+  const adicionarParcelada = useFinancasStore((s) => s.adicionarParcelada);
+  const atualizarTransacao = useFinancasStore((s) => s.atualizarTransacao);
+  const txParaEditar       = useTransacao(txId);
+  const modoEdicao         = !!txId;
+
+  if (!isOpen) return null;
+
+  const initial = txParaEditar ? fromTx(txParaEditar) : emptyForm();
+
+  const handleSave = (form: ReturnType<typeof emptyForm>) => {
+    const amountCents     = parseBRL(form.amount);
+    const valorBrutoCents = parseBRL(form.valorBruto);
+
+    if (modoEdicao && txId) {
+      atualizarTransacao(txId, {
+        desc:     form.desc.trim(),
+        amount:   amountCents,
+        type:     form.type,
+        category: form.category,
+        date:     form.date,
+        due:      form.due || undefined,
+        cardId:   form.cardId,
+      });
+    } else if (form.parcelado && parseInt(form.parcelas) > 1) {
+      adicionarParcelada({
+        desc:          form.desc.trim(),
+        totalAmount:   amountCents,
+        valorBruto:    valorBrutoCents > 0 && valorBrutoCents < amountCents ? valorBrutoCents : undefined,
+        totalParcelas: parseInt(form.parcelas),
+        firstDate:     form.date,
+        category:      form.category,
+        cardId:        form.cardId,
+      });
+    } else {
+      adicionarTransacao({
+        desc:     form.desc.trim(),
+        amount:   amountCents,
+        type:     form.type,
+        category: form.category,
+        date:     form.date,
+        due:      form.due || undefined,
+        paid:     false,
+        cardId:   form.cardId,
+      });
+    }
+  };
+
+  return (
+    <TransactionForm
+      key={txId ?? 'nova'}
+      modoEdicao={modoEdicao}
+      txId={txId}
+      initial={initial}
+      onSave={handleSave}
+      onClose={onClose}
+    />
   );
 }

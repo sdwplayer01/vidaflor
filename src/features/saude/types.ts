@@ -43,7 +43,7 @@ export interface HealthProfile {
 }
 
 export interface SaudeState {
-  activeProfileId: ID;
+  activeProfileId: ID | null;
   profiles:        HealthProfile[];
   _version:        number;
   _hydrated:       boolean;

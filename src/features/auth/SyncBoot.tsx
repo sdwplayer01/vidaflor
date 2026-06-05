@@ -7,15 +7,39 @@ import { useEspiritualStore } from '@/features/espiritual/store';
 import { useConfigStore }    from '@/features/config/store';
 import { SAUDE_VERSION }     from '@/features/saude/migrations';
 import { ESPIRITUAL_VERSION } from '@/features/espiritual/migrations';
+import { PROFILE_COLOR_DEFAULT } from '@/shared/constants/colors';
+import { genId }             from '@/shared/utils/id';
+import { today }             from '@/shared/utils/date';
+import type { AuthUser }     from '@/features/auth/types';
+import type { SaudeState }   from '@/features/saude/types';
 
 const TOTAL_FEATURES = 3;
 
-const emptySaude = () => ({
-  activeProfileId: '',
-  profiles: [],
-  _version: SAUDE_VERSION,
-  _hydrated: true,
-});
+// Estado de saúde populado com perfil real — nunca usa activeProfileId: '' ou
+// profiles: []. activeProfileId sempre aponta para um perfil existente.
+function defaultSaudeParaUsuario(user: AuthUser): SaudeState {
+  const id = genId('prf');
+  return {
+    activeProfileId: id,
+    profiles: [{
+      id,
+      name:       user.name,
+      avatar:     '🌸',
+      type:       'adult_f',
+      color:      PROFILE_COLOR_DEFAULT,
+      water:      { goalMl: 2000, logMl: {} },
+      meds:       [],
+      notes:      {},
+      moodLog:    {},
+      sleepLog:   {},
+      stepsLog:   {},
+      metaPassos: 8000,
+      createdAt:  today(),
+    }],
+    _version:  SAUDE_VERSION,
+    _hydrated: true,
+  };
+}
 
 const emptyEspiritual = () => ({
   gratidao: {},
@@ -56,7 +80,8 @@ export function SyncBoot() {
     getState:        () => useSaudeStore.getState(),
     setState:        (d) => useSaudeStore.setState(d as Parameters<typeof useSaudeStore.setState>[0]),
     subscribe:       (cb) => useSaudeStore.subscribe(cb),
-    getEmptyState:   emptySaude,
+    // user está garantido quando useStoreSync dispara (só roda com isLoggedIn && userId)
+    getEmptyState:   () => defaultSaudeParaUsuario(user!),
     onFirstPullDone: handleDone,
   });
 

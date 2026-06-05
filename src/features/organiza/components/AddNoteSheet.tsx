@@ -1,5 +1,5 @@
 // src/features/organiza/components/AddNoteSheet.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet }  from "@/shared/ui/Sheet";
 import { FInput } from "@/shared/ui/FInput";
 import { Btn }    from "@/shared/ui/Btn";
@@ -13,40 +13,28 @@ interface Props {
   notaEditando?: Note | null;
 }
 
-export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
-  const adicionarNota = useOrganizaStore((s) => s.adicionarNota);
-  const atualizarNota = useOrganizaStore((s) => s.atualizarNota);
+interface NoteFormProps {
+  initial:  Pick<Note, "title" | "content" | "color"> | null | undefined;
+  isEdit:   boolean;
+  onSubmit: (data: Pick<Note, "title" | "content" | "color">) => void;
+  onClose:  () => void;
+}
 
+function NoteForm({ initial, isEdit, onSubmit, onClose }: NoteFormProps) {
   const [form, setForm] = useState({
-    title:   notaEditando?.title   ?? "",
-    content: notaEditando?.content ?? "",
-    color:   notaEditando?.color   ?? NOTE_COLORS[0],
+    title:   initial?.title   ?? "",
+    content: initial?.content ?? "",
+    color:   initial?.color   ?? NOTE_COLORS[0] ?? "",
   });
-
-  useEffect(() => {
-    if (!isOpen) return;
-    setForm({
-      title:   notaEditando?.title   ?? "",
-      content: notaEditando?.content ?? "",
-      color:   notaEditando?.color   ?? NOTE_COLORS[0],
-    });
-  }, [isOpen, notaEditando?.id]);
-
-  if (!isOpen) return null;
 
   const salvar = () => {
     if (!form.content.trim() && !form.title.trim()) return;
-    if (notaEditando) {
-      atualizarNota(notaEditando.id, { title: form.title, content: form.content, color: form.color });
-    } else {
-      adicionarNota({ title: form.title, content: form.content, color: form.color });
-    }
-    setForm({ title: "", content: "", color: NOTE_COLORS[0] ?? "" });
+    onSubmit({ title: form.title, content: form.content, color: form.color });
     onClose();
   };
 
   return (
-    <Sheet title={notaEditando ? "Editar Nota" : "Nova Nota"} onClose={onClose}>
+    <Sheet title={isEdit ? "Editar Nota" : "Nova Nota"} onClose={onClose}>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <FInput value={form.title} onChange={(v) => setForm((f) => ({ ...f, title: v }))} placeholder="Titulo (opcional)" />
         <textarea
@@ -77,10 +65,35 @@ export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
           ))}
         </div>
         <Btn onClick={salvar} disabled={!form.content.trim() && !form.title.trim()}>
-          {notaEditando ? "Salvar" : "Adicionar"}
+          {isEdit ? "Salvar" : "Adicionar"}
         </Btn>
         <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
+  );
+}
+
+export function AddNoteSheet({ isOpen, onClose, notaEditando }: Props) {
+  const adicionarNota = useOrganizaStore((s) => s.adicionarNota);
+  const atualizarNota = useOrganizaStore((s) => s.atualizarNota);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (data: Pick<Note, "title" | "content" | "color">) => {
+    if (notaEditando) {
+      atualizarNota(notaEditando.id, data);
+    } else {
+      adicionarNota(data);
+    }
+  };
+
+  return (
+    <NoteForm
+      key={notaEditando?.id ?? "nova"}
+      initial={notaEditando}
+      isEdit={Boolean(notaEditando)}
+      onSubmit={handleSubmit}
+      onClose={onClose}
+    />
   );
 }

@@ -1,5 +1,5 @@
 // src/features/organiza/components/AddShoppingSheet.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet }  from "@/shared/ui/Sheet";
 import { FInput } from "@/shared/ui/FInput";
 import { Btn }    from "@/shared/ui/Btn";
@@ -16,46 +16,32 @@ interface Props {
 
 const DEFAULT_SECAO = "Mercearia";
 
-export function AddShoppingSheet({ isOpen, onClose, editItem }: Props) {
-  const adicionar  = useOrganizaStore((s) => s.adicionarItemCompra);
-  const atualizar  = useOrganizaStore((s) => s.atualizarItemCompra);
+interface FormProps {
+  editItem?: ShoppingItem;
+  onSubmit: (payload: Omit<ShoppingItem, "id" | "createdAt">) => void;
+  onClose:  () => void;
+}
 
-  const [name,    setName]    = useState("");
-  const [secao,   setSecao]   = useState(DEFAULT_SECAO);
-  const [qty,     setQty]     = useState("");
-  const [preco,   setPreco]   = useState("");
+function ShoppingItemForm({ editItem, onSubmit, onClose }: FormProps) {
+  const isEdit = Boolean(editItem);
+  const [name,  setName]  = useState(editItem?.name ?? "");
+  const [secao, setSecao] = useState(editItem?.category || DEFAULT_SECAO);
+  const [qty,   setQty]   = useState(editItem?.quantity ? String(editItem.quantity) : "");
+  const [preco, setPreco] = useState(
+    editItem?.price && editItem.price > 0 ? formatBRL(editItem.price) : ""
+  );
 
-  // Preenche form ao abrir em modo edição
-  useEffect(() => {
-    if (isOpen && editItem) {
-      setName(editItem.name);
-      setSecao(editItem.category || DEFAULT_SECAO);
-      setQty(editItem.quantity ? String(editItem.quantity) : "");
-      setPreco(editItem.price && editItem.price > 0 ? formatBRL(editItem.price) : "");
-    } else if (isOpen && !editItem) {
-      setName(""); setSecao(DEFAULT_SECAO); setQty(""); setPreco("");
-    }
-  }, [isOpen, editItem?.id]);
-
-  if (!isOpen) return null;
-
-  const isEdit   = Boolean(editItem);
-  const valido   = name.trim().length > 0;
+  const valido = name.trim().length > 0;
 
   const salvar = () => {
     if (!valido) return;
-    const payload = {
+    onSubmit({
       name:     name.trim(),
       category: secao,
       quantity: qty ? parseInt(qty, 10) : undefined,
       price:    preco ? parseBRL(preco) : 0,
       done:     editItem?.done ?? false,
-    };
-    if (isEdit && editItem) {
-      atualizar(editItem.id, payload);
-    } else {
-      adicionar(payload);
-    }
+    });
     onClose();
   };
 
@@ -67,7 +53,6 @@ export function AddShoppingSheet({ isOpen, onClose, editItem }: Props) {
           value={name}
           onChange={setName}
           placeholder="Nome do item"
-
         />
 
         {/* Seções em chips */}
@@ -121,5 +106,29 @@ export function AddShoppingSheet({ isOpen, onClose, editItem }: Props) {
         <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
+  );
+}
+
+export function AddShoppingSheet({ isOpen, onClose, editItem }: Props) {
+  const adicionar = useOrganizaStore((s) => s.adicionarItemCompra);
+  const atualizar = useOrganizaStore((s) => s.atualizarItemCompra);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (payload: Omit<ShoppingItem, "id" | "createdAt">) => {
+    if (editItem) {
+      atualizar(editItem.id, payload);
+    } else {
+      adicionar(payload);
+    }
+  };
+
+  return (
+    <ShoppingItemForm
+      key={editItem?.id ?? "novo"}
+      editItem={editItem}
+      onSubmit={handleSubmit}
+      onClose={onClose}
+    />
   );
 }
