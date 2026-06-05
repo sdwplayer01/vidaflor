@@ -6,7 +6,7 @@ import type { AuthState, AuthActions, AuthUser } from './types';
 
 const AUTH_VERSION = 1;
 
-type Store = AuthState & AuthActions;
+type Store = AuthState & AuthActions & { sessionInitialized: boolean };
 
 function sessionToUser(session: Session): AuthUser {
   const { user } = session;
@@ -29,23 +29,29 @@ function sessionToUser(session: Session): AuthUser {
 
 export const useAuthStore = create<Store>()(
   persistVidaFlor(
-    (set) => ({
-      user:       null,
-      isLoggedIn: false,
-      _hydrated:  false,
-      loading:    false,
-      error:      null,
+    (set, get) => ({
+      user:               null,
+      isLoggedIn:         false,
+      _hydrated:          false,
+      loading:            false,
+      error:              null,
+      sessionInitialized: false,
 
       setUser: (user) => set({ user, isLoggedIn: true }),
 
-      clearUser: () => set({ user: null, isLoggedIn: false, error: null }),
+      clearUser: () => set({ user: null, isLoggedIn: false, error: null, sessionInitialized: false }),
 
       setError: (error) => set({ error }),
 
       setLoading: (loading) => set({ loading }),
 
-      hydrateFromSession: (session: Session) =>
-        set({ user: sessionToUser(session), isLoggedIn: true }),
+      hydrateFromSession: (session: Session) => {
+        if (get().sessionInitialized) {
+          set({ user: sessionToUser(session), isLoggedIn: true });
+          return;
+        }
+        set({ user: sessionToUser(session), isLoggedIn: true, sessionInitialized: true });
+      },
     }),
     {
       name:    STORAGE_KEYS.auth,

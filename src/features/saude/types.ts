@@ -50,7 +50,8 @@ export interface SaudeState {
 }
 
 export interface SaudeActions {
-  trocarPerfilAtivo:    (id: ID) => void;
+  trocarPerfilAtivo:      (id: ID) => void;
+  resetParaUsuarioReal:   () => void;
   adicionarPerfil:      (profile: Omit<HealthProfile, 'id' | 'createdAt' | 'meds' | 'notes'>) => void;
   removerPerfil:        (id: ID) => void;
   atualizarPerfil:      (id: ID, patch: Partial<HealthProfile>) => void;

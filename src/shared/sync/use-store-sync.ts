@@ -4,10 +4,11 @@ import { pullPersonal, pushPersonal } from '@/shared/sync/personal-sync';
 import type { PersonalFeature }       from '@/shared/sync/personal-sync';
 
 export interface UseStoreSyncOptions {
-  feature:   PersonalFeature;
-  getState:  () => unknown;
-  setState:  (s: unknown) => void;
-  subscribe: (cb: () => void) => () => void;
+  feature:        PersonalFeature;
+  getState:       () => unknown;
+  setState:       (s: unknown) => void;
+  subscribe:      (cb: () => void) => () => void;
+  getEmptyState?: () => unknown;
 }
 
 export function useStoreSync({
@@ -15,6 +16,7 @@ export function useStoreSync({
   getState,
   setState,
   subscribe,
+  getEmptyState,
 }: UseStoreSyncOptions): void {
   const isApplyingRemote = useRef(false);
   const debounceTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -34,12 +36,14 @@ export function useStoreSync({
 
     async function hydrate() {
       const remote = await pullPersonal(feature, userId as string);
-      if (!active || remote === null) return;
+      if (!active) return;
 
       isApplyingRemote.current = true;
-      setState(remote);
-      // setTimeout(0) em vez de queueMicrotask: dá ao scheduler do React 18
-      // tempo para processar o batch antes de liberar novos pushes ao Supabase.
+      if (remote !== null) {
+        setState(remote);
+      } else if (getEmptyState) {
+        setState(getEmptyState());
+      }
       setTimeout(() => { isApplyingRemote.current = false; }, 0);
     }
 

@@ -26,6 +26,8 @@ export const useSaudeStore = create<Store>()(
 
       trocarPerfilAtivo: (id) => set({ activeProfileId: id }),
 
+      resetParaUsuarioReal: () => set({ activeProfileId: '', profiles: [] }),
+
       adicionarPerfil: (profile) => {
         const novo: HealthProfile = {
           ...profile,
