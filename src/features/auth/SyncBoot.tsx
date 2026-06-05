@@ -51,7 +51,7 @@ const emptyEspiritual = () => ({
 
 export function SyncBoot() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
-  const user       = useAuthStore((s) => s.user);
+  const userId     = useAuthStore((s) => s.user?.id ?? null);
 
   const [doneCount, setDoneCount] = useState(0);
   const flippedRef                = useRef(false);
@@ -61,12 +61,12 @@ export function SyncBoot() {
   }, []);
 
   useEffect(() => {
-    if (!isLoggedIn || !user) {
+    if (!isLoggedIn || !userId) {
       flippedRef.current = false;
       setDoneCount(0);
       useSyncReady.getState().reset();
     }
-  }, [isLoggedIn, user]);
+  }, [isLoggedIn, userId]);
 
   useEffect(() => {
     if (doneCount >= TOTAL_FEATURES && !flippedRef.current) {
@@ -81,7 +81,7 @@ export function SyncBoot() {
     setState:        (d) => useSaudeStore.setState(d as Parameters<typeof useSaudeStore.setState>[0]),
     subscribe:       (cb) => useSaudeStore.subscribe(cb),
     // user está garantido quando useStoreSync dispara (só roda com isLoggedIn && userId)
-    getEmptyState:   () => defaultSaudeParaUsuario(user!),
+    getEmptyState:   () => defaultSaudeParaUsuario(useAuthStore.getState().user!),
     onFirstPullDone: handleDone,
   });
 

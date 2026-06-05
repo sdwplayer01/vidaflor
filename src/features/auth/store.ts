@@ -46,11 +46,13 @@ export const useAuthStore = create<Store>()(
       setLoading: (loading) => set({ loading }),
 
       hydrateFromSession: (session: Session) => {
-        if (get().sessionInitialized) {
-          set({ user: sessionToUser(session), isLoggedIn: true });
+        const next    = sessionToUser(session);
+        const current = get().user;
+        if (current && current.id === next.id && current.email === next.email) {
+          if (!get().sessionInitialized) set({ sessionInitialized: true });
           return;
         }
-        set({ user: sessionToUser(session), isLoggedIn: true, sessionInitialized: true });
+        set({ user: next, isLoggedIn: true, sessionInitialized: true });
       },
     }),
     {

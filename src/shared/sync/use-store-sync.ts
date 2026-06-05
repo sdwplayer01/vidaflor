@@ -63,16 +63,17 @@ export function useStoreSync({
       }
     }
 
-    hydrate();
+    hydrate().then(() => {
+      if (!active) return;
+      unsubRef.current = subscribe(() => {
+        if (isApplyingRemote.current) return;
 
-    unsubRef.current = subscribe(() => {
-      if (isApplyingRemote.current) return;
-
-      if (debounceTimer.current) clearTimeout(debounceTimer.current);
-      debounceTimer.current = setTimeout(() => {
-        if (!active) return;
-        pushPersonal(feature, userId as string, getState());
-      }, 1500);
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+        debounceTimer.current = setTimeout(() => {
+          if (!active) return;
+          pushPersonal(feature, userId as string, getState());
+        }, 1500);
+      });
     });
 
     return () => {
