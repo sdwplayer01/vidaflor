@@ -53,17 +53,18 @@ export function AddReminderSheet({ isOpen, onClose }: Props) {
         <FInput value={form.date} onChange={(v) => setForm((f) => ({ ...f, date: v }))} type="date" />
         <FInput value={form.time} onChange={(v) => setForm((f) => ({ ...f, time: v }))} placeholder="Horario (opcional)" type="time" />
         <FSelect
+          label="Área"
           value={form.category}
           onChange={(v) => setForm((f) => ({ ...f, category: v }))}
           options={CATEGORIAS}
         />
         <FSelect
+          label="Prioridade"
           value={form.priority}
           onChange={(v) => setForm((f) => ({ ...f, priority: v as ReminderPriority }))}
           options={PRIORIDADES}
         />
         <Btn onClick={salvar} disabled={!form.title.trim()}>Adicionar</Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

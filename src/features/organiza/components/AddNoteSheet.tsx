@@ -67,7 +67,6 @@ function NoteForm({ initial, isEdit, onSubmit, onClose }: NoteFormProps) {
         <Btn onClick={salvar} disabled={!form.content.trim() && !form.title.trim()}>
           {isEdit ? "Salvar" : "Adicionar"}
         </Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

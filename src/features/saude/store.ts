@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { persistVidaFlor } from '@/shared/storage/persist-middleware';
 import { STORAGE_KEYS } from '@/shared/storage/keys';
 import { genId } from '@/shared/utils/id';
-import { today } from '@/shared/utils/date';
+import { today, nowISO } from '@/shared/utils/date';
 import { seedSaude } from './seed';
 import { migrate, SAUDE_VERSION } from './migrations';
 import type { SaudeState, SaudeActions, HealthProfile, Medication, CycleConfig } from './types';
@@ -142,13 +142,50 @@ export const useSaudeStore = create<Store>()(
           })),
         })),
 
-      registrarAnotacaoDia: (profileId, day, text) =>
+      adicionarAnotacao: (profileId, day, text) => {
+        if (!text.trim()) return;
         set((s) => ({
           profiles: updProfile(s.profiles, profileId, (p) => ({
             ...p,
-            notes: { ...p.notes, [day]: text },
+            notes: {
+              ...p.notes,
+              [day]: [
+                ...(p.notes[day] ?? []),
+                { id: genId('note'), text: text.trim(), createdAt: nowISO() },
+              ],
+            },
           })),
+        }));
+      },
+
+      removerAnotacao: (profileId, day, id) =>
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => {
+            const arr = (p.notes[day] ?? []).filter((n) => n.id !== id);
+            const notes = { ...p.notes };
+            if (arr.length === 0) {
+              delete notes[day];
+            } else {
+              notes[day] = arr;
+            }
+            return { ...p, notes };
+          }),
         })),
+
+      editarAnotacao: (profileId, day, id, text) => {
+        if (!text.trim()) return;
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => ({
+            ...p,
+            notes: {
+              ...p.notes,
+              [day]: (p.notes[day] ?? []).map((n) =>
+                n.id === id ? { ...n, text } : n
+              ),
+            },
+          })),
+        }));
+      },
 
       registrarMoodDia: (profileId, day, mood) =>
         set((s) => ({
@@ -186,14 +223,23 @@ export const useSaudeStore = create<Store>()(
 
       registrarAtividade: (profileId, day, atividade) =>
         set((s) => ({
-          profiles: updProfile(s.profiles, profileId, (p) => ({
-            ...p,
-            atividadeLog: atividade
-              ? { ...(p.atividadeLog ?? {}), [day]: atividade }
-              : Object.fromEntries(
-                  Object.entries(p.atividadeLog ?? {}).filter(([k]) => k !== day)
-                ),
-          })),
+          profiles: updProfile(s.profiles, profileId, (p) => {
+            const log = { ...(p.atividadeLog ?? {}) };
+            if (!atividade) {
+              delete log[day];
+              return { ...p, atividadeLog: log };
+            }
+            const arr = log[day] ?? [];
+            const next = arr.includes(atividade)
+              ? arr.filter((a) => a !== atividade)
+              : [...arr, atividade];
+            if (next.length === 0) {
+              delete log[day];
+            } else {
+              log[day] = next;
+            }
+            return { ...p, atividadeLog: log };
+          }),
         })),
     }),
     {

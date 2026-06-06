@@ -1,5 +1,11 @@
 // src/features/saude/types.ts
-import type { ID, ISODate, HexColor, Emoji } from '@/shared/types/common';
+import type { ID, ISODate, ISODateTime, HexColor, Emoji } from '@/shared/types/common';
+
+export interface NoteEntry {
+  id:        ID;
+  text:      string;
+  createdAt: ISODateTime;
+}
 
 export type ProfileType = 'adult_f' | 'adult_m' | 'child' | 'pet';
 
@@ -20,6 +26,7 @@ export interface Medication {
   dose:      string;
   time:      string;           // 'HH:mm'
   schedule:  'diario' | 'sos' | 'semanal';
+  weekdays?: number[];
   log:       Record<ISODate, boolean>;
   createdAt: ISODate;
   active:    boolean;
@@ -34,12 +41,12 @@ export interface HealthProfile {
   water:     WaterLog;
   cycle?:    CycleConfig;
   meds:      Medication[];
-  notes:     Record<ISODate, string>;
+  notes:     Record<ISODate, NoteEntry[]>;
   moodLog:   Record<ISODate, string>;  // humor do dia: 'calm'|'happy'|'anx'|'grat'
   sleepLog:     Record<ISODate, number>;           // horas dormidas por dia
   stepsLog:     Record<ISODate, number>;           // passos por dia (legado)
   metaPassos:   number;                            // meta diária de passos (legado)
-  atividadeLog?: Record<ISODate, string>;          // atividade física do dia
+  atividadeLog?: Record<ISODate, string[]>;         // atividade física do dia (multi)
   createdAt: ISODate;
 }
 
@@ -70,7 +77,9 @@ export interface SaudeActions {
   desativarMedicamento:  (profileId: ID, medId: ID) => void;
   registrarMoodDia:      (profileId: ID, day: ISODate, mood: string | null) => void;
 
-  registrarAnotacaoDia: (profileId: ID, day: ISODate, text: string) => void;
+  adicionarAnotacao: (profileId: ID, day: ISODate, text: string) => void;
+  removerAnotacao:   (profileId: ID, day: ISODate, id: ID) => void;
+  editarAnotacao:    (profileId: ID, day: ISODate, id: ID, text: string) => void;
 
   registrarSono:       (profileId: ID, day: ISODate, hours: number) => void;
   registrarPassos:     (profileId: ID, day: ISODate, steps: number) => void;

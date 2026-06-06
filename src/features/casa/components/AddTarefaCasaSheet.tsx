@@ -1,8 +1,9 @@
 // src/features/casa/components/AddTarefaCasaSheet.tsx
 import { useState } from 'react';
-import { Sheet }  from '@/shared/ui/Sheet';
-import { FInput } from '@/shared/ui/FInput';
-import { Btn }    from '@/shared/ui/Btn';
+import { Sheet }   from '@/shared/ui/Sheet';
+import { FInput }  from '@/shared/ui/FInput';
+import { FSelect } from '@/shared/ui/FSelect';
+import { Btn }     from '@/shared/ui/Btn';
 import { useCasaStore } from '../store';
 import type { Ambiente } from '../types';
 
@@ -46,19 +47,12 @@ export function AddTarefaCasaSheet({ isOpen, onClose }: Props) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <FInput value={form.task} onChange={(v) => setForm((f) => ({ ...f, task: v }))} placeholder="O que limpar/organizar?" />
 
-        <select
+        <FSelect
+          label="Ambiente"
           value={form.ambiente}
-          onChange={(e) => setForm((f) => ({ ...f, ambiente: e.target.value as Ambiente }))}
-          style={{
-            padding: '12px', borderRadius: 12, border: '1px solid var(--vf-bd)',
-            background: 'var(--vf-bg)', color: 'var(--vf-t)', fontSize: 14,
-            fontFamily: 'inherit', outline: 'none',
-          }}
-        >
-          {AMBIENTES.map((a) => (
-            <option key={a} value={a}>{a.replace('_', ' ')}</option>
-          ))}
-        </select>
+          onChange={(v) => setForm((f) => ({ ...f, ambiente: v as Ambiente }))}
+          options={AMBIENTES.map((a) => ({ value: a, label: a.replace('_', ' ') }))}
+        />
 
         <div style={{ display: 'flex', gap: 8 }}>
           {(['diaria', 'semanal', 'avulsa'] as const).map((r) => (
@@ -81,7 +75,6 @@ export function AddTarefaCasaSheet({ isOpen, onClose }: Props) {
         </div>
 
         <Btn onClick={salvar} disabled={!form.task.trim()}>Adicionar</Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

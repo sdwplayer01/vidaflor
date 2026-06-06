@@ -68,7 +68,6 @@ export function AddKidSheet({ isOpen, onClose, criancaEditando }: Props) {
         <Btn onClick={salvar} disabled={!form.name.trim()}>
           {criancaEditando ? 'Salvar' : 'Adicionar'}
         </Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

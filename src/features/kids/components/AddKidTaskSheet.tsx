@@ -32,7 +32,6 @@ export function AddKidTaskSheet({ kidId, isOpen, onClose }: Props) {
         <FInput value={form.emoji} onChange={(v) => setForm((f) => ({ ...f, emoji: v }))} placeholder="Emoji" />
         <FInput value={form.time}  onChange={(v) => setForm((f) => ({ ...f, time: v }))}  placeholder="Horario (opcional)" type="time" />
         <Btn onClick={salvar} disabled={!form.task.trim()}>Adicionar</Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

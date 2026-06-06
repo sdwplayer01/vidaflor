@@ -38,7 +38,6 @@ export function AddGratidaoSheet({ isOpen, onClose }: Props) {
           placeholder="Pelo que voce e grata?"
         />
         <Btn onClick={salvar} disabled={!texto.trim()}>Agradecer</Btn>
-        <Btn variant="ghost" onClick={fechar}>Cancelar</Btn>
       </div>
     </Sheet>
   );

@@ -64,8 +64,8 @@ export const seedSaude: SaudeState = {
         },
       ],
       notes: {
-        '2026-06-01': 'Consulta com cardiologista — tudo bem.',
-        '2026-06-03': 'Dor de cabeça leve à tarde.',
+        '2026-06-01': [{ id: 'note_seed_01', text: 'Consulta com cardiologista — tudo bem.', createdAt: '2026-06-01T00:00:00.000Z' }],
+        '2026-06-03': [{ id: 'note_seed_03', text: 'Dor de cabeça leve à tarde.', createdAt: '2026-06-03T00:00:00.000Z' }],
       },
       moodLog: {
         '2026-05-28': 'calm',

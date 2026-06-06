@@ -5,7 +5,7 @@ import { useSaudeStore } from './store';
 import { calcAguaPctDoDia, calcCycleState, calcAdesaoMedicamentos } from './utils';
 import { today } from '@/shared/utils/date';
 import type { ID, ISODate } from '@/shared/types/common';
-import type { HealthProfile, Medication, ProfileType } from './types';
+import type { HealthProfile, Medication, ProfileType, NoteEntry } from './types';
 import type { CycleState } from './utils';
 
 // ── Sentinelas congeladas: SEMPRE a mesma referência ─────────────────────────
@@ -84,10 +84,16 @@ export function useCicloAtual(profileId?: ID): CycleState | undefined {
 export function useMedicamentosDoDia(profileId?: ID): Medication[] {
   return useSaudeStore(
     useShallow((s) => {
-      const id = profileId ?? s.activeProfileId;
-      const p  = s.profiles.find((pr) => pr.id === id);
+      const id  = profileId ?? s.activeProfileId;
+      const p   = s.profiles.find((pr) => pr.id === id);
       if (!p) return [];
-      return p.meds.filter((m) => m.active && m.schedule === 'diario');
+      const dow = new Date(today() + 'T00:00:00').getDay();
+      return p.meds.filter((m) =>
+        m.active && (
+          m.schedule === 'diario' ||
+          (m.schedule === 'semanal' && (m.weekdays ?? []).includes(dow))
+        )
+      );
     })
   );
 }
@@ -96,11 +102,18 @@ export function useMedicamentosPendentesHoje(): { profile: HealthProfile; meds: 
   const profiles = useSaudeStore((s) => s.profiles);
   return useMemo(() => {
     const day = today();
+    const dow = new Date(day + 'T00:00:00').getDay();
     return profiles
       .map((p) => ({
         profile: p,
         meds: p.meds.filter(
-          (m) => m.active && m.schedule === 'diario' && !m.log[day]
+          (m) =>
+            m.active &&
+            (
+              m.schedule === 'diario' ||
+              (m.schedule === 'semanal' && (m.weekdays ?? []).includes(dow))
+            ) &&
+            !m.log[day]
         ),
       }))
       .filter(({ meds }) => meds.length > 0);
@@ -122,11 +135,27 @@ export function useAdesaoMedicamentosHoje(profileId?: ID): {
   );
 }
 
-export function useAnotacaoDoDia(day?: ISODate, profileId?: ID): string {
-  return useSaudeStore((s) => {
-    const id  = profileId ?? s.activeProfileId;
-    const p   = s.profiles.find((pr) => pr.id === id);
-    const d   = day ?? today();
-    return p?.notes[d] ?? '';
-  });
+export function useAnotacoesDoDia(day?: ISODate, profileId?: ID): NoteEntry[] {
+  return useSaudeStore(
+    useShallow((s) => {
+      const id = profileId ?? s.activeProfileId;
+      const p  = s.profiles.find((pr) => pr.id === id);
+      const d  = day ?? today();
+      return p?.notes[d] ?? (EMPTY_ARR as unknown as NoteEntry[]);
+    })
+  );
+}
+
+export function useTodasAnotacoes(profileId?: ID): { data: ISODate; entries: NoteEntry[] }[] {
+  return useSaudeStore(
+    useShallow((s) => {
+      const id = profileId ?? s.activeProfileId;
+      const p  = s.profiles.find((pr) => pr.id === id);
+      if (!p) return [];
+      return Object.entries(p.notes)
+        .filter(([, entries]) => entries.length > 0)
+        .sort(([a], [b]) => b.localeCompare(a))
+        .map(([data, entries]) => ({ data, entries }));
+    })
+  );
 }

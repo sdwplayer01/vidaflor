@@ -72,7 +72,6 @@ function ConcluirCompraSheet({ estimativa, onClose, onConfirm }: ConcluirSheetPr
         <Btn onClick={() => valido && onConfirm(parseBRL(valor))} disabled={!valido}>
           Lançar no orçamento
         </Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

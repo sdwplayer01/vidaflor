@@ -49,7 +49,6 @@ export function AddLeituraSheet({ isOpen, onClose }: Props) {
           placeholder="Versiculo(s) - opcional"
         />
         <Btn onClick={salvar} disabled={!form.livro.trim()}>Registrar leitura</Btn>
-        <Btn variant="ghost" onClick={fechar}>Cancelar</Btn>
       </div>
     </Sheet>
   );

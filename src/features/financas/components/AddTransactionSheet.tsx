@@ -204,7 +204,6 @@ function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: 
               ? `Criar ${form.parcelas}x`
               : 'Adicionar'}
         </Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

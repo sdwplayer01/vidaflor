@@ -45,7 +45,13 @@ export function calcAdesaoMedicamentos(
   profile: HealthProfile,
   day: ISODate
 ): { tomados: number; total: number; pct: number } {
-  const meds = profile.meds.filter((m) => m.active && m.schedule === 'diario');
+  const dow  = new Date(day + 'T00:00:00').getDay();
+  const meds = profile.meds.filter((m) =>
+    m.active && (
+      m.schedule === 'diario' ||
+      (m.schedule === 'semanal' && (m.weekdays ?? []).includes(dow))
+    )
+  );
   const total = meds.length;
   if (total === 0) return { tomados: 0, total: 0, pct: 100 };
   const tomados = meds.filter((m) => m.log[day] === true).length;

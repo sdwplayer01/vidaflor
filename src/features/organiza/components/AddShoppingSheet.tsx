@@ -103,7 +103,6 @@ function ShoppingItemForm({ editItem, onSubmit, onClose }: FormProps) {
         <Btn onClick={salvar} disabled={!valido}>
           {isEdit ? "Salvar" : "Adicionar"}
         </Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

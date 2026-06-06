@@ -96,7 +96,6 @@ export function AddPetSheet({ isOpen, onClose, petEditando }: Props) {
         <Btn onClick={salvar} disabled={!form.name.trim()}>
           {petEditando ? 'Salvar' : 'Adicionar'}
         </Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

@@ -64,7 +64,6 @@ export function AddTaskSheet({ isOpen, onClose }: Props) {
           ))}
         </div>
         <Btn onClick={salvar} disabled={!form.task.trim()}>Adicionar</Btn>
-        <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>
   );

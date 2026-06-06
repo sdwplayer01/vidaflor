@@ -1,7 +1,7 @@
 // src/features/saude/components/SleepStepsCard.tsx
 import { useState } from 'react';
 import { Moon, Dumbbell } from 'lucide-react';
-import { usePerfilAtivo } from '../selectors';
+import { usePerfilAtivo, EMPTY_ARR } from '../selectors';
 import { useSaudeStore } from '../store';
 import { today } from '@/shared/utils/date';
 
@@ -36,12 +36,11 @@ export function SleepStepsCard() {
   const sleepToday = perfil.sleepLog?.[day] ?? 0;
   const sleepPct   = Math.min(100, Math.round((sleepToday / 8) * 100));
 
-  const atividadeHoje = perfil.atividadeLog?.[day] ?? '';
-  const ativConcluida = atividadeHoje !== '';
+  const atividadeHoje = (perfil.atividadeLog?.[day] ?? EMPTY_ARR) as string[];
+  const ativConcluida = atividadeHoje.length > 0;
 
   const handleAtividade = (nome: string) => {
-    // toggle: clicar no mesmo chip desmarca
-    registrarAtividade(perfil.id, day, atividadeHoje === nome ? '' : nome);
+    registrarAtividade(perfil.id, day, nome);
   };
 
   const handleOutro = () => {
@@ -93,7 +92,11 @@ export function SleepStepsCard() {
           <Dumbbell size={17} color="var(--vf-ok)" />
           <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--vf-t)' }}>Atividade Física</span>
           <span style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--vf-tm)' }}>
-            {ativConcluida ? atividadeHoje : '—'}
+            {atividadeHoje.length === 0
+              ? '—'
+              : atividadeHoje.length <= 2
+              ? atividadeHoje.join(' · ')
+              : `${atividadeHoje.length} selecionadas`}
           </span>
         </div>
         <ProgressBar pct={ativConcluida ? 100 : 0} color="var(--vf-ok)" />
@@ -104,9 +107,9 @@ export function SleepStepsCard() {
               onClick={() => handleAtividade(a)}
               style={{
                 padding: '7px 12px', borderRadius: 10, fontSize: 12,
-                border: atividadeHoje === a ? 'none' : '1px solid var(--vf-bd)',
-                background: atividadeHoje === a ? 'var(--vf-ok)' : 'var(--vf-bg)',
-                color: atividadeHoje === a ? '#fff' : 'var(--vf-t)',
+                border: atividadeHoje.includes(a) ? 'none' : '1px solid var(--vf-bd)',
+                background: atividadeHoje.includes(a) ? 'var(--vf-ok)' : 'var(--vf-bg)',
+                color: atividadeHoje.includes(a) ? '#fff' : 'var(--vf-t)',
                 fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                 transition: 'all 0.2s',
               }}

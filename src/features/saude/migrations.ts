@@ -1,7 +1,7 @@
 // src/features/saude/migrations.ts
 import { PROFILE_COLOR_DEFAULT } from '@/shared/constants/colors';
 
-export const SAUDE_VERSION = 6;
+export const SAUDE_VERSION = 7;
 
 // ID est\u00E1vel para o perfil legado "eu" \u2014 gerado uma vez e reutilizado entre runs.
 const LEGACY_EU_STABLE_ID = 'prf_legacy_eu_default';
@@ -83,6 +83,43 @@ export function migrate(state: any, fromVersion: number): any {
       ...p,
       atividadeLog: p.atividadeLog ?? {},
     }));
+  }
+
+  // v6 -> v7: atividadeLog string->string[], notes string->NoteEntry[],
+  // weekdays default em meds semanais (preserva comportamento legado)
+  if (fromVersion < 7) {
+    s.profiles = (s.profiles || []).map((p: any) => {
+      const atividadeLog: Record<string, string[]> = {};
+      for (const [day, val] of Object.entries(p.atividadeLog ?? {})) {
+        if (Array.isArray(val)) {
+          atividadeLog[day] = val as string[];
+        } else if (typeof val === 'string' && val) {
+          atividadeLog[day] = [val];
+        }
+      }
+
+      const notes: Record<string, any[]> = {};
+      for (const [day, val] of Object.entries(p.notes ?? {})) {
+        if (Array.isArray(val)) {
+          notes[day] = val;
+        } else if (typeof val === 'string' && (val as string).trim()) {
+          notes[day] = [{
+            id: `note_${day}_${Math.random().toString(36).slice(2, 9)}`,
+            text: val,
+            createdAt: `${day}T00:00:00.000Z`,
+          }];
+        }
+      }
+
+      const meds = (p.meds ?? []).map((m: any) => ({
+        ...m,
+        weekdays: m.schedule === 'semanal'
+          ? (m.weekdays ?? [0, 1, 2, 3, 4, 5, 6])
+          : m.weekdays,
+      }));
+
+      return { ...p, atividadeLog, notes, meds };
+    });
   }
 
   return s;

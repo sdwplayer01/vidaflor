@@ -44,7 +44,6 @@ export function AddOracaoSheet({ isOpen, onClose }: Props) {
           placeholder="Qual o pedido?"
         />
         <Btn onClick={salvar} disabled={!valido}>Adicionar</Btn>
-        <Btn variant="ghost" onClick={fechar}>Cancelar</Btn>
       </div>
     </Sheet>
   );
