@@ -17,6 +17,18 @@ export const SECOES_MERCADO = [
 
 export type SecaoMercado = typeof SECOES_MERCADO[number];
 
+export const SUGESTOES_POR_SECAO: Record<string, readonly string[]> = {
+  "Hortifrúti":  ["Banana", "Batata", "Cebola", "Tomate", "Maçã", "Alface", "Cenoura", "Laranja", "Abacate", "Limão"],
+  "Açougue":     ["Carne Moída", "Frango", "Costela", "Coxão Mole", "Linguiça", "Contrafilé", "Coxinha da Asa", "Salsicha"],
+  "Mercearia":   ["Arroz", "Feijão", "Macarrão", "Óleo de Soja", "Açúcar", "Café", "Farinha de Trigo", "Molho de Tomate", "Sal", "Leite em Pó"],
+  "Laticínios":  ["Leite", "Queijo", "Iogurte", "Manteiga", "Requeijão", "Nata", "Ovos"],
+  "Limpeza":     ["Detergente", "Sabão em Pó", "Desinfetante", "Água Sanitária", "Esponja", "Amaciante", "Limpador Multiuso"],
+  "Higiene":     ["Shampoo", "Condicionador", "Sabonete", "Pasta de Dente", "Desodorante", "Papel Higiênico", "Absorvente"],
+  "Padaria":     ["Pão Francês", "Pão de Forma", "Bolo", "Rosca", "Biscoito"],
+  "Bebidas":     ["Água", "Suco", "Refrigerante", "Cerveja", "Vinho", "Café Solúvel", "Chá"],
+  "Outros":      [],
+};
+
 // --- SHOPPING ---
 export interface ShoppingItem {
   id:        ID;

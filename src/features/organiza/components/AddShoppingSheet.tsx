@@ -4,7 +4,7 @@ import { Sheet }  from "@/shared/ui/Sheet";
 import { FInput } from "@/shared/ui/FInput";
 import { Btn }    from "@/shared/ui/Btn";
 import { useOrganizaStore } from "../store";
-import { SECOES_MERCADO } from "../types";
+import { SECOES_MERCADO, SUGESTOES_POR_SECAO } from "../types";
 import { parseBRL, formatBRL } from "@/shared/utils/money";
 import type { ShoppingItem } from "../types";
 
@@ -32,6 +32,11 @@ function ShoppingItemForm({ editItem, onSubmit, onClose }: FormProps) {
   );
 
   const valido = name.trim().length > 0;
+
+  const sugestoesCategoria = SUGESTOES_POR_SECAO[secao] ?? [];
+  const sugestoesFiltradas = name.trim().length > 0
+    ? sugestoesCategoria.filter((s) => s.toLowerCase().includes(name.trim().toLowerCase()))
+    : sugestoesCategoria;
 
   const salvar = () => {
     if (!valido) return;
@@ -81,6 +86,39 @@ function ShoppingItemForm({ editItem, onSubmit, onClose }: FormProps) {
             ))}
           </div>
         </div>
+
+        {/* ── Sugestões rápidas / autocomplete ── */}
+        {sugestoesFiltradas.length > 0 && (
+          <div>
+            <p style={{
+              margin: "0 0 6px", fontSize: 11, fontWeight: 700,
+              color: "var(--vf-tx-mute)", textTransform: "uppercase", letterSpacing: "0.06em",
+            }}>
+              {name.trim().length > 0 ? "Sugestões" : "Itens comuns"}
+            </p>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {sugestoesFiltradas.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setName(s)}
+                  style={{
+                    padding: "4px 10px", borderRadius: 99, fontSize: 12,
+                    border: `1.5px solid ${name === s ? "var(--vf-ok)" : "var(--vf-bd)"}`,
+                    background: name === s
+                      ? "color-mix(in srgb, var(--vf-ok) 15%, transparent)"
+                      : "var(--vf-surf)",
+                    color: name === s ? "var(--vf-ok)" : "var(--vf-tx-soft)",
+                    fontWeight: name === s ? 700 : 400,
+                    cursor: "pointer", fontFamily: "inherit",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
