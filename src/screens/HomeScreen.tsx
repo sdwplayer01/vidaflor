@@ -17,7 +17,7 @@ import { useKidsCompletosHoje } from "@/features/kids/selectors";
 import { addDays }             from "@/shared/utils/date";
 import { useSaudeStore }        from "@/features/saude/store";
 import { useGratidoesDoDiaCount } from "@/features/espiritual/selectors";
-import { useSaldoDoMes }        from "@/features/financas/selectors";
+import { useSaldoDoMes, useOrcamentoMes } from "@/features/financas/selectors";
 import { today, greet }         from "@/shared/utils/date";
 import { formatBRL }            from "@/shared/utils/money";
 
@@ -52,7 +52,7 @@ function Ambient({ vitality }: { vitality: number }) {
 }
 
 // ── Screen header ────────────────────────────────────────────────────────
-function HomeHeader({ streak }: { streak: number }) {
+function HomeHeader({ streak, billCount }: { streak: number; billCount: number }) {
   const irPara = useNavStore((s) => s.irPara);
   const nome   = useConfigStore((s) => s.name ?? "");
   return (
@@ -92,6 +92,24 @@ function HomeHeader({ streak }: { streak: number }) {
             <span className="vf-mono" style={{ fontSize: 12, color: "var(--vf-coral)" }}>{streak}</span>
           </div>
         )}
+        {billCount > 0 && (
+          <div
+            onClick={() => irPara("financas" as TabKey)}
+            style={{
+              display:      "flex",
+              alignItems:   "center",
+              padding:      "5px 10px",
+              borderRadius: 99,
+              background:   "color-mix(in oklab, var(--vf-er) 15%, transparent)",
+              border:       "1px solid color-mix(in oklab, var(--vf-er) 25%, transparent)",
+              cursor:       "pointer",
+            }}
+          >
+            <span className="vf-mono" style={{ fontSize: 11, color: "var(--vf-er)", fontWeight: 700 }}>
+              ⚠️ {billCount}
+            </span>
+          </div>
+        )}
         <button
           onClick={() => irPara("config" as TabKey)}
           style={{
@@ -125,8 +143,8 @@ function WaterCard() {
   const dots      = Array.from({ length: metaCopos });
 
   const adicionar = (ml: number) => {
-    if (!profile) return;
-    toggleAgua(profile.id, d, Math.min(atual + ml, meta));
+    if (!profile || atual >= meta) return;
+    toggleAgua(profile.id, d, Math.min(ml, meta - atual));
   };
 
   return (
@@ -154,7 +172,11 @@ function WaterCard() {
         {dots.map((_, i) => (
           <div
             key={i}
-            onClick={() => profile && toggleAgua(profile.id, d, i < copos ? i * 250 : (i + 1) * 250)}
+            onClick={() => {
+              if (!profile) return;
+              const target = Math.min(i < copos ? i * 250 : (i + 1) * 250, meta);
+              toggleAgua(profile.id, d, target - atual);
+            }}
             style={{
               flex:         "1 0 auto",
               height:       32,
@@ -254,18 +276,13 @@ function MoodCard() {
 // ── Badges de alerta ─────────────────────────────────────────────────────────
 function AlertBadges() {
   const irPara  = useNavStore((s) => s.irPara);
-  const d       = today();
-  const amanha3 = addDays(d, 3);
 
   const medsPendentes  = useMedicamentosPendentesHoje();
-  const contasVencendo = useProximasContas(3).filter((t) => !t.paid && (t.due ?? "") <= amanha3);
   const kidsDone       = useKidsCompletosHoje();
 
   const badges: { key: string; label: string; color: string; tab: TabKey }[] = [];
   if (medsPendentes.some(({ meds }) => meds.length > 0))
     badges.push({ key: "med",  label: `💊 ${medsPendentes.reduce((n, p) => n + p.meds.length, 0)} med.`,  color: "var(--vf-wn)",  tab: "saude"    });
-  if (contasVencendo.length > 0)
-    badges.push({ key: "bill", label: `⚠️ ${contasVencendo.length} conta${contasVencendo.length > 1 ? "s" : ""}`, color: "var(--vf-er)",  tab: "financas" });
   if (kidsDone.length > 0)
     badges.push({ key: "kids", label: `🌱 ${kidsDone.length} kids 100%`, color: "var(--vf-ok)", tab: "dia" });
 
@@ -437,9 +454,12 @@ export function HomeScreen({ setTab: _setTab }: Props) {
   const agua     = useAguaDoDia();
   const gratCount = useGratidoesDoDiaCount();
 
-  const mes   = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const saldo = useSaldoDoMes(mes);
-  const streak = useRotinaStore((s) => Object.keys(s.done).length);
+  const mes      = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+  const saldo    = useSaldoDoMes(mes);
+  const orcamento = useOrcamentoMes(mes);
+  const streak   = useRotinaStore((s) => Object.keys(s.done).length);
+  const amanha3  = addDays(d, 3);
+  const billCount = useProximasContas(3).filter((t) => !t.paid && (t.due ?? "") <= amanha3).length;
 
   const areaCards: AreaCardProps[] = [
     {
@@ -464,10 +484,10 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  `${gratCount} gratidao${gratCount !== 1 ? "es" : ""}`,
     },
     {
-      tab:   "organiza",
+      tab:   "familia",
       label: "Conexao",
       icon:  <Users size={16} />,
-      pct:   60,
+      pct:   0,
       hint:  "vinculos ativos",
     },
     {
@@ -481,7 +501,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       tab:   "financas",
       label: "Financas",
       icon:  <Wallet size={16} />,
-      pct:   Math.max(0, Math.min(100, Math.round((saldo as any).pct ?? 60))),
+      pct:   orcamento.pct,
       hint:  formatBRL(saldo.saldo),
     },
   ];
@@ -489,7 +509,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
   return (
     <div style={{ padding: "0 0 8px", position: "relative", minHeight: "100vh" }}>
       <Ambient vitality={vitality} />
-      <HomeHeader streak={streak} />
+      <HomeHeader streak={streak} billCount={billCount} />
 
       {/* Hero: Flower + vitality label */}
       <div style={{ position: "relative", zIndex: 2, padding: "16px 20px 4px", textAlign: "center" }}>
@@ -553,7 +573,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       </div>
 
       {/* Next task whisper */}
-      <div style={{ position: "relative", zIndex: 2, padding: "0 20px" }}>
+      <div style={{ position: "relative", zIndex: 2, padding: "0 20px", marginBottom: 12 }}>
         <NextTaskCard />
       </div>
 
