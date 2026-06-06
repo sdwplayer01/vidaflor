@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Bell } from "lucide-react";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { ConfirmDel } from "@/shared/ui/ConfirmDel";
+import { Btn } from "@/shared/ui/Btn";
 import { useOrganizaStore } from "../store";
 import { useLembretesPendentes, useLembretesUrgentes } from "../selectors";
 import { AddReminderSheet } from "./AddReminderSheet";
@@ -23,7 +24,8 @@ export function RemindersTab() {
   if (pendentes.length === 0) {
     return (
       <>
-        <EmptyState icon={<Bell size={24} />} title="Nenhum lembrete" desc="Adicione lembretes para nao esquecer nada" />
+        <EmptyState icon={<Bell size={24} />} title="Nenhum lembrete" desc="Adicione lembretes para não esquecer nada" />
+        <Btn onClick={() => setSheetAdd(true)} style={{ marginTop: 12 }}>+ Adicionar lembrete</Btn>
         <AddReminderSheet isOpen={sheetAdd} onClose={() => setSheetAdd(false)} />
       </>
     );
@@ -31,6 +33,7 @@ export function RemindersTab() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <Btn onClick={() => setSheetAdd(true)} style={{ marginBottom: 4 }}>+ Adicionar lembrete</Btn>
       {urgentes.length > 0 && (
         <div style={{
           padding: "8px 12px", borderRadius: 10, marginBottom: 4,

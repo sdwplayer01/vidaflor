@@ -2,7 +2,7 @@
 // Contemplative home: ambient blobs, hero flower, water+mood quick-acts,
 // next-task whisper, 6 area cards.
 
-import { Settings, Flame, Check, Calendar, Heart, Sparkles, Users, Folder, Wallet } from "lucide-react";
+import { Settings, Flame, Check, Calendar, Heart, Users, Folder, Wallet } from "lucide-react";
 import type { TabKey } from "@/features/nav/store";
 import { useNavStore }          from "@/features/nav/store";
 import { useConfigStore }       from "@/features/config/store";
@@ -124,6 +124,11 @@ function WaterCard() {
   const metaCopos = Math.round(meta / 250);
   const dots      = Array.from({ length: metaCopos });
 
+  const adicionar = (ml: number) => {
+    if (!profile) return;
+    toggleAgua(profile.id, d, Math.min(atual + ml, meta));
+  };
+
   return (
     <div style={{
       background:   "var(--vf-glass)",
@@ -132,15 +137,18 @@ function WaterCard() {
       borderRadius: "var(--vf-r-xl)",
       padding:      16,
     }}>
-      <div className="vf-eyebrow" style={{ marginBottom: 8 }}>hidratacao</div>
-      <div style={{
-        fontFamily: "var(--vf-font-display)",
-        fontStyle:  "italic",
-        fontSize:   26,
-        lineHeight: 1,
-        color:      "var(--vf-tx)",
-      }}>
-        {copos}<span style={{ fontSize: 14, color: "var(--vf-tx-mute)", marginLeft: 3 }}>/ {metaCopos}</span>
+      <div className="vf-eyebrow" style={{ marginBottom: 8 }}>hidratação</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div style={{
+          fontFamily: "var(--vf-font-display)",
+          fontStyle:  "italic",
+          fontSize:   26,
+          lineHeight: 1,
+          color:      "var(--vf-tx)",
+        }}>
+          {copos}<span style={{ fontSize: 14, color: "var(--vf-tx-mute)", marginLeft: 3 }}>/ {metaCopos}</span>
+        </div>
+        <span style={{ fontSize: 11, color: "var(--vf-tx-mute)" }}>{atual}ml / {meta}ml</span>
       </div>
       <div style={{ display: "flex", gap: 5, marginTop: 12, flexWrap: "wrap" }}>
         {dots.map((_, i) => (
@@ -160,6 +168,24 @@ function WaterCard() {
               border:       "1px solid var(--vf-bd)",
             }}
           />
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+        {[200, 250].map((ml) => (
+          <button
+            key={ml}
+            onClick={() => adicionar(ml)}
+            disabled={atual >= meta}
+            style={{
+              flex: 1, padding: "5px 0", borderRadius: 8, fontSize: 11, fontWeight: 600,
+              background: "color-mix(in srgb, var(--vf-rose) 10%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--vf-rose) 30%, transparent)",
+              color: "var(--vf-rose)", cursor: atual >= meta ? "default" : "pointer",
+              opacity: atual >= meta ? 0.4 : 1,
+            }}
+          >
+            +{ml}ml
+          </button>
         ))}
       </div>
     </div>
@@ -433,7 +459,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
     {
       tab:   "espiritual",
       label: "Espirito",
-      icon:  <Sparkles size={16} />,
+      icon:  <Flame size={16} />,
       pct:   Math.round(bloom.spiritPct),
       hint:  `${gratCount} gratidao${gratCount !== 1 ? "es" : ""}`,
     },

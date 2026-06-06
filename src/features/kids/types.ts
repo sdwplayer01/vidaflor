@@ -28,6 +28,7 @@ export interface KidsState {
 
 export interface KidsActions {
   adicionarCrianca:   (crianca: Omit<Crianca, 'id' | 'tasks' | 'createdAt'>) => void;
+  editarCrianca:      (id: ID, dados: Partial<Pick<Crianca, 'name' | 'avatar' | 'age' | 'color'>>) => void;
   removerCrianca:     (id: ID) => void;
   trocarCriancaAtiva: (id: ID) => void;
   adicionarTarefaKid: (kidId: ID, task: string, emoji: Emoji, time?: string) => void;

@@ -1,13 +1,18 @@
 // src/features/kids/components/KidSwitcher.tsx
+import { Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { useKidsStore } from '../store';
 
-export function KidSwitcher() {
+interface Props {
+  onAdd?: () => void;
+}
+
+export function KidSwitcher({ onAdd }: Props) {
   const criancas    = useKidsStore(useShallow((s) => s.criancas));
   const activeKidId = useKidsStore((s) => s.activeKidId);
   const trocar      = useKidsStore((s) => s.trocarCriancaAtiva);
 
-  if (criancas.length <= 1) return null;
+  if (criancas.length === 0 && !onAdd) return null;
 
   return (
     <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, marginBottom: 12 }}>
@@ -35,6 +40,20 @@ export function KidSwitcher() {
           </button>
         );
       })}
+      {onAdd && (
+        <button
+          onClick={onAdd}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', gap: 4, padding: '8px 12px', borderRadius: 14, flexShrink: 0,
+            border: '2px dashed var(--vf-bd)', background: 'transparent',
+            color: 'var(--vf-tm)', cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={18} />
+          <span style={{ fontSize: 11 }}>novo</span>
+        </button>
+      )}
     </div>
   );
 }

@@ -24,6 +24,11 @@ export const usePetsStore = create<Store>()(
         }));
       },
 
+      editarPet: (id: ID, dados) =>
+        set((s) => ({
+          pets: s.pets.map((p) => (p.id === id ? { ...p, ...dados } : p)),
+        })),
+
       removerPet: (id: ID) =>
         set((s) => {
           const filtered = s.pets.filter((p) => p.id !== id);

@@ -12,6 +12,7 @@ import {
   useShoppingComprados,
   useComprasPorSecao,
   useEstimativaLista,
+  useCarrinhoTotal,
 } from "../selectors";
 import { useOrcamentoCategoria } from "@/features/financas/selectors";
 import { useFinancasStore }      from "@/features/financas/store";
@@ -79,9 +80,10 @@ function ConcluirCompraSheet({ estimativa, onClose, onConfirm }: ConcluirSheetPr
 
 // ── Tab principal ─────────────────────────────────────────────────────────────
 export function ShoppingTab() {
-  const secoes    = useComprasPorSecao();
-  const comprados = useShoppingComprados();
-  const estimativa = useEstimativaLista();
+  const secoes      = useComprasPorSecao();
+  const comprados   = useShoppingComprados();
+  const estimativa  = useEstimativaLista();
+  const noCarrinho  = useCarrinhoTotal();
 
   const marcarItemComprado    = useOrganizaStore((s) => s.marcarItemComprado);
   const desmarcarItemComprado = useOrganizaStore((s) => s.desmarcarItemComprado);
@@ -151,6 +153,13 @@ export function ShoppingTab() {
               {estimativa > 0 ? `~ R$ ${formatBRL(estimativa)}` : "sem estimativa"}
             </span>
           </div>
+          {noCarrinho > 0 && (
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
+              <span style={{ fontSize: 11, color: "var(--vf-ok)", fontVariantNumeric: "tabular-nums" }}>
+                no carrinho: R$ {formatBRL(noCarrinho)}
+              </span>
+            </div>
+          )}
           <EnvelopeMercadoBar />
           <Btn
             onClick={() => setConcluirOpen(true)}

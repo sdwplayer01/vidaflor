@@ -4,7 +4,7 @@ import { persistVidaFlor } from '@/shared/storage/persist-middleware';
 import { STORAGE_KEYS } from '@/shared/storage/keys';
 import { applyTheme, resolveTheme } from '@/shared/constants/themes';
 import type { ThemeKey } from '@/shared/types/theme';
-import type { AppConfig, DashConfig } from './types';
+import type { AppConfig, DashConfig, Parceiro } from './types';
 import { CONFIG_STORE_VERSION, migrateConfigState } from './migrations';
 
 interface ConfigState extends AppConfig {
@@ -13,10 +13,11 @@ interface ConfigState extends AppConfig {
 }
 
 interface ConfigActions {
-  setTheme:   (key: ThemeKey) => void;
-  setName:    (name: string) => void;
-  toggleDash: (key: keyof DashConfig) => void;
-  setDash:    (dash: Partial<DashConfig>) => void;
+  setTheme:    (key: ThemeKey) => void;
+  setName:     (name: string) => void;
+  toggleDash:  (key: keyof DashConfig) => void;
+  setDash:     (dash: Partial<DashConfig>) => void;
+  setParceiro: (p: Parceiro | undefined) => void;
 }
 
 const defaultDash: DashConfig = {
@@ -58,6 +59,8 @@ export const useConfigStore = create<ConfigState & ConfigActions>()(
         set((state) => ({
           dash: { ...state.dash, ...partial },
         })),
+
+      setParceiro: (p) => set({ parceiro: p }),
     }),
     {
       name:    STORAGE_KEYS.config,

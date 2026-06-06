@@ -1,16 +1,18 @@
 // src/screens/FamiliaScreen.tsx
 import { useState } from "react";
-import { Home, Baby, Heart } from "lucide-react";
-import { CasaView } from "@/features/casa/CasaView";
-import { KidsView } from "@/features/kids/KidsView";
-import { PetsView } from "@/features/pets/PetsView";
+import { Home, Baby, Heart, Users } from "lucide-react";
+import { CasaView }    from "@/features/casa/CasaView";
+import { KidsView }    from "@/features/kids/KidsView";
+import { PetsView }    from "@/features/pets/PetsView";
+import { ConjugeView } from "./ConjugeView";
 
-type FamiliaTab = "casa" | "kids" | "pets";
+type FamiliaTab = "casa" | "conjuge" | "kids" | "pets";
 
 const TABS: { key: FamiliaTab; label: string; icon: React.ReactNode }[] = [
-  { key: "casa",  label: "Casa",   icon: <Home  size={15} strokeWidth={1.8} /> },
-  { key: "kids",  label: "Filhos", icon: <Baby  size={15} strokeWidth={1.8} /> },
-  { key: "pets",  label: "Pets",   icon: <Heart size={15} strokeWidth={1.8} /> },
+  { key: "casa",    label: "Casa",    icon: <Home   size={15} strokeWidth={1.8} /> },
+  { key: "conjuge", label: "Cônjuge", icon: <Users  size={15} strokeWidth={1.8} /> },
+  { key: "kids",    label: "Filhos",  icon: <Baby   size={15} strokeWidth={1.8} /> },
+  { key: "pets",    label: "Pets",    icon: <Heart  size={15} strokeWidth={1.8} /> },
 ];
 
 export function FamiliaScreen() {
@@ -60,9 +62,10 @@ export function FamiliaScreen() {
       </div>
 
       <div style={{ padding: "0 20px" }}>
-        {active === "casa"  && <CasaView />}
-        {active === "kids"  && <KidsView />}
-        {active === "pets"  && <PetsView />}
+        {active === "casa"    && <CasaView />}
+        {active === "conjuge" && <ConjugeView />}
+        {active === "kids"    && <KidsView />}
+        {active === "pets"    && <PetsView />}
       </div>
     </div>
   );

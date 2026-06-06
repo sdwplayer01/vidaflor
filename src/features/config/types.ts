@@ -15,8 +15,14 @@ export interface DashConfig {
   pets:      boolean;
 }
 
+export interface Parceiro {
+  name:   string;
+  avatar: string;
+}
+
 export interface AppConfig {
-  theme: ThemeKey;
-  name:  string;
-  dash:  DashConfig;
+  theme:     ThemeKey;
+  name:      string;
+  dash:      DashConfig;
+  parceiro?: Parceiro;
 }

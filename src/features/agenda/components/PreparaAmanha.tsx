@@ -1,9 +1,9 @@
 // src/features/agenda/components/PreparaAmanha.tsx
-// 4d: card "Preparar o amanhã" com checklist + link para o dia seguinte
 import { useState } from 'react';
-import { Moon } from 'lucide-react';
-import { Sheet } from '@/shared/ui/Sheet';
-import { Btn }   from '@/shared/ui/Btn';
+import { Moon, Pencil, X, Check, Plus } from 'lucide-react';
+import { Sheet }  from '@/shared/ui/Sheet';
+import { Btn }    from '@/shared/ui/Btn';
+import { FInput } from '@/shared/ui/FInput';
 import { addDays, today, formatBR } from '@/shared/utils/date';
 import type { ISODate } from '@/shared/types/common';
 
@@ -11,18 +11,24 @@ interface Props {
   onVerAmanha: (date: ISODate) => void;
 }
 
-const CHECKLIST = [
-  { id: 'mochila',     label: 'Mochila preparada' },
-  { id: 'roupas',      label: 'Roupas separadas' },
-  { id: 'lanche',      label: 'Lanche preparado' },
-  { id: 'compromissos',label: 'Compromissos de amanhã revisados' },
+interface Item { id: string; label: string; }
+
+const CHECKLIST_INICIAL: Item[] = [
+  { id: 'mochila',      label: 'Mochila preparada' },
+  { id: 'roupas',       label: 'Roupas separadas' },
+  { id: 'lanche',       label: 'Lanche preparado' },
+  { id: 'compromissos', label: 'Compromissos de amanhã revisados' },
 ];
 
 export function PreparaAmanha({ onVerAmanha }: Props) {
-  const [open,    setOpen]    = useState(false);
-  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [open,      setOpen]      = useState(false);
+  const [editando,  setEditando]  = useState(false);
+  const [checked,   setChecked]   = useState<Set<string>>(new Set());
+  const [itens,     setItens]     = useState<Item[]>(CHECKLIST_INICIAL);
+  const [novoItem,  setNovoItem]  = useState('');
 
   const amanha = addDays(today(), 1);
+
   const toggle = (id: string) =>
     setChecked((prev) => {
       const next = new Set(prev);
@@ -30,8 +36,21 @@ export function PreparaAmanha({ onVerAmanha }: Props) {
       return next;
     });
 
+  const removerItem = (id: string) => {
+    setItens((prev) => prev.filter((i) => i.id !== id));
+    setChecked((prev) => { const next = new Set(prev); next.delete(id); return next; });
+  };
+
+  const adicionarItem = () => {
+    const label = novoItem.trim();
+    if (!label) return;
+    const id = `custom_${Date.now()}`;
+    setItens((prev) => [...prev, { id, label }]);
+    setNovoItem('');
+  };
+
   const feitos = checked.size;
-  const total  = CHECKLIST.length;
+  const total  = itens.length;
 
   return (
     <>
@@ -66,15 +85,47 @@ export function PreparaAmanha({ onVerAmanha }: Props) {
       </button>
 
       {open && (
-        <Sheet title="Preparar o amanhã" onClose={() => setOpen(false)}>
+        <Sheet title="Preparar o amanhã" onClose={() => { setOpen(false); setEditando(false); }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <p style={{ margin: 0, fontSize: 12, color: 'var(--vf-tx-mute)' }}>
-              {formatBR(amanha)} — verifique antes de dormir
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <p style={{ margin: 0, fontSize: 12, color: 'var(--vf-tx-mute)' }}>
+                {formatBR(amanha)} — verifique antes de dormir
+              </p>
+              <button
+                onClick={() => setEditando((e) => !e)}
+                style={{
+                  background: editando ? 'var(--vf-rose)' : 'none',
+                  border: editando ? 'none' : '1px solid var(--vf-bd)',
+                  borderRadius: 8, cursor: 'pointer', padding: '4px 8px',
+                  color: editando ? '#fff' : 'var(--vf-tx-mute)',
+                  display: 'flex', alignItems: 'center', gap: 4, fontSize: 11,
+                }}
+              >
+                <Pencil size={12} /> {editando ? 'Concluir' : 'Editar'}
+              </button>
+            </div>
 
-            {CHECKLIST.map(({ id, label }) => {
+            {itens.map(({ id, label }) => {
               const done = checked.has(id);
-              return (
+              return editando ? (
+                <div key={id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 12px', borderRadius: 12,
+                  background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
+                }}>
+                  <span style={{ flex: 1, fontSize: 14, color: 'var(--vf-tx)' }}>{label}</span>
+                  <button
+                    onClick={() => removerItem(id)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--vf-er)', padding: 2, display: 'flex', alignItems: 'center',
+                    }}
+                    aria-label="Remover item"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
                 <button
                   key={id}
                   onClick={() => toggle(id)}
@@ -94,11 +145,7 @@ export function PreparaAmanha({ onVerAmanha }: Props) {
                     border: done ? 'none' : '2px solid var(--vf-bd)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {done && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
+                    {done && <Check size={12} color="#fff" strokeWidth={2.5} />}
                   </div>
                   <span style={{
                     fontSize: 14, fontWeight: 600,
@@ -109,13 +156,43 @@ export function PreparaAmanha({ onVerAmanha }: Props) {
               );
             })}
 
-            <Btn
-              onClick={() => { setOpen(false); onVerAmanha(amanha); }}
-              style={{ marginTop: 4 }}
-            >
-              Ver agenda de amanhã
-            </Btn>
-            <Btn variant="ghost" onClick={() => setOpen(false)}>Fechar</Btn>
+            {editando && (
+              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                <div style={{ flex: 1 }}>
+                  <FInput
+                    value={novoItem}
+                    onChange={setNovoItem}
+                    placeholder="Novo item..."
+                  />
+                </div>
+                <button
+                  onClick={adicionarItem}
+                  disabled={!novoItem.trim()}
+                  style={{
+                    padding: '0 14px', borderRadius: 10, flexShrink: 0,
+                    background: novoItem.trim() ? 'var(--vf-rose)' : 'var(--vf-bd)',
+                    border: 'none', color: '#fff',
+                    cursor: novoItem.trim() ? 'pointer' : 'default',
+                    display: 'flex', alignItems: 'center',
+                  }}
+                  aria-label="Adicionar item"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            )}
+
+            {!editando && (
+              <>
+                <Btn
+                  onClick={() => { setOpen(false); setEditando(false); onVerAmanha(amanha); }}
+                  style={{ marginTop: 4 }}
+                >
+                  Ver agenda de amanhã
+                </Btn>
+                <Btn variant="ghost" onClick={() => { setOpen(false); setEditando(false); }}>Fechar</Btn>
+              </>
+            )}
           </div>
         </Sheet>
       )}

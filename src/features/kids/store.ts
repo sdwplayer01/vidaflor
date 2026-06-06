@@ -29,6 +29,11 @@ export const useKidsStore = create<Store>()(
         }));
       },
 
+      editarCrianca: (id: ID, dados) =>
+        set((s) => ({
+          criancas: s.criancas.map((k) => (k.id === id ? { ...k, ...dados } : k)),
+        })),
+
       removerCrianca: (id: ID) =>
         set((s) => {
           const filtered = s.criancas.filter((k) => k.id !== id);

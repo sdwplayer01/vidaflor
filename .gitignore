@@ -5,6 +5,7 @@ artefacts/supabase-url e anonkay.md
 # Dependências e build
 node_modules
 ruvector.db
+/ruvector.db
 .claude/
 dist
 .env

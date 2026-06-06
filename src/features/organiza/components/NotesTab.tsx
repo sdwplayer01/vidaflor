@@ -3,6 +3,7 @@ import { useState } from "react";
 import { StickyNote } from "lucide-react";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { ConfirmDel } from "@/shared/ui/ConfirmDel";
+import { Btn } from "@/shared/ui/Btn";
 import { useOrganizaStore } from "../store";
 import { useNotasOrdenadas } from "../selectors";
 import { AddNoteSheet } from "./AddNoteSheet";
@@ -24,6 +25,7 @@ export function NotesTab() {
     return (
       <>
         <EmptyState icon={<StickyNote size={24} />} title="Nenhuma nota" desc="Anote o que precisar" />
+        <Btn onClick={() => setSheetAdd(true)} style={{ marginTop: 12 }}>+ Adicionar nota</Btn>
         <AddNoteSheet isOpen={sheetAdd} onClose={() => setSheetAdd(false)} />
       </>
     );
@@ -31,6 +33,7 @@ export function NotesTab() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <Btn onClick={() => setSheetAdd(true)} style={{ marginBottom: 4 }}>+ Adicionar nota</Btn>
       {notas.map((n) => (
         <NoteCard
           key={n.id}

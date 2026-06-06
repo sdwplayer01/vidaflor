@@ -1,7 +1,7 @@
 // src/features/config/migrations.ts
 import { AppConfig } from "./types";
 
-export const CONFIG_STORE_VERSION = 2;
+export const CONFIG_STORE_VERSION = 3;
 
 /** Maps legacy theme keys to the new Aurora/Crepusculo system */
 const THEME_MAP: Record<string, string> = {
@@ -37,6 +37,10 @@ export function migrateConfigState(persistedState: any, version: number): any {
 
   if (version < 2) {
     state.theme = THEME_MAP[state.theme ?? ""] ?? "aurora";
+  }
+
+  if (version < 3) {
+    // parceiro é opcional — sem transformação necessária
   }
 
   return state;

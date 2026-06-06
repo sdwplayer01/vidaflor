@@ -1,6 +1,6 @@
 // src/features/pets/PetsView.tsx
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Pencil } from 'lucide-react';
 import { PetSwitcher }      from './components/PetSwitcher';
 import { CuidadoPetItem }   from './components/CuidadoPetItem';
 import { AddPetSheet }      from './components/AddPetSheet';
@@ -9,17 +9,21 @@ import { useShallow }       from 'zustand/react/shallow';
 import { usePetAtivo }      from './selectors';
 import { usePetsStore }     from './store';
 import { today }            from '@/shared/utils/date';
+import type { Pet } from './types';
 
-// Fallback estavel — evita novo {} quando nao ha cuidados feitos no dia
 const EMPTY_DONE: Record<string, number> = {};
 
 export function PetsView() {
-  const [addPetOpen, setAddPetOpen] = useState(false);
+  const [addPetOpen,  setAddPetOpen]  = useState(false);
+  const [petEditando, setPetEditando] = useState<Pet | undefined>(undefined);
   const pet      = usePetAtivo();
   const doneDay  = usePetsStore(useShallow((s) => s.done[today()] ?? EMPTY_DONE));
   const registrar= usePetsStore((s) => s.registrarFeito);
   const desfazer = usePetsStore((s) => s.desfazerFeito);
   const day      = today();
+
+  const abrirAdicionarPet = () => { setPetEditando(undefined); setAddPetOpen(true); };
+  const abrirEditarPet    = (p: Pet) => { setPetEditando(p); setAddPetOpen(true); };
 
   if (!pet) {
     return (
@@ -30,7 +34,7 @@ export function PetsView() {
           desc="Adicione seu companheiro de quatro patas"
         />
         <button
-          onClick={() => setAddPetOpen(true)}
+          onClick={abrirAdicionarPet}
           style={{
             marginTop: 16, display: 'flex', alignItems: 'center',
             justifyContent: 'center', gap: 8, width: '100%',
@@ -41,14 +45,14 @@ export function PetsView() {
         >
           <Plus size={18} /> Adicionar pet
         </button>
-        <AddPetSheet isOpen={addPetOpen} onClose={() => setAddPetOpen(false)} />
+        <AddPetSheet isOpen={addPetOpen} onClose={() => setAddPetOpen(false)} petEditando={petEditando} />
       </>
     );
   }
 
   return (
     <div>
-      <PetSwitcher />
+      <PetSwitcher onAdd={abrirAdicionarPet} />
 
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
@@ -56,17 +60,28 @@ export function PetsView() {
         background: 'var(--vf-s2)', borderRadius: 16, border: '1px solid var(--vf-bd)',
       }}>
         <span style={{ fontSize: 36 }}>{pet.avatar}</span>
-        <div>
+        <div style={{ flex: 1 }}>
           <p style={{ margin: 0, fontWeight: 700, fontSize: 16, color: 'var(--vf-t)' }}>{pet.name}</p>
           {pet.raca && <p style={{ margin: 0, fontSize: 12, color: 'var(--vf-tm)' }}>{pet.raca}</p>}
         </div>
+        <button
+          onClick={() => abrirEditarPet(pet)}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--vf-tm)', padding: 6, borderRadius: 8,
+            display: 'flex', alignItems: 'center',
+          }}
+          aria-label="Editar pet"
+        >
+          <Pencil size={15} />
+        </button>
       </div>
 
       {pet.cuidados.length === 0 ? (
         <EmptyState
           icon={<span style={{ fontSize: 24 }}>🐾</span>}
           title="Sem cuidados cadastrados"
-          desc="Adicione alimentacao, agua, passeio..."
+          desc="Adicione alimentação, água, passeio..."
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -82,7 +97,7 @@ export function PetsView() {
         </div>
       )}
 
-      <AddPetSheet isOpen={addPetOpen} onClose={() => setAddPetOpen(false)} />
+      <AddPetSheet isOpen={addPetOpen} onClose={() => { setAddPetOpen(false); setPetEditando(undefined); }} petEditando={petEditando} />
     </div>
   );
 }

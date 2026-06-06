@@ -42,7 +42,7 @@ function ChipBtn({
 
 export function AddTarefaDiaSheet({ isOpen, onClose, date }: Props) {
   const adicionarAgenda = useAgendaStore((s) => s.adicionarTarefa);
-  const { adicionarTarefaRotina: adicionarRotina, criancas } = useNovaTarefaData();
+  const { adicionarTarefaRotina: adicionarRotina, criancas, parceiro } = useNovaTarefaData();
 
   const [title,    setTitle]    = useState('');
   const [turno,    setTurno]    = useState<Turno>('manha');
@@ -100,6 +100,11 @@ export function AddTarefaDiaSheet({ isOpen, onClose, date }: Props) {
             <ChipBtn active={assignee === 'voce'} onClick={() => setAssignee('voce')}>
               🌸 Você
             </ChipBtn>
+            {parceiro && (
+              <ChipBtn active={assignee === 'conjuge'} onClick={() => setAssignee('conjuge')}>
+                {parceiro.avatar} {parceiro.name}
+              </ChipBtn>
+            )}
             {criancas.map((c) => (
               <ChipBtn key={c.id} active={assignee === c.id} onClick={() => setAssignee(c.id)}>
                 {c.avatar} {c.name}

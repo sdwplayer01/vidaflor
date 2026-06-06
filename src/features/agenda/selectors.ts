@@ -1,12 +1,13 @@
 // src/features/agenda/selectors.ts
 import { useMemo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { useRotinaStore } from '@/features/rotina/store';
-import { useCasaStore }   from '@/features/casa/store';
-import { useKidsStore }   from '@/features/kids/store';
-import { usePetsStore }   from '@/features/pets/store';
+import { useRotinaStore }  from '@/features/rotina/store';
+import { useCasaStore }    from '@/features/casa/store';
+import { useKidsStore }    from '@/features/kids/store';
+import { usePetsStore }    from '@/features/pets/store';
 import { useOrganizaStore } from '@/features/organiza/store';
-import { useAgendaStore }   from './store';
+import { useConfigStore }  from '@/features/config/store';
+import { useAgendaStore }  from './store';
 import { tarefaAtivaNoDia } from '@/features/casa/utils';
 import type { ISODate } from '@/shared/types/common';
 import type { DiaItem, DiaSource, Turno } from './types';
@@ -214,16 +215,27 @@ export function useDiaActions(date: ISODate): (item: DiaItem) => void {
   }, [date, toggleRotina, toggleCasa, toggleKid, registrarPet, desfazerPet, toggleReminder, toggleAgenda]);
 }
 
+// useTarefasDelegadas — tarefas de agendaStore atribuídas a um membro específico numa data
+export function useTarefasDelegadas(assigneeId: string, date: ISODate) {
+  return useAgendaStore(
+    useShallow((s) =>
+      s.tarefas.filter((t) => t.assignee === assigneeId && t.date === date)
+    )
+  );
+}
+
 // useCapturaRouter — dados cross-feature para CapturaRapida
 export function useCapturaRouter() {
   const adicionarItemCompra = useOrganizaStore((s) => s.adicionarItemCompra);
-  const criancas = useKidsStore(useShallow((s) => s.criancas));
-  return { adicionarItemCompra, criancas };
+  const criancas  = useKidsStore(useShallow((s) => s.criancas));
+  const parceiro  = useConfigStore((s) => s.parceiro);
+  return { adicionarItemCompra, criancas, parceiro };
 }
 
 // useNovaTarefaData — dados cross-feature para AddTarefaDiaSheet
 export function useNovaTarefaData() {
   const adicionarTarefaRotina = useRotinaStore((s) => s.adicionarTarefa);
   const criancas = useKidsStore(useShallow((s) => s.criancas));
-  return { adicionarTarefaRotina, criancas };
+  const parceiro = useConfigStore((s) => s.parceiro);
+  return { adicionarTarefaRotina, criancas, parceiro };
 }

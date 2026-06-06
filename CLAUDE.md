@@ -59,10 +59,12 @@ Sem backend. Sem autenticação. Sem multi-tenancy. Todo estado persiste em `win
 
 ## Comandos
 
+> O projeto agora usa **pnpm** e **npx** (não npm) para os comandos.
+
 ```bash
-npm run dev       # Vite dev server
-npm run build     # build de produção
-npm run preview   # preview do build
+pnpm run dev       # Vite dev server
+pnpm run build     # build de produção
+pnpm run preview   # preview do build
 ```
 
 TypeScript check: `npx tsc --noEmit`

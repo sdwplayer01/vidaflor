@@ -1,5 +1,5 @@
 // src/shared/layout/BottomNav.tsx -- v2
-import { CalendarDays, Heart, Sparkles, Users, Wallet, Settings, Home } from "lucide-react";
+import { CalendarDays, Heart, Flame, Users, Wallet, Home } from "lucide-react";
 import { useNavStore, type TabKey } from "@/features/nav/store";
 import { FlowerMark }               from "@/features/bloom/components/BloomFlower";
 import { useVitality }              from "@/features/bloom/selectors";
@@ -24,11 +24,10 @@ export function BottomNav() {
     },
     { k: "dia",       label: "dia",      icon: <CalendarDays size={20} strokeWidth={1.6} /> },
     { k: "saude",     label: "saude",    icon: <Heart        size={20} strokeWidth={1.6} /> },
-    { k: "espiritual",label: "espirito", icon: <Sparkles     size={20} strokeWidth={1.6} /> },
+    { k: "espiritual",label: "espírito", icon: <Flame        size={20} strokeWidth={1.6} /> },
     { k: "organiza",  label: "listas",   icon: <Users        size={20} strokeWidth={1.6} /> },
-    { k: "financas",  label: "financas", icon: <Wallet       size={20} strokeWidth={1.6} /> },
-    { k: "familia",   label: "familia",  icon: <Home         size={20} strokeWidth={1.6} /> },
-    { k: "config",    label: "config",   icon: <Settings     size={20} strokeWidth={1.6} /> },
+    { k: "financas",  label: "finanças", icon: <Wallet       size={20} strokeWidth={1.6} /> },
+    { k: "familia",   label: "família",  icon: <Home         size={20} strokeWidth={1.6} /> },
   ];
 
   return (

@@ -1,13 +1,18 @@
 // src/features/pets/components/PetSwitcher.tsx
+import { Plus } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { usePetsStore } from '../store';
 
-export function PetSwitcher() {
-  const pets      = usePetsStore(useShallow((s) => s.pets));
-  const activeId  = usePetsStore((s) => s.activePetId);
-  const trocar    = usePetsStore((s) => s.trocarPetAtivo);
+interface Props {
+  onAdd?: () => void;
+}
 
-  if (pets.length <= 1) return null;
+export function PetSwitcher({ onAdd }: Props) {
+  const pets     = usePetsStore(useShallow((s) => s.pets));
+  const activeId = usePetsStore((s) => s.activePetId);
+  const trocar   = usePetsStore((s) => s.trocarPetAtivo);
+
+  if (pets.length === 0 && !onAdd) return null;
 
   return (
     <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, marginBottom: 12 }}>
@@ -32,6 +37,20 @@ export function PetSwitcher() {
           </button>
         );
       })}
+      {onAdd && (
+        <button
+          onClick={onAdd}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', gap: 4, padding: '8px 12px', borderRadius: 14, flexShrink: 0,
+            border: '2px dashed var(--vf-bd)', background: 'transparent',
+            color: 'var(--vf-tm)', cursor: 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={18} />
+          <span style={{ fontSize: 11 }}>novo</span>
+        </button>
+      )}
     </div>
   );
 }

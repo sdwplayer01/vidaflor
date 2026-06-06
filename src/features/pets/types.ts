@@ -42,6 +42,7 @@ export interface PetsState {
 
 export interface PetsActions {
   adicionarPet:     (pet: Omit<Pet, 'id' | 'cuidados' | 'createdAt'>) => void;
+  editarPet:        (id: ID, dados: Partial<Pick<Pet, 'name' | 'avatar' | 'especie' | 'raca' | 'color'>>) => void;
   removerPet:       (id: ID) => void;
   trocarPetAtivo:   (id: ID) => void;
   adicionarCuidado: (petId: ID, cuidado: Omit<CuidadoPet, 'id'>) => void;

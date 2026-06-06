@@ -50,7 +50,7 @@ function CapturaRouter({ capturaId, text, date, onDone }: RouterProps) {
 
   const removerCaptura  = useAgendaStore((s) => s.removerCaptura);
   const adicionarTarefa = useAgendaStore((s) => s.adicionarTarefa);
-  const { adicionarItemCompra: adicionarCompra, criancas } = useCapturaRouter();
+  const { adicionarItemCompra: adicionarCompra, criancas, parceiro } = useCapturaRouter();
 
   const irCompra = () => {
     adicionarCompra({ name: text, category: "Mercearia" });
@@ -83,6 +83,11 @@ function CapturaRouter({ capturaId, text, date, onDone }: RouterProps) {
           {/* Responsável */}
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             <MiniChip active={assignee === 'voce'} onClick={() => setAssignee('voce')}>🌸 Você</MiniChip>
+            {parceiro && (
+              <MiniChip active={assignee === 'conjuge'} onClick={() => setAssignee('conjuge')}>
+                {parceiro.avatar} {parceiro.name}
+              </MiniChip>
+            )}
             {criancas.map((c) => (
               <MiniChip key={c.id} active={assignee === c.id} onClick={() => setAssignee(c.id)}>
                 {c.avatar} {c.name}
@@ -97,25 +102,30 @@ function CapturaRouter({ capturaId, text, date, onDone }: RouterProps) {
           onClick={irTarefa}
           style={{
             flex: 1, padding: '7px 0', borderRadius: 8, fontSize: 12, fontWeight: 600,
-            background: 'color-mix(in srgb, var(--vf-rose) 12%, transparent)',
-            border: '1px solid var(--vf-rose)', color: 'var(--vf-rose)',
+            background: modo === 'tarefa'
+              ? 'var(--vf-rose)'
+              : 'color-mix(in srgb, var(--vf-rose) 12%, transparent)',
+            border: '1px solid var(--vf-rose)',
+            color: modo === 'tarefa' ? '#fff' : 'var(--vf-rose)',
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
           }}
         >
           <CheckSquare size={13} />
           {modo === 'router' ? '→ Tarefa' : 'Confirmar'}
         </button>
-        <button
-          onClick={irCompra}
-          style={{
-            flex: 1, padding: '7px 0', borderRadius: 8, fontSize: 12, fontWeight: 600,
-            background: 'color-mix(in srgb, var(--vf-source-casa) 12%, transparent)',
-            border: '1px solid var(--vf-source-casa)', color: 'var(--vf-source-casa)',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-          }}
-        >
-          <ShoppingCart size={13} />→ Compra
-        </button>
+        {assignee === 'voce' && (
+          <button
+            onClick={irCompra}
+            style={{
+              flex: 1, padding: '7px 0', borderRadius: 8, fontSize: 12, fontWeight: 600,
+              background: 'color-mix(in srgb, var(--vf-source-casa) 12%, transparent)',
+              border: '1px solid var(--vf-source-casa)', color: 'var(--vf-source-casa)',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+            }}
+          >
+            <ShoppingCart size={13} />→ Compra
+          </button>
+        )}
       </div>
     </div>
   );
