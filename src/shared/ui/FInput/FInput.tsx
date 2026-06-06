@@ -1,5 +1,5 @@
 import styles from "./FInput.module.css";
-import type { CSSProperties } from "react";
+import React, { type CSSProperties } from "react";
 
 interface FInputProps {
   id?: string;
@@ -8,6 +8,7 @@ interface FInputProps {
   onChange: (val: string) => void;
   placeholder?: string;
   type?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
   error?: string;
   disabled?: boolean;
   className?: string;
@@ -21,6 +22,7 @@ export function FInput({
   onChange,
   placeholder,
   type = "text",
+  inputMode,
   error,
   disabled = false,
   className = "",
@@ -36,6 +38,7 @@ export function FInput({
       <input
         id={id}
         type={type}
+        inputMode={inputMode}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}

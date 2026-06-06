@@ -53,6 +53,13 @@ interface FormProps {
   onClose:     () => void;
 }
 
+function maskAmount(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  const cents = parseInt(digits, 10);
+  return (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: FormProps) {
   const cartoes         = useCartoes();
   const [form, setForm] = useState(initial);
@@ -80,7 +87,7 @@ function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: 
             {(['expense', 'income'] as const).map((t) => (
               <button
                 key={t}
-                onClick={() => setForm((f) => ({ ...f, type: t, cardId: null }))}
+                onClick={() => setForm((f) => ({ ...f, type: t, cardId: null, category: t === 'income' ? '💰 Salário' : '✨ Outros' }))}
                 style={{
                   flex: 1, padding: '10px', borderRadius: 12, fontSize: 13,
                   border: `2px solid ${form.type === t
@@ -110,8 +117,9 @@ function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: 
         />
         <FInput
           value={form.amount}
-          onChange={(v) => setForm((f) => ({ ...f, amount: v }))}
-          placeholder={form.parcelado ? 'Total com juros (ex: 1.250,00)' : 'Valor (ex: 1.250,00)'}
+          onChange={(v) => setForm((f) => ({ ...f, amount: maskAmount(v) }))}
+          placeholder="0,00"
+          inputMode="numeric"
         />
         <FInput
           value={form.date}
@@ -122,6 +130,7 @@ function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: 
         <CategoryChips
           value={form.category}
           onChange={(c) => setForm((f) => ({ ...f, category: c }))}
+          type={form.type}
         />
 
         {/* Select de cartao — visivel so para despesas */}
@@ -143,7 +152,7 @@ function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: 
                 fontFamily: 'inherit', cursor: 'pointer',
               }}
             >
-              <option value="">Nenhum (debito / dinheiro)</option>
+              <option value="">(dinheiro/Pix)</option>
               {cartoes.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}

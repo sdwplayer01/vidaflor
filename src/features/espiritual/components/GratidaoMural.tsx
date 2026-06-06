@@ -1,23 +1,27 @@
 // src/features/espiritual/components/GratidaoMural.tsx
 import { useState } from 'react';
-import { Send, Sparkles } from 'lucide-react';
+import { Send, Sparkles, History, ChevronDown, ChevronUp } from 'lucide-react';
 import { FInput } from '@/shared/ui/FInput';
 import { ConfirmDel } from '@/shared/ui/ConfirmDel';
 import { EmptyState } from '@/shared/ui/EmptyState';
-import { useGratidoesDoDia } from '../selectors';
+import { useGratidoesDoDia, useTodasGratidoes } from '../selectors';
 import { useEspiritualStore } from '../store';
 import { GratidaoItem } from './GratidaoItem';
-import { today } from '@/shared/utils/date';
+import { today, formatBR } from '@/shared/utils/date';
 import type { ID } from '@/shared/types/common';
 
 export function GratidaoMural() {
-  const day   = today();
-  const grats = useGratidoesDoDia();
+  const day        = today();
+  const grats      = useGratidoesDoDia();
+  const historico  = useTodasGratidoes();
   const adicionarGratidao = useEspiritualStore((s) => s.adicionarGratidao);
   const removerGratidao   = useEspiritualStore((s) => s.removerGratidao);
 
-  const [texto, setTexto]         = useState('');
+  const [texto, setTexto]             = useState('');
   const [deletandoId, setDeletandoId] = useState<ID | null>(null);
+  const [verHistorico, setVerHistorico] = useState(false);
+
+  const diasPassados = historico.filter((h) => h.data !== day);
 
   const salvar = () => {
     if (!texto.trim()) return;
@@ -91,6 +95,52 @@ export function GratidaoMural() {
           <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--vf-ok)' }}>
             Gratidao completa!
           </p>
+        </div>
+      )}
+
+      {/* Histórico de dias anteriores */}
+      {diasPassados.length > 0 && (
+        <div style={{ marginTop: 20 }}>
+          <button
+            onClick={() => setVerHistorico((v) => !v)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: 'var(--vf-tx-mute)', fontSize: 12, fontWeight: 600,
+              padding: '4px 0', WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <History size={13} />
+            {verHistorico ? 'Ocultar histórico' : `Ver histórico de gratidões (${diasPassados.length} dias)`}
+            {verHistorico ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+
+          {verHistorico && (
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {diasPassados.map(({ data, entries }) => (
+                <div key={data}>
+                  <p style={{
+                    margin: '0 0 6px', fontSize: 11, fontWeight: 700,
+                    color: 'var(--vf-tx-mute)', textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}>
+                    {formatBR(data)}
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {entries.map((g) => (
+                      <div key={g.id} style={{
+                        padding: '10px 14px', borderRadius: 12,
+                        background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
+                        fontSize: 13, color: 'var(--vf-tx)',
+                      }}>
+                        {g.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

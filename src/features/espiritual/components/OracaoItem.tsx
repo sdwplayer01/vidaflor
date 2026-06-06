@@ -1,5 +1,6 @@
 // src/features/espiritual/components/OracaoItem.tsx
 import { Check, HandHeart, Trash2 } from 'lucide-react';
+import { fmtDayShort } from '@/shared/utils/date';
 import type { Oracao } from '../types';
 import type { ID } from '@/shared/types/common';
 
@@ -56,11 +57,18 @@ export function OracaoItem({ oracao, onToggle, onRemove }: Props) {
       </div>
 
       {/* Ações */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
         {oracao.respondida && (
-          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--vf-ok)', whiteSpace: 'nowrap' }}>
-            ✅ Respondida
-          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end' }}>
+            <span style={{ fontSize: 9, color: 'var(--vf-tx-mute)', whiteSpace: 'nowrap' }}>
+              Pedido em: {fmtDayShort(oracao.createdAt.slice(0, 10))}
+            </span>
+            {oracao.respondidaEm && (
+              <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--vf-ok)', whiteSpace: 'nowrap' }}>
+                Atendido em: {fmtDayShort(oracao.respondidaEm)}
+              </span>
+            )}
+          </div>
         )}
         <button
           onClick={() => onRemove(oracao.id)}

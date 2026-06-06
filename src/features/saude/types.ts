@@ -36,9 +36,10 @@ export interface HealthProfile {
   meds:      Medication[];
   notes:     Record<ISODate, string>;
   moodLog:   Record<ISODate, string>;  // humor do dia: 'calm'|'happy'|'anx'|'grat'
-  sleepLog:  Record<ISODate, number>;  // horas dormidas por dia
-  stepsLog:  Record<ISODate, number>;  // passos por dia
-  metaPassos: number;                  // meta diária de passos
+  sleepLog:     Record<ISODate, number>;           // horas dormidas por dia
+  stepsLog:     Record<ISODate, number>;           // passos por dia (legado)
+  metaPassos:   number;                            // meta diária de passos (legado)
+  atividadeLog?: Record<ISODate, string>;          // atividade física do dia
   createdAt: ISODate;
 }
 
@@ -71,7 +72,8 @@ export interface SaudeActions {
 
   registrarAnotacaoDia: (profileId: ID, day: ISODate, text: string) => void;
 
-  registrarSono:   (profileId: ID, day: ISODate, hours: number) => void;
-  registrarPassos: (profileId: ID, day: ISODate, steps: number) => void;
-  ajustarMetaPassos: (profileId: ID, meta: number) => void;
+  registrarSono:       (profileId: ID, day: ISODate, hours: number) => void;
+  registrarPassos:     (profileId: ID, day: ISODate, steps: number) => void;
+  ajustarMetaPassos:   (profileId: ID, meta: number) => void;
+  registrarAtividade:  (profileId: ID, day: ISODate, atividade: string) => void;
 }

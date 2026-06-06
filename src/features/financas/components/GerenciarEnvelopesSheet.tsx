@@ -36,7 +36,7 @@ export function GerenciarEnvelopesSheet({ mes, isOpen, onClose }: Props) {
   };
 
   return (
-    <Sheet title="Gerenciar envelopes" onClose={onClose}>
+    <Sheet title="Limites de Gastos" onClose={onClose}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {/* ── Envelopes existentes ─────────────────────────────── */}
@@ -50,11 +50,11 @@ export function GerenciarEnvelopesSheet({ mes, isOpen, onClose }: Props) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {envelopes.map(({ categoria, limite: lim, gasto, pct }) => {
-              const cor = pct >= 90 ? 'var(--vf-er)' : pct >= 70 ? 'var(--vf-wn)' : 'var(--vf-ok)';
-              const alerta = pct >= 90
-                ? '⚠ limite quase atingido'
-                : pct >= 70
-                ? 'atenção ao gasto'
+              const cor = pct > 100 ? 'var(--vf-er)' : pct >= 80 ? 'var(--vf-wn)' : 'var(--vf-ok)';
+              const alerta = pct > 100
+                ? '🔴 Limite estourado'
+                : pct >= 80
+                ? '🟡 Próximo ao limite'
                 : null;
               return (
                 <div

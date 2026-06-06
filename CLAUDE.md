@@ -55,7 +55,8 @@ App React SPA para gestão pessoal/familiar — rotina, saúde, finanças, espir
 
 **Stack:** React 18 · Vite 6 · TypeScript 6 · Zustand 5 · Recharts · Lucide React
 
-Sem backend. Sem autenticação. Sem multi-tenancy. Todo estado persiste em `window.storage` (Claude Artifacts API) com fallback para `localStorage`.
+**Persistência local:** `window.storage` (Claude Artifacts API) com fallback para `localStorage`.  
+**Backend opcional:** Supabase para auth + sync pessoal (`src/shared/supabase/`, `src/features/auth/`, `src/shared/sync/`). Quando logado, `SyncBoot` sincroniza saúde, espiritual e config. Multi-tenancy reservado para Fase 5 (`src/shared/types/household.ts`).
 
 ## Comandos
 
@@ -77,6 +78,7 @@ TypeScript check: `npx tsc --noEmit`
 src/
   app/            # boot.ts (inicialização), routes.ts (mapa de abas)
   features/       # módulos de domínio
+    agenda/       # DiaScreen, CapturaRapida, tarefas avulsas, selectors cross-feature
     financas/
     rotina/
     saude/
@@ -88,7 +90,8 @@ src/
     bloom/
     nav/
     config/
-  screens/        # HomeScreen, ConfigScreen (screens sem feature própria)
+    auth/         # AuthGate, LoginScreen, SyncBoot
+  screens/        # HomeScreen, FamiliaScreen, ConjugeView, ConfigScreen
   shared/
     ui/           # componentes reutilizáveis (Btn, Card, Sheet, FInput, etc.)
     hooks/        # useDebounce, useDisclosure, useMounted, etc.
@@ -149,6 +152,8 @@ export const useMinhaStore = create<Store>()(
 6. **Estado derivado em `selectors.ts`**, nunca duplicar lógica nos componentes.
 7. **Lógica pura em `utils.ts`** (sem acesso a store, sem efeitos). Testável de forma isolada.
 8. **Microcopy em pt-BR**, tom direto e acolhedor.
+9. **Todos os hooks antes de qualquer `return` condicional.** Violar isso corrompe o tracking interno do React 18 e causa loop infinito (#185) em produção — sem aviso legível.
+10. **Seletores Zustand com arrays/objetos usam `useShallow` + sentinela estável** (`const EMPTY: T[] = []` fora do componente). Sem isso, cada render cria referência nova → re-render infinito. Ver padrão em `src/features/agenda/selectors.ts`.
 
 ## Onde olhar
 

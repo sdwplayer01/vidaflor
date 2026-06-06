@@ -1,7 +1,7 @@
 // src/features/saude/migrations.ts
 import { PROFILE_COLOR_DEFAULT } from '@/shared/constants/colors';
 
-export const SAUDE_VERSION = 5;
+export const SAUDE_VERSION = 6;
 
 // ID est\u00E1vel para o perfil legado "eu" \u2014 gerado uma vez e reutilizado entre runs.
 const LEGACY_EU_STABLE_ID = 'prf_legacy_eu_default';
@@ -75,6 +75,14 @@ export function migrate(state: any, fromVersion: number): any {
     if (s.activeProfileId === 'eu') {
       s.activeProfileId = LEGACY_EU_STABLE_ID;
     }
+  }
+
+  // v5 -> v6: add atividadeLog field
+  if (fromVersion < 6) {
+    s.profiles = (s.profiles || []).map((p: any) => ({
+      ...p,
+      atividadeLog: p.atividadeLog ?? {},
+    }));
   }
 
   return s;

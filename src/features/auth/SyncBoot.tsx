@@ -41,13 +41,17 @@ function defaultSaudeParaUsuario(user: AuthUser): SaudeState {
   };
 }
 
-const emptyEspiritual = () => ({
-  gratidao: {},
-  oracoes: [],
-  leituras: [],
-  _version: ESPIRITUAL_VERSION,
-  _hydrated: true,
-});
+// Quando Supabase não tem dado (usuário novo ou primeiro login),
+// preserva o estado local se houver — evita apagar dados offline.
+const getEspiritualFallback = () => {
+  const local = useEspiritualStore.getState();
+  const temDados =
+    local.oracoes.length > 0 ||
+    local.leituras.length > 0 ||
+    Object.keys(local.gratidao).length > 0;
+  if (temDados) return { ...local, _hydrated: true };
+  return { gratidao: {}, oracoes: [], leituras: [], _version: ESPIRITUAL_VERSION, _hydrated: true };
+};
 
 export function SyncBoot() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -90,7 +94,7 @@ export function SyncBoot() {
     getState:        () => useEspiritualStore.getState(),
     setState:        (d) => useEspiritualStore.setState(d as Parameters<typeof useEspiritualStore.setState>[0]),
     subscribe:       (cb) => useEspiritualStore.subscribe(cb),
-    getEmptyState:   emptyEspiritual,
+    getEmptyState:   getEspiritualFallback,
     onFirstPullDone: handleDone,
   });
 

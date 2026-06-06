@@ -14,17 +14,29 @@ export const CATEGORIES = [
   '✨ Outros',
 ] as const;
 
-export type Category = typeof CATEGORIES[number];
+export const INCOME_CATEGORIES = [
+  '💰 Salário',
+  '📊 Pró-labore',
+  '🛍 Vendas',
+  '📈 Lucro',
+  '💳 Conta recebida',
+  '💹 Rendimentos',
+] as const;
+
+export type Category       = typeof CATEGORIES[number];
+export type IncomeCategory = typeof INCOME_CATEGORIES[number];
 
 interface Props {
   value:    string;
   onChange: (cat: string) => void;
+  type?:    'expense' | 'income';
 }
 
-export function CategoryChips({ value, onChange }: Props) {
+export function CategoryChips({ value, onChange, type = 'expense' }: Props) {
+  const list = type === 'income' ? INCOME_CATEGORIES : CATEGORIES;
   return (
     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-      {CATEGORIES.map((cat) => (
+      {list.map((cat) => (
         <button
           key={cat}
           onClick={() => onChange(cat)}

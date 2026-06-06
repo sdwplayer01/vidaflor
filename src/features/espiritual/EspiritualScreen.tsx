@@ -8,7 +8,6 @@ import { GratidaoMural }    from './components/GratidaoMural';
 import { OracaoList }       from './components/OracaoList';
 import { LeituraList }      from './components/LeituraList';
 import { AddGratidaoSheet } from './components/AddGratidaoSheet';
-import { AddOracaoSheet }   from './components/AddOracaoSheet';
 import { AddLeituraSheet }  from './components/AddLeituraSheet';
 import { useEspiritualStore } from './store';
 import { useAuthStore }       from '@/features/auth/store';
@@ -25,7 +24,6 @@ export function EspiritualScreen() {
   // ── Hooks (sempre antes de qualquer return — Rules of Hooks) ──
   const [sub, setSub]             = useState<SubTab>('gratidao');
   const [sheetGrat, setSheetGrat] = useState(false);
-  const [sheetOrac, setSheetOrac] = useState(false);
   const [sheetLeit, setSheetLeit] = useState(false);
 
   const gratCount      = useGratidoesDoDiaCount();
@@ -35,7 +33,6 @@ export function EspiritualScreen() {
 
   const abrirSheet = () => {
     if (sub === 'gratidao') setSheetGrat(true);
-    else if (sub === 'oracoes') setSheetOrac(true);
     else setSheetLeit(true);
   };
 
@@ -87,21 +84,23 @@ export function EspiritualScreen() {
           >
             Jardim interior
           </h1>
-          <button
-            onClick={abrirSheet}
-            style={{
-              width: 40, height: 40, borderRadius: 14,
-              background: 'var(--vf-grad-hero)', border: 'none',
-              color: 'var(--vf-on-rose)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(184,96,122,0.30)',
-              WebkitTapHighlightColor: 'transparent',
-            }}
-            aria-label="Adicionar"
-          >
-            <Plus size={20} />
-          </button>
+          {sub !== 'oracoes' && (
+            <button
+              onClick={abrirSheet}
+              style={{
+                width: 40, height: 40, borderRadius: 14,
+                background: 'var(--vf-grad-hero)', border: 'none',
+                color: 'var(--vf-on-rose)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(184,96,122,0.30)',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+              aria-label="Adicionar"
+            >
+              <Plus size={20} />
+            </button>
+          )}
         </div>
         <div
           style={{
@@ -150,12 +149,11 @@ export function EspiritualScreen() {
 
       {/* ── Content ────────────────────────────────────────────── */}
       {sub === 'gratidao' && <GratidaoMural />}
-      {sub === 'oracoes'  && <OracaoList filter="pendente" />}
+      {sub === 'oracoes'  && <OracaoList />}
       {sub === 'leituras' && <LeituraList />}
 
       {/* ── Sheets ─────────────────────────────────────────────── */}
       <AddGratidaoSheet isOpen={sheetGrat} onClose={() => setSheetGrat(false)} />
-      <AddOracaoSheet   isOpen={sheetOrac} onClose={() => setSheetOrac(false)} />
       <AddLeituraSheet  isOpen={sheetLeit} onClose={() => setSheetLeit(false)} />
     </div>
   );

@@ -183,6 +183,18 @@ export const useSaudeStore = create<Store>()(
             metaPassos: meta,
           })),
         })),
+
+      registrarAtividade: (profileId, day, atividade) =>
+        set((s) => ({
+          profiles: updProfile(s.profiles, profileId, (p) => ({
+            ...p,
+            atividadeLog: atividade
+              ? { ...(p.atividadeLog ?? {}), [day]: atividade }
+              : Object.fromEntries(
+                  Object.entries(p.atividadeLog ?? {}).filter(([k]) => k !== day)
+                ),
+          })),
+        })),
     }),
     {
       name:    STORAGE_KEYS.saude,

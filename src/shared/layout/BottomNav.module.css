@@ -14,7 +14,7 @@
   border-top:           1px solid var(--vf-bd);
 
   display:     grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap:         4px;
   z-index:     50;
   box-shadow:  0 -4px 24px rgba(60, 28, 36, 0.05);

@@ -39,3 +39,15 @@ export function useLeiturasRecentes(limit = 50): Leitura[] {
     useShallow((s) => s.leituras.slice(0, limit))
   );
 }
+
+// Todos os dias com gratidões, ordenados do mais recente para o mais antigo
+export function useTodasGratidoes(): { data: string; entries: GratidaoEntry[] }[] {
+  return useEspiritualStore(
+    useShallow((s) =>
+      Object.entries(s.gratidao)
+        .filter(([, entries]) => entries.length > 0)
+        .sort(([a], [b]) => b.localeCompare(a))
+        .map(([data, entries]) => ({ data, entries }))
+    )
+  );
+}

@@ -15,7 +15,7 @@ interface CategoryRowProps {
 function CategoryRow({ categoria, mes }: CategoryRowProps) {
   const { disponivel, gasto, pct } = useOrcamentoCategoria(categoria, mes);
   if (disponivel === 0) return null;
-  const cor = pct >= 90 ? 'var(--vf-er)' : pct >= 70 ? 'var(--vf-wn)' : 'var(--vf-ok)';
+  const cor = pct > 100 ? 'var(--vf-er)' : pct >= 80 ? 'var(--vf-wn)' : 'var(--vf-ok)';
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -48,7 +48,7 @@ export function BudgetBar({ mes }: Props = {}) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` as IsoMonth;
   })();
 
-  const barColor = pct >= 90 ? 'var(--vf-er)' : pct >= 70 ? 'var(--vf-wn)' : 'var(--vf-ok)';
+  const barColor = pct > 100 ? 'var(--vf-er)' : pct >= 80 ? 'var(--vf-wn)' : 'var(--vf-ok)';
 
   return (
     <>
@@ -77,7 +77,7 @@ export function BudgetBar({ mes }: Props = {}) {
             <button
               onClick={() => setGerenciar(true)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--vf-tx-mute)', padding: 2 }}
-              aria-label="Gerenciar envelopes"
+              aria-label="Configurar limites"
             >
               <Settings2 size={14} />
             </button>

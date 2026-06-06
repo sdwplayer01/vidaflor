@@ -32,6 +32,13 @@ export function LeituraList() {
 
   return (
     <div>
+      <p style={{
+        margin: '0 0 12px', fontSize: 11, fontWeight: 700,
+        color: 'var(--vf-tx-mute)', textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+      }}>
+        Histórico de leituras
+      </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {leituras.map((l) => (
           <LeituraItem

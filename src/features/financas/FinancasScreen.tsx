@@ -385,6 +385,12 @@ export function FinancasScreen() {
           >
             <Plus size={18} /> adicionar cartao
           </button>
+          <p style={{
+            textAlign: 'center', fontSize: 12, color: 'var(--vf-tx-mute)',
+            marginTop: 10, fontStyle: 'italic', padding: '0 8px',
+          }}>
+            Para lançar despesas nos cartões, use o botão (+) de nova transação no topo.
+          </p>
         </>
       )}
 
