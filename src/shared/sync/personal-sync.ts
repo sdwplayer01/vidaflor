@@ -1,14 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/shared/supabase/client';
 
-export type PersonalFeature = 'saude' | 'espiritual' | 'config';
-
-const TABLE: Record<PersonalFeature, string> = {
-  saude:     'personal_saude',
-  espiritual:'personal_espiritual',
-  config:    'personal_config',
-};
-
 export type SyncStatus = 'idle' | 'syncing' | 'error';
 
 interface SyncStatusState {
@@ -23,15 +15,21 @@ export const useSyncStatus = create<SyncStatusState>()((set) => ({
   set:        (s) => set(s),
 }));
 
-export async function pullPersonal(
-  feature: PersonalFeature,
+export interface PullResult {
+  data:    unknown;
+  version: number;
+}
+
+export async function pullState(
+  feature: string,
   userId:  string
-): Promise<unknown | null> {
+): Promise<PullResult | null> {
   useSyncStatus.getState().set({ status: 'syncing' });
   const { data, error } = await supabase
-    .from(TABLE[feature])
-    .select('data')
+    .from('personal_state')
+    .select('data, version')
     .eq('user_id', userId)
+    .eq('feature', feature)
     .maybeSingle();
 
   if (error) {
@@ -40,27 +38,36 @@ export async function pullPersonal(
     return null;
   }
 
-  // null = nenhuma linha ainda (usuário novo) — não é erro
   if (!data) {
     useSyncStatus.getState().set({ status: 'idle', lastSyncAt: Date.now() });
     return null;
   }
 
   useSyncStatus.getState().set({ status: 'idle', lastSyncAt: Date.now() });
-  return (data as { data: unknown }).data;
+  return {
+    data:    (data as { data: unknown }).data,
+    version: (data as { version: number }).version ?? 0,
+  };
 }
 
-export async function pushPersonal(
-  feature: PersonalFeature,
+export async function pushState(
+  feature: string,
   userId:  string,
-  payload: unknown
+  payload: unknown,
+  version: number
 ): Promise<void> {
   useSyncStatus.getState().set({ status: 'syncing' });
   const { error } = await supabase
-    .from(TABLE[feature])
+    .from('personal_state')
     .upsert(
-      { user_id: userId, data: payload, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id' }
+      {
+        user_id:    userId,
+        feature,
+        data:       payload,
+        version,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id,feature' }
     );
 
   if (error) {
