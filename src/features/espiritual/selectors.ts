@@ -1,5 +1,6 @@
 // src/features/espiritual/selectors.ts
 // Hooks de leitura — componentes NUNCA calculam, so consomem selectors.
+import { useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { today } from '@/shared/utils/date';
 import { useEspiritualStore } from './store';
@@ -40,14 +41,18 @@ export function useLeiturasRecentes(limit = 50): Leitura[] {
   );
 }
 
-// Todos os dias com gratidões, ordenados do mais recente para o mais antigo
+// Todos os dias com gratidões, ordenados do mais recente para o mais antigo.
+// ATENÇÃO: .map() cria objetos novos a cada chamada — useShallow não consegue
+// estabilizá-los por Object.is, causando loop via useSyncExternalStore (#185).
+// Padrão correto: ref estável via seletor primitivo + useMemo para a derivação.
 export function useTodasGratidoes(): { data: string; entries: GratidaoEntry[] }[] {
-  return useEspiritualStore(
-    useShallow((s) =>
-      Object.entries(s.gratidao)
+  const gratidao = useEspiritualStore((s) => s.gratidao);
+  return useMemo(
+    () =>
+      Object.entries(gratidao)
         .filter(([, entries]) => entries.length > 0)
         .sort(([a], [b]) => b.localeCompare(a))
-        .map(([data, entries]) => ({ data, entries }))
-    )
+        .map(([data, entries]) => ({ data, entries })),
+    [gratidao],
   );
 }
