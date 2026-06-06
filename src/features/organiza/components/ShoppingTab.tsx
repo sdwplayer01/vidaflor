@@ -1,7 +1,7 @@
 // src/features/organiza/components/ShoppingTab.tsx
 // Fase 3: agrupado por seção + estimativa + elo Mercado
 import { useState } from "react";
-import { ShoppingCart, ShoppingBag } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Plus } from "lucide-react";
 import { EmptyState }  from "@/shared/ui/EmptyState";
 import { ConfirmDel }  from "@/shared/ui/ConfirmDel";
 import { Btn }         from "@/shared/ui/Btn";
@@ -95,8 +95,9 @@ export function ShoppingTab() {
   const [deletandoId,    setDeletandoId]    = useState<ID | null>(null);
   const [concluirOpen,   setConcluirOpen]   = useState(false);
 
-  const totalItens = secoes.reduce((n, s) => n + s.items.length, 0);
-  const itemDeletando = [...secoes.flatMap((s) => s.items), ...comprados].find((i) => i.id === deletandoId);
+  const totalPendentes = secoes.reduce((n, s) => n + s.items.length, 0);
+  const totalGeral     = totalPendentes + comprados.length;
+  const itemDeletando  = [...secoes.flatMap((s) => s.items), ...comprados].find((i) => i.id === deletandoId);
 
   const handleToggle = (id: ID) => {
     const todos = [...secoes.flatMap((s) => s.items), ...comprados];
@@ -121,24 +122,37 @@ export function ShoppingTab() {
     setConcluirOpen(false);
   };
 
-  if (totalItens === 0 && comprados.length === 0) {
-    return (
-      <>
-        <EmptyState
-          icon={<ShoppingCart size={24} />}
-          title="Lista vazia"
-          desc="Adicione itens para comprar"
-        />
-        <AddShoppingSheet isOpen={sheetAdd} onClose={() => setSheetAdd(false)} />
-      </>
-    );
-  }
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
+      {/* ── Botão de adicionar — sempre visível ─────────────── */}
+      <button
+        onClick={() => { setEditItem(undefined); setSheetAdd(true); }}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          padding: "10px 16px", borderRadius: 14,
+          background: "color-mix(in srgb, var(--vf-rose) 8%, transparent)",
+          border: "1.5px dashed color-mix(in srgb, var(--vf-rose) 40%, transparent)",
+          color: "var(--vf-rose)", fontFamily: "var(--vf-font-ui)",
+          fontSize: 13, fontWeight: 600, cursor: "pointer",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >
+        <Plus size={15} />
+        Adicionar item
+      </button>
+
+      {/* ── Empty state ─────────────────────────────────────── */}
+      {totalGeral === 0 && (
+        <EmptyState
+          icon={<ShoppingCart size={24} />}
+          title="Lista vazia"
+          desc="Toque acima para adicionar itens"
+        />
+      )}
+
       {/* ── Card estimativa + envelope ───────────────────────── */}
-      {totalItens > 0 && (
+      {totalGeral > 0 && (
         <div style={{
           padding: "12px 14px", borderRadius: 14,
           background: "var(--vf-surf)", border: "1px solid var(--vf-bd)",
@@ -146,7 +160,12 @@ export function ShoppingTab() {
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontSize: 12, color: "var(--vf-tx-mute)" }}>
-              {totalItens} {totalItens === 1 ? "item" : "itens"}
+              {totalGeral} {totalGeral === 1 ? "item" : "itens"}
+              {comprados.length > 0 && totalPendentes > 0 && (
+                <span style={{ marginLeft: 6, color: "var(--vf-ok)" }}>
+                  · {comprados.length} comprados
+                </span>
+              )}
             </span>
             <span style={{ fontSize: 15, fontWeight: 700, color: "var(--vf-tx)", fontVariantNumeric: "tabular-nums" }}>
               {estimativa > 0 ? `~ R$ ${formatBRL(estimativa)}` : "sem estimativa"}

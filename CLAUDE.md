@@ -154,6 +154,7 @@ export const useMinhaStore = create<Store>()(
 8. **Microcopy em pt-BR**, tom direto e acolhedor.
 9. **Todos os hooks antes de qualquer `return` condicional.** Violar isso corrompe o tracking interno do React 18 e causa loop infinito (#185) em produção — sem aviso legível.
 10. **Seletores Zustand com arrays/objetos usam `useShallow` + sentinela estável** (`const EMPTY: T[] = []` fora do componente). Sem isso, cada render cria referência nova → re-render infinito. Ver padrão em `src/features/agenda/selectors.ts`.
+11. **`useShallow` + `.map(... => ({ ... }))` é PROIBIDO.** Mesmo retornando array (não objeto wrapper), cada elemento criado por `.map()` tem referência nova → `Object.is(prev[i], next[i])` falha → `useSyncExternalStore` detecta snapshot instável → loop #185. Padrão correto: extrair campo do store como ref direta + `useMemo` no hook seletor. Ver `src/features/espiritual/selectors.ts:useTodasGratidoes` como referência.
 
 ## Onde olhar
 

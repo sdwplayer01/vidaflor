@@ -53,21 +53,19 @@ export function ShoppingItem({ item, onToggle, onEdit, onRemove }: Props) {
       </div>
 
       {/* Ações */}
-      {!item.done && (
-        <button
-          onClick={() => onEdit(item)}
-          style={{
-            width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-            background: "transparent", border: "none",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", color: "var(--vf-tx-mute)",
-            WebkitTapHighlightColor: "transparent",
-          }}
-          aria-label="Editar item"
-        >
-          <Pencil size={13} />
-        </button>
-      )}
+      <button
+        onClick={() => onEdit(item)}
+        style={{
+          width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+          background: "transparent", border: "none",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", color: "var(--vf-tx-mute)",
+          WebkitTapHighlightColor: "transparent",
+        }}
+        aria-label="Editar item"
+      >
+        <Pencil size={13} />
+      </button>
       <button
         onClick={() => onRemove(item.id)}
         style={{
