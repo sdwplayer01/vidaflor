@@ -5,7 +5,7 @@ import { FInput } from "@/shared/ui/FInput";
 import { Btn }    from "@/shared/ui/Btn";
 import { useOrganizaStore } from "../store";
 import { SECOES_MERCADO, SUGESTOES_POR_SECAO } from "../types";
-import { parseBRL, formatBRL } from "@/shared/utils/money";
+import { parseBRL, formatBRL, maskAmount } from "@/shared/utils/money";
 import type { ShoppingItem } from "../types";
 
 interface Props {
@@ -132,8 +132,9 @@ function ShoppingItemForm({ editItem, onSubmit, onClose }: FormProps) {
           <div style={{ flex: 1 }}>
             <FInput
               value={preco}
-              onChange={setPreco}
+              onChange={(v) => setPreco(maskAmount(v))}
               placeholder="Preço (ex: 8,90)"
+              inputMode="numeric"
             />
           </div>
         </div>

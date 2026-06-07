@@ -1,15 +1,17 @@
 // src/features/agenda/DiaScreen.tsx — Fase 4 completa (4b+4c+4d+4e)
 import { useState, useRef } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgendaStore }   from './store';
+import { useRotinaStore }   from '@/features/rotina/store';
 import { useDia, useDiaActions } from './selectors';
 import { today, formatBR, addDays } from '@/shared/utils/date';
 import { AddTarefaDiaSheet } from './components/AddTarefaDiaSheet';
 import { CapturaRapida }     from './components/CapturaRapida';
 import { PreparaAmanha }     from './components/PreparaAmanha';
 import { GerenciarRotinas }  from './components/GerenciarRotinas';
-import type { DiaItem, DiaSource, Turno } from './types';
+import { ConfirmDel }        from '@/shared/ui/ConfirmDel';
+import type { DiaItem, DiaSource, Turno, TarefaAvulsa } from './types';
 import type { ISODate } from '@/shared/types/common';
 
 // ── Cores e labels por fonte ──────────────────────────────────────────────────
@@ -36,47 +38,90 @@ const TURNO_LABEL: Record<Turno, string> = {
 };
 
 // ── DayRow ────────────────────────────────────────────────────────────────────
-function DayRow({ item, onToggle }: { item: DiaItem; onToggle: (item: DiaItem) => void }) {
+function DayRow({
+  item, onToggle, onEdit, onDelete,
+}: {
+  item:     DiaItem;
+  onToggle: (item: DiaItem) => void;
+  onEdit:   (item: DiaItem) => void;
+  onDelete: (item: DiaItem) => void;
+}) {
   const color = SOURCE_COLOR[item.source];
+  const canEdit = item.source === 'tarefa';
   return (
-    <button
-      onClick={() => onToggle(item)}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '11px 14px', borderRadius: 12, width: '100%', textAlign: 'left',
-        background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
-        cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-        opacity: item.done ? 0.5 : 1,
-      }}
-    >
-      <span style={{ width: 3, height: 28, borderRadius: 2, background: color, flexShrink: 0 }} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{
-          margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--vf-tx)',
-          textDecoration: item.done ? 'line-through' : 'none',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 6,
+      padding: '11px 14px', borderRadius: 12,
+      background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
+      opacity: item.done ? 0.5 : 1,
+    }}>
+      <button
+        onClick={() => onToggle(item)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10, flex: 1, textAlign: 'left',
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          WebkitTapHighlightColor: 'transparent', minWidth: 0, padding: 0,
+        }}
+      >
+        <span style={{ width: 3, height: 28, borderRadius: 2, background: color, flexShrink: 0 }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{
+            margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--vf-tx)',
+            textDecoration: item.done ? 'line-through' : 'none',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
+            {item.title}
+          </p>
+          {(item.time || item.tag) && (
+            <div style={{ display: 'flex', gap: 6, marginTop: 2, alignItems: 'center' }}>
+              {item.time && (
+                <span style={{ fontSize: 11, color: 'var(--vf-tx-mute)', fontVariantNumeric: 'tabular-nums' }}>
+                  {item.time}
+                </span>
+              )}
+              {item.tag && <span style={{ fontSize: 11, color: 'var(--vf-tx-mute)' }}>{item.tag}</span>}
+            </div>
+          )}
+        </div>
+        <span style={{
+          fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
+          background: `color-mix(in srgb, ${color} 15%, transparent)`,
+          color, flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.05em',
         }}>
-          {item.title}
-        </p>
-        {(item.time || item.tag) && (
-          <div style={{ display: 'flex', gap: 6, marginTop: 2, alignItems: 'center' }}>
-            {item.time && (
-              <span style={{ fontSize: 11, color: 'var(--vf-tx-mute)', fontVariantNumeric: 'tabular-nums' }}>
-                {item.time}
-              </span>
-            )}
-            {item.tag && <span style={{ fontSize: 11, color: 'var(--vf-tx-mute)' }}>{item.tag}</span>}
-          </div>
-        )}
-      </div>
-      <span style={{
-        fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
-        background: `color-mix(in srgb, ${color} 15%, transparent)`,
-        color, flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.05em',
-      }}>
-        {SOURCE_LABEL[item.source]}
-      </span>
-    </button>
+          {SOURCE_LABEL[item.source]}
+        </span>
+      </button>
+      {canEdit && (
+        <>
+          <button
+            onClick={() => onEdit(item)}
+            style={{
+              width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+              background: 'transparent', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: 'var(--vf-tx-mute)',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+            aria-label="Editar tarefa"
+          >
+            <Pencil size={13} />
+          </button>
+          <button
+            onClick={() => onDelete(item)}
+            style={{
+              width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+              background: 'color-mix(in srgb, var(--vf-er) 10%, transparent)',
+              border: 'none', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', cursor: 'pointer',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+            aria-label="Remover tarefa"
+          >
+            <Trash2 size={12} color="var(--vf-er)" />
+          </button>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -123,7 +168,14 @@ export function DiaScreen() {
   const [view,       setView]       = useState<'hoje' | 'semana'>('hoje');
   const [dataSel,    setDataSel]    = useState<ISODate>(today());
   const [addOpen,    setAddOpen]    = useState(false);
+  const [editItem,   setEditItem]   = useState<TarefaAvulsa | undefined>(undefined);
+  const [deleteItem, setDeleteItem] = useState<DiaItem | undefined>(undefined);
   const initialized = useRef(false);
+
+  const removerTarefa   = useAgendaStore((s) => s.removerTarefa);
+  const tarefas         = useAgendaStore(useShallow((s) => s.tarefas));
+  const essMode         = useRotinaStore((s) => s.essMode);
+  const alternarEssMode = useRotinaStore((s) => s.alternarEssMode);
 
   const date = view === 'hoje' ? today() : dataSel;
   const items = useDia(date);
@@ -132,6 +184,20 @@ export function DiaScreen() {
   const pct    = total > 0 ? Math.round((feitos / total) * 100) : 0;
 
   const handleToggle = useDiaActions(date);
+
+  const handleEdit = (item: DiaItem) => {
+    const found = tarefas.find((t) => t.id === item.nativeId);
+    if (found) { setEditItem(found); setAddOpen(true); }
+  };
+
+  const handleDelete = (item: DiaItem) => {
+    setDeleteItem(item);
+  };
+
+  const confirmDelete = () => {
+    if (deleteItem) removerTarefa(deleteItem.nativeId);
+    setDeleteItem(undefined);
+  };
 
   // Navegar para amanhã (4d)
   const verAmanha = (d: ISODate) => {
@@ -149,9 +215,54 @@ export function DiaScreen() {
   return (
     <div style={{ padding: '24px 20px 100px' }}>
 
+      {/* ── Banner Modo Essencial ────────────────────────────── */}
+      {essMode && (
+        <div style={{
+          background: 'color-mix(in oklab, var(--vf-sage) 12%, transparent)',
+          border: '1px solid color-mix(in oklab, var(--vf-sage) 30%, transparent)',
+          borderRadius: 14, padding: '12px 16px', marginBottom: 14,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+        }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--vf-sage)' }}>
+              Modo Essencial ativo
+            </p>
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--vf-tx-mute)', fontStyle: 'italic' }}>
+              Hoje é dia de respirar fundo. Foco no essencial.
+            </p>
+          </div>
+          <button
+            onClick={alternarEssMode}
+            style={{
+              padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 700,
+              background: 'var(--vf-sage)', color: '#fff', border: 'none',
+              cursor: 'pointer', flexShrink: 0,
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            Desativar
+          </button>
+        </div>
+      )}
+
       {/* ── Header ──────────────────────────────────────────── */}
       <div style={{ marginBottom: 16 }}>
-        <div className="vf-eyebrow">dia</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+          <div className="vf-eyebrow">dia</div>
+          {!essMode && (
+            <button
+              onClick={alternarEssMode}
+              style={{
+                padding: '4px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600,
+                background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
+                color: 'var(--vf-tx-mute)', cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              modo essencial
+            </button>
+          )}
+        </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 4 }}>
           <h1 style={{
             margin: 0, fontSize: 28, lineHeight: 1.1,
@@ -222,7 +333,13 @@ export function DiaScreen() {
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {por[turno].map((item) => (
-                  <DayRow key={item.id} item={item} onToggle={handleToggle} />
+                  <DayRow
+                    key={item.id}
+                    item={item}
+                    onToggle={handleToggle}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
                 ))}
               </div>
             </div>
@@ -245,12 +362,23 @@ export function DiaScreen() {
         <GerenciarRotinas />
       </div>
 
-      {/* ── Sheet add tarefa ─────────────────────────────────── */}
+      {/* ── Sheet add/edit tarefa ────────────────────────────── */}
       <AddTarefaDiaSheet
+        key={editItem?.id ?? 'nova'}
         isOpen={addOpen}
-        onClose={() => setAddOpen(false)}
+        onClose={() => { setAddOpen(false); setEditItem(undefined); }}
         date={date}
+        editItem={editItem}
       />
+
+      {/* ── Confirm delete ───────────────────────────────────── */}
+      {deleteItem && (
+        <ConfirmDel
+          label={deleteItem.title}
+          onCancel={() => setDeleteItem(undefined)}
+          onConfirm={confirmDelete}
+        />
+      )}
 
       {/* ── FAB + tarefa ─────────────────────────────────────── */}
       <button

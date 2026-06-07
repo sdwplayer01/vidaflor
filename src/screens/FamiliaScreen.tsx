@@ -1,22 +1,20 @@
 // src/screens/FamiliaScreen.tsx
 import { useState } from "react";
-import { Home, Baby, Heart, Users } from "lucide-react";
-import { CasaView }    from "@/features/casa/CasaView";
+import { Baby, Heart, Users } from "lucide-react";
 import { KidsView }    from "@/features/kids/KidsView";
 import { PetsView }    from "@/features/pets/PetsView";
 import { ConjugeView } from "./ConjugeView";
 
-type FamiliaTab = "casa" | "conjuge" | "kids" | "pets";
+type FamiliaTab = "conjuge" | "kids" | "pets";
 
 const TABS: { key: FamiliaTab; label: string; icon: React.ReactNode }[] = [
-  { key: "casa",    label: "Casa",    icon: <Home   size={15} strokeWidth={1.8} /> },
   { key: "conjuge", label: "Cônjuge", icon: <Users  size={15} strokeWidth={1.8} /> },
   { key: "kids",    label: "Filhos",  icon: <Baby   size={15} strokeWidth={1.8} /> },
   { key: "pets",    label: "Pets",    icon: <Heart  size={15} strokeWidth={1.8} /> },
 ];
 
 export function FamiliaScreen() {
-  const [active, setActive] = useState<FamiliaTab>("casa");
+  const [active, setActive] = useState<FamiliaTab>("conjuge");
 
   return (
     <div style={{ paddingBottom: 100 }}>
@@ -32,6 +30,9 @@ export function FamiliaScreen() {
           position: "sticky",
           top: 0,
           zIndex: 10,
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
         }}
       >
         {TABS.map(({ key, label, icon }) => (
@@ -53,6 +54,8 @@ export function FamiliaScreen() {
               fontFamily: "inherit",
               transition: "all var(--vf-trans-normal)",
               WebkitTapHighlightColor: "transparent",
+              flexShrink: 0,
+              whiteSpace: "nowrap",
             }}
           >
             {icon}
@@ -62,7 +65,6 @@ export function FamiliaScreen() {
       </div>
 
       <div style={{ padding: "0 20px" }}>
-        {active === "casa"    && <CasaView />}
         {active === "conjuge" && <ConjugeView />}
         {active === "kids"    && <KidsView />}
         {active === "pets"    && <PetsView />}

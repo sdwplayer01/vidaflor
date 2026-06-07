@@ -63,7 +63,7 @@ export function useComprasPorSecao(): Array<{ secao: string; items: ShoppingItem
 export function useEstimativaLista(): number {
   return useOrganizaStore(
     useShallow((s) =>
-      s.shopping.items.reduce((acc, i) => acc + (i.price ?? 0), 0)
+      s.shopping.items.reduce((acc, i) => acc + (i.price ?? 0) * (i.quantity ?? 1), 0)
     )
   );
 }
@@ -72,7 +72,7 @@ export function useEstimativaLista(): number {
 export function useCarrinhoTotal(): number {
   return useOrganizaStore(
     useShallow((s) =>
-      s.shopping.items.filter((i) => i.done).reduce((acc, i) => acc + (i.price ?? 0), 0)
+      s.shopping.items.filter((i) => i.done).reduce((acc, i) => acc + (i.price ?? 0) * (i.quantity ?? 1), 0)
     )
   );
 }

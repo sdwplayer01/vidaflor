@@ -53,6 +53,53 @@ export const useFinancasStore = create<Store>()(
           ),
         })),
 
+      concretizarVirtual: (virtualId: ID) => {
+        // Virtual ids follow the pattern "${realId}_v_${mes}" or "${realId}_v_${date}"
+        const sepIdx = virtualId.indexOf('_v_');
+        if (sepIdx === -1) return;
+        const baseId   = virtualId.slice(0, sepIdx) as ID;
+        const datePart = virtualId.slice(sepIdx + 3); // mes (YYYY-MM) or date (YYYY-MM-DD)
+        const s        = get();
+        const origin   = s.transactions.find((t) => t.id === baseId);
+        if (!origin) return;
+        // Derive the actual date: if datePart is YYYY-MM, use the same day as origin clamped
+        const isoDate  = datePart.length === 7
+          ? (() => {
+              const [y, m] = datePart.split('-').map(Number) as [number, number];
+              const [, , d] = origin.date.split('-').map(Number) as [number, number, number];
+              const last = new Date(y, m, 0).getDate();
+              const day  = Math.min(d, last);
+              return `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}` as import('@/shared/types/common').ISODate;
+            })()
+          : datePart as import('@/shared/types/common').ISODate;
+        // Avoid duplicates: if a real tx already exists for this virtual, just mark it
+        const already = s.transactions.find((t) => t.id === virtualId);
+        if (already) {
+          set((st) => ({
+            transactions: st.transactions.map((t) =>
+              t.id === virtualId ? { ...t, paid: true } : t
+            ),
+          }));
+          return;
+        }
+        const concrete: Transaction = {
+          ...origin,
+          id:        virtualId,
+          date:      isoDate,
+          due:       isoDate,
+          paid:      true,
+          recorrencia: undefined,
+          paidFaturaRef: undefined,
+        };
+        set((st) => ({ transactions: [...st.transactions, concrete] }));
+      },
+
+      desmarcarVirtual: (virtualId: ID) => {
+        set((s) => ({
+          transactions: s.transactions.filter((t) => t.id !== virtualId),
+        }));
+      },
+
       removerTransacao: (id: ID) =>
         set((s) => ({
           transactions: s.transactions.filter((t) => t.id !== id),

@@ -9,7 +9,7 @@ import { CategoryChips } from './CategoryChips';
 import { useFinancasStore } from '../store';
 import { useCartoes, useTransacao } from '../selectors';
 import { today }         from '@/shared/utils/date';
-import { parseBRL, formatBRL } from '@/shared/utils/money';
+import { parseBRL, formatBRL, maskAmount } from '@/shared/utils/money';
 import type { Transaction, TransactionType } from '../types';
 import type { ID } from '@/shared/types/common';
 
@@ -51,13 +51,6 @@ interface FormProps {
   initial:     ReturnType<typeof emptyForm>;
   onSave:      (form: ReturnType<typeof emptyForm>) => void;
   onClose:     () => void;
-}
-
-function maskAmount(raw: string): string {
-  const digits = raw.replace(/\D/g, '');
-  if (!digits) return '';
-  const cents = parseInt(digits, 10);
-  return (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: FormProps) {

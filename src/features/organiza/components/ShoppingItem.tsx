@@ -41,12 +41,12 @@ export function ShoppingItem({ item, onToggle, onEdit, onRemove }: Props) {
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>{item.name}</p>
         <div style={{ display: "flex", gap: 8, marginTop: 2, alignItems: "center" }}>
-          {item.quantity && (
+          {(item.quantity ?? 1) > 1 && (
             <span style={{ fontSize: 11, color: "var(--vf-tx-mute)" }}>×{item.quantity}</span>
           )}
           {(item.price ?? 0) > 0 && (
             <span style={{ fontSize: 11, color: "var(--vf-tx-mute)", fontVariantNumeric: "tabular-nums" }}>
-              R$ {formatBRL(item.price!)}
+              R$ {formatBRL(item.price! * (item.quantity ?? 1))}
             </span>
           )}
         </div>

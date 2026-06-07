@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import {
-  Palette, User, LayoutDashboard, Flower, LogOut,
+  Palette, User, LayoutDashboard, Flower, LogOut, Check,
 } from "lucide-react";
 import { useAuth }       from "@/features/auth/hooks/useAuth";
 import { useSyncStatus } from "@/shared/sync/personal-sync";
@@ -137,7 +137,7 @@ export function ConfigScreen() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
                 }}>
-                  <span style={{ color: "#fff", fontSize: 13, fontWeight: 900 }}>\u2713</span>
+                  <Check size={13} color="#fff" strokeWidth={3} />
                 </div>
               )}
             </button>

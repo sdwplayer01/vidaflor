@@ -2,6 +2,7 @@
 // Contemplative home: ambient blobs, hero flower, water+mood quick-acts,
 // next-task whisper, 6 area cards.
 
+import { useState, useEffect } from "react";
 import { Settings, Flame, Check, Calendar, Heart, Users, Folder, Wallet } from "lucide-react";
 import type { TabKey } from "@/features/nav/store";
 import { useNavStore }          from "@/features/nav/store";
@@ -447,6 +448,23 @@ function NextTaskCard() {
 // ── Main HomeScreen ──────────────────────────────────────────────────────
 
 export function HomeScreen({ setTab: _setTab }: Props) {
+  // #005 — force re-render at midnight so today() and bloom selectors pick up the new day
+  const [_tick, setTick] = useState(0);
+  useEffect(() => {
+    const scheduleNext = () => {
+      const now  = new Date();
+      const msUntilMidnight =
+        new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+      const id = setTimeout(() => {
+        setTick((n) => n + 1);
+        scheduleNext();
+      }, msUntilMidnight + 100);
+      return id;
+    };
+    const id = scheduleNext();
+    return () => clearTimeout(id);
+  }, []);
+
   const d        = today();
   const bloom    = useBloomDoDia(d);
   const vitality = bloom.total;
@@ -457,12 +475,21 @@ export function HomeScreen({ setTab: _setTab }: Props) {
   const mes      = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
   const saldo    = useSaldoDoMes(mes);
   const orcamento = useOrcamentoMes(mes);
-  const streak   = useRotinaStore((s) => Object.keys(s.done).length);
+  const essMode  = useRotinaStore((s) => s.essMode);
+  const streak   = useRotinaStore((s) => {
+    const doneKeys = Object.keys(s.done);
+    if (!s.essMode) return doneKeys.length;
+    return doneKeys.filter((day) => day !== today()).length;
+  });
   const amanha3  = addDays(d, 3);
   const billCount = useProximasContas(3).filter((t) => !t.paid && (t.due ?? "") <= amanha3).length;
 
-  const areaCards: AreaCardProps[] = [
+  // #007 — read dash config to conditionally render cards/sections
+  const dash = useConfigStore((s) => s.dash);
+
+  const allAreaCards: (AreaCardProps & { dashKey: keyof typeof dash | null })[] = [
     {
+      dashKey: "routine",
       tab:   "dia",
       label: "Rotina",
       icon:  <Calendar size={16} />,
@@ -470,6 +497,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  `${rotina.feitas}/${rotina.total} hoje`,
     },
     {
+      dashKey: null,
       tab:   "saude",
       label: "Saude",
       icon:  <Heart size={16} />,
@@ -477,6 +505,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  `${Math.round(agua.atual / 250)} de ${Math.round(agua.meta / 250)} copos`,
     },
     {
+      dashKey: "spirit",
       tab:   "espiritual",
       label: "Espirito",
       icon:  <Flame size={16} />,
@@ -484,6 +513,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  `${gratCount} gratidao${gratCount !== 1 ? "es" : ""}`,
     },
     {
+      dashKey: "kids",
       tab:   "familia",
       label: "Conexao",
       icon:  <Users size={16} />,
@@ -491,6 +521,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  "vinculos ativos",
     },
     {
+      dashKey: null,
       tab:   "organiza",
       label: "Organiza",
       icon:  <Folder size={16} />,
@@ -498,6 +529,7 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  "listas ativas",
     },
     {
+      dashKey: "finance",
       tab:   "financas",
       label: "Financas",
       icon:  <Wallet size={16} />,
@@ -505,6 +537,8 @@ export function HomeScreen({ setTab: _setTab }: Props) {
       hint:  formatBRL(saldo.saldo),
     },
   ];
+
+  const areaCards = allAreaCards.filter((c) => c.dashKey === null || dash[c.dashKey]);
 
   return (
     <div style={{ padding: "0 0 8px", position: "relative", minHeight: "100vh" }}>
@@ -518,10 +552,10 @@ export function HomeScreen({ setTab: _setTab }: Props) {
           className="vf-display-it"
           style={{ fontSize: 30, lineHeight: 1.1, margin: "2px 0 4px", color: "var(--vf-tx)" }}
         >
-          {bloomLabel(vitality)}
+          {essMode ? "Dia de descanso" : bloomLabel(vitality)}
         </div>
         <div style={{ fontSize: 14, color: "var(--vf-tx-mute)", fontStyle: "italic", marginBottom: 10 }}>
-          — {bloomPoem(vitality)}
+          — {essMode ? "respire, cuide-se, volte em paz" : bloomPoem(vitality)}
         </div>
 
         <div style={{ display: "grid", placeItems: "center", margin: "8px auto 4px" }}>
@@ -560,27 +594,33 @@ export function HomeScreen({ setTab: _setTab }: Props) {
 
       <AlertBadges />
       {/* Quick actions: water + mood */}
-      <div style={{
-        position:            "relative",
-        zIndex:              2,
-        display:             "grid",
-        gridTemplateColumns: "1.3fr 1fr",
-        gap:                 12,
-        padding:             "16px 20px 0",
-      }}>
-        <WaterCard />
-        <MoodCard />
-      </div>
+      {(dash.water) && (
+        <div style={{
+          position:            "relative",
+          zIndex:              2,
+          display:             "grid",
+          gridTemplateColumns: "1.3fr 1fr",
+          gap:                 12,
+          padding:             "16px 20px 0",
+        }}>
+          <WaterCard />
+          <MoodCard />
+        </div>
+      )}
 
       {/* Next task whisper */}
-      <div style={{ position: "relative", zIndex: 2, padding: "0 20px", marginBottom: 12 }}>
-        <NextTaskCard />
-      </div>
+      {dash.routine && (
+        <div style={{ position: "relative", zIndex: 2, padding: "0 20px", marginBottom: 12 }}>
+          <NextTaskCard />
+        </div>
+      )}
 
       {/* Bloom history */}
-      <div style={{ padding: "0 20px", marginBottom: 16 }}>
-        <BloomHistoricoChart />
-      </div>
+      {dash.bloom && (
+        <div style={{ padding: "0 20px", marginBottom: 16 }}>
+          <BloomHistoricoChart />
+        </div>
+      )}
 
       {/* Six area cards */}
       <div style={{

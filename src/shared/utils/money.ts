@@ -51,3 +51,15 @@ export function parseBRL(val: string): Money {
 export function sumMoney(...amounts: Money[]): Money {
   return amounts.reduce((acc, curr) => acc + curr, 0);
 }
+
+/**
+ * Máscara de valor monetário para inputs controlados.
+ * Aceita só dígitos e formata como "0,00" em pt-BR.
+ * Ex: "890" → "8,90"; "12345" → "123,45"
+ */
+export function maskAmount(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  const cents = parseInt(digits, 10);
+  return (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}

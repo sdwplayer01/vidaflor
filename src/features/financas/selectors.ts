@@ -26,9 +26,12 @@ export function useTransacoesDoMes(mes?: IsoMonth): Transaction[] {
 }
 
 export function useSaldoDoMes(mes?: IsoMonth) {
-  return useFinancasStore(
-    useShallow((s) => calcSaldoMes(s.transactions, mes ?? currentMonth()))
-  );
+  const transactions = useFinancasStore((s) => s.transactions);
+  return useMemo(() => {
+    const m    = mes ?? currentMonth();
+    const virt = expandirRecorrentes(transactions, m);
+    return calcSaldoMes([...transactions, ...virt], m);
+  }, [transactions, mes]);
 }
 
 export function useCartoes() {

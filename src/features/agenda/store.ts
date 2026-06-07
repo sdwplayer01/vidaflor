@@ -24,6 +24,11 @@ export const useAgendaStore = create<Store>()(
           ],
         })),
 
+      atualizarTarefa: (id: ID, patch) =>
+        set((s) => ({
+          tarefas: s.tarefas.map((t) => t.id === id ? { ...t, ...patch } : t),
+        })),
+
       removerTarefa: (id: ID) =>
         set((s) => ({ tarefas: s.tarefas.filter((t) => t.id !== id) })),
 

@@ -147,15 +147,19 @@ export function useAnotacoesDoDia(day?: ISODate, profileId?: ID): NoteEntry[] {
 }
 
 export function useTodasAnotacoes(profileId?: ID): { data: ISODate; entries: NoteEntry[] }[] {
-  return useSaudeStore(
-    useShallow((s) => {
-      const id = profileId ?? s.activeProfileId;
-      const p  = s.profiles.find((pr) => pr.id === id);
-      if (!p) return [];
-      return Object.entries(p.notes)
+  // §4.3 Variante C: extrai ref estável do store → useMemo deriva. Evita loop #185
+  // causado por .map(() => ({ ... })) dentro de useShallow (objetos novos a cada chamada).
+  const notes = useSaudeStore((s) => {
+    const id = profileId ?? s.activeProfileId;
+    const p  = s.profiles.find((pr) => pr.id === id);
+    return p?.notes ?? (EMPTY_OBJ as HealthProfile['notes']);
+  });
+  return useMemo(
+    () =>
+      Object.entries(notes)
         .filter(([, entries]) => entries.length > 0)
         .sort(([a], [b]) => b.localeCompare(a))
-        .map(([data, entries]) => ({ data, entries }));
-    })
+        .map(([data, entries]) => ({ data, entries })),
+    [notes],
   );
 }

@@ -76,15 +76,22 @@ export function FinancasScreen() {
   const saldo         = useSaldoDoMes(mes);
   const transacoes    = useTransacoesDoMes(mes);
   const cartoes       = useCartoes();
-  const marcarPago    = useFinancasStore((s) => s.marcarComoPago);
-  const desmarcar     = useFinancasStore((s) => s.desmarcarPago);
-  const remover       = useFinancasStore((s) => s.removerTransacao);
-  const removerCartao = useFinancasStore((s) => s.removerCartao);
+  const marcarPago         = useFinancasStore((s) => s.marcarComoPago);
+  const desmarcar          = useFinancasStore((s) => s.desmarcarPago);
+  const concretizarVirtual = useFinancasStore((s) => s.concretizarVirtual);
+  const desmarcarVirtual   = useFinancasStore((s) => s.desmarcarVirtual);
+  const remover            = useFinancasStore((s) => s.removerTransacao);
+  const removerCartao      = useFinancasStore((s) => s.removerCartao);
 
   const handleTogglePago = (id: ID) => {
     const tx = transacoes.find((t) => t.id === id);
     if (!tx) return;
-    if (tx.paid) desmarcar(id); else marcarPago(id);
+    const isVirtual = id.includes('_v_');
+    if (isVirtual) {
+      if (tx.paid) desmarcarVirtual(id); else concretizarVirtual(id);
+    } else {
+      if (tx.paid) desmarcar(id); else marcarPago(id);
+    }
   };
 
   const handleEdit = (id: ID) => {

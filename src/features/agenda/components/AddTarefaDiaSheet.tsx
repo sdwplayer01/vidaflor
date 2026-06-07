@@ -6,13 +6,14 @@ import { FInput }   from '@/shared/ui/FInput';
 import { Btn }      from '@/shared/ui/Btn';
 import { useAgendaStore }    from '../store';
 import { useNovaTarefaData } from '../selectors';
-import type { Turno, MemberId } from '../types';
-import type { ISODate } from '@/shared/types/common';
+import type { Turno, MemberId, TarefaAvulsa } from '../types';
+import type { ISODate, ID } from '@/shared/types/common';
 
 interface Props {
-  isOpen:  boolean;
-  onClose: () => void;
-  date:    ISODate;
+  isOpen:    boolean;
+  onClose:   () => void;
+  date:      ISODate;
+  editItem?: TarefaAvulsa;
 }
 
 const TURNOS: { key: Turno; label: string; emoji: string }[] = [
@@ -40,14 +41,17 @@ function ChipBtn({
   );
 }
 
-export function AddTarefaDiaSheet({ isOpen, onClose, date }: Props) {
+export function AddTarefaDiaSheet({ isOpen, onClose, date, editItem }: Props) {
   const adicionarAgenda = useAgendaStore((s) => s.adicionarTarefa);
+  const atualizarAgenda = useAgendaStore((s) => s.atualizarTarefa);
   const { adicionarTarefaRotina: adicionarRotina, criancas, parceiro } = useNovaTarefaData();
 
-  const [title,    setTitle]    = useState('');
-  const [turno,    setTurno]    = useState<Turno>('manha');
-  const [time,     setTime]     = useState('');
-  const [assignee, setAssignee] = useState<MemberId>('voce');
+  const isEdit = Boolean(editItem);
+
+  const [title,    setTitle]    = useState(editItem?.title ?? '');
+  const [turno,    setTurno]    = useState<Turno>(editItem?.turno ?? 'manha');
+  const [time,     setTime]     = useState(editItem?.time ?? '');
+  const [assignee, setAssignee] = useState<MemberId>(editItem?.assignee ?? 'voce');
   const [repetir,  setRepetir]  = useState(false);
 
   if (!isOpen) return null;
@@ -55,11 +59,16 @@ export function AddTarefaDiaSheet({ isOpen, onClose, date }: Props) {
 
   const salvar = () => {
     if (!valido) return;
-    if (repetir) {
-      // Recorrente → rotina (aparece todos os dias no turno)
+    if (isEdit && editItem) {
+      atualizarAgenda(editItem.id, {
+        title:    title.trim(),
+        turno,
+        time:     time || undefined,
+        assignee,
+      });
+    } else if (repetir) {
       adicionarRotina(turno, title.trim(), time || undefined);
     } else {
-      // Avulsa → agenda para a data
       adicionarAgenda({
         title:    title.trim(),
         date,
@@ -73,7 +82,7 @@ export function AddTarefaDiaSheet({ isOpen, onClose, date }: Props) {
   };
 
   return (
-    <Sheet title="Nova tarefa" onClose={onClose}>
+    <Sheet title={isEdit ? 'Editar tarefa' : 'Nova tarefa'} onClose={onClose}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
         <FInput value={title} onChange={setTitle} placeholder="O que precisa ser feito?" />
@@ -113,39 +122,43 @@ export function AddTarefaDiaSheet({ isOpen, onClose, date }: Props) {
           </div>
         </div>
 
-        {/* Repetir toggle */}
-        <button
-          onClick={() => setRepetir((v) => !v)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '10px 12px', borderRadius: 12,
-            background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
-            cursor: 'pointer', fontFamily: 'inherit',
-          }}
-        >
-          <div style={{
-            width: 36, height: 20, borderRadius: 10, position: 'relative',
-            background: repetir ? 'var(--vf-rose)' : 'var(--vf-bd)',
-            transition: 'background 0.2s',
-          }}>
-            <div style={{
-              position: 'absolute', top: 2, left: repetir ? 18 : 2,
-              width: 16, height: 16, borderRadius: 8, background: '#fff',
-              transition: 'left 0.2s',
-            }} />
-          </div>
-          <span style={{ fontSize: 13, color: 'var(--vf-tx)', fontWeight: 600 }}>
-            Repetir todos os dias
-          </span>
-        </button>
+        {/* Repetir toggle — oculto em modo edição */}
+        {!isEdit && (
+          <>
+            <button
+              onClick={() => setRepetir((v) => !v)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 12px', borderRadius: 12,
+                background: 'var(--vf-surf)', border: '1px solid var(--vf-bd)',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              <div style={{
+                width: 36, height: 20, borderRadius: 10, position: 'relative',
+                background: repetir ? 'var(--vf-rose)' : 'var(--vf-bd)',
+                transition: 'background 0.2s',
+              }}>
+                <div style={{
+                  position: 'absolute', top: 2, left: repetir ? 18 : 2,
+                  width: 16, height: 16, borderRadius: 8, background: '#fff',
+                  transition: 'left 0.2s',
+                }} />
+              </div>
+              <span style={{ fontSize: 13, color: 'var(--vf-tx)', fontWeight: 600 }}>
+                Repetir todos os dias
+              </span>
+            </button>
 
-        {repetir && (
-          <p style={{ margin: 0, fontSize: 12, color: 'var(--vf-tx-mute)', fontStyle: 'italic', padding: '0 4px' }}>
-            A tarefa será adicionada à sua rotina diária no turno escolhido.
-          </p>
+            {repetir && (
+              <p style={{ margin: 0, fontSize: 12, color: 'var(--vf-tx-mute)', fontStyle: 'italic', padding: '0 4px' }}>
+                A tarefa será adicionada à sua rotina diária no turno escolhido.
+              </p>
+            )}
+          </>
         )}
 
-        <Btn onClick={salvar} disabled={!valido}>Adicionar</Btn>
+        <Btn onClick={salvar} disabled={!valido}>{isEdit ? 'Salvar' : 'Adicionar'}</Btn>
         <Btn variant="ghost" onClick={onClose}>Cancelar</Btn>
       </div>
     </Sheet>

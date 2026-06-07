@@ -31,6 +31,9 @@ function makeId(source: DiaSource, nativeId: string): string {
 
 // ── useDia ────────────────────────────────────────────────────────────────────
 export function useDia(date: ISODate): DiaItem[] {
+  const essMode   = useRotinaStore((s) => s.essMode);
+  const essential = useRotinaStore(useShallow((s) => s.essential));
+
   const rotina  = useRotinaStore(useShallow((s) => ({
     manha: s.tarefas.manha, tarde: s.tarefas.tarde, noite: s.tarefas.noite,
     done:  s.done[date] ?? EMPTY_IDS,
@@ -76,64 +79,105 @@ export function useDia(date: ISODate): DiaItem[] {
     const items: DiaItem[] = [];
 
     // ── rotina ───────────────────────────────────────────────────────────────
-    for (const turno of ['manha', 'tarde', 'noite'] as Turno[]) {
-      for (const t of rotina[turno]) {
+    if (essMode) {
+      // Modo essencial: exibe apenas até 3 tarefas da lista essential
+      const essentialIds = new Set(essential.map((e) => e.id));
+      const essItems: DiaItem[] = [];
+      for (const turno of ['manha', 'tarde', 'noite'] as Turno[]) {
+        for (const t of rotina[turno]) {
+          if (essentialIds.has(t.id)) {
+            essItems.push({
+              id:       makeId('rotina', t.id),
+              nativeId: t.id,
+              source:   'rotina',
+              turno,
+              title:    t.task,
+              time:     t.time,
+              done:     rotina.done.includes(t.id),
+            });
+          }
+        }
+      }
+      // Fallback: se nenhuma tarefa da rotina é marcada como essencial, pega as primeiras do essential
+      if (essItems.length === 0) {
+        for (const ess of essential.slice(0, 3)) {
+          essItems.push({
+            id:       makeId('rotina', ess.id),
+            nativeId: ess.id,
+            source:   'rotina',
+            turno:    'manha',
+            title:    ess.task,
+            done:     rotina.done.includes(ess.id),
+          });
+        }
+      }
+      items.push(...essItems.slice(0, 3));
+    } else {
+      for (const turno of ['manha', 'tarde', 'noite'] as Turno[]) {
+        for (const t of rotina[turno]) {
+          items.push({
+            id:       makeId('rotina', t.id),
+            nativeId: t.id,
+            source:   'rotina',
+            turno,
+            title:    t.task,
+            time:     t.time,
+            done:     rotina.done.includes(t.id),
+          });
+        }
+      }
+    }
+
+    // ── casa (oculto no modo essencial) ──────────────────────────────────────
+    if (!essMode) {
+      for (const t of casa.tarefas) {
+        if (!tarefaAtivaNoDia(t, date)) continue;
         items.push({
-          id:       makeId('rotina', t.id),
+          id:       makeId('casa', t.id),
           nativeId: t.id,
-          source:   'rotina',
-          turno,
+          source:   'casa',
+          turno:    'manha',
           title:    t.task,
-          time:     t.time,
-          done:     rotina.done.includes(t.id),
+          tag:      t.ambiente,
+          done:     casa.done.includes(t.id),
         });
       }
     }
 
-    // ── casa ─────────────────────────────────────────────────────────────────
-    for (const t of casa.tarefas) {
-      if (!tarefaAtivaNoDia(t, date)) continue;
-      items.push({
-        id:       makeId('casa', t.id),
-        nativeId: t.id,
-        source:   'casa',
-        turno:    'manha',
-        title:    t.task,
-        tag:      t.ambiente,
-        done:     casa.done.includes(t.id),
-      });
-    }
-
-    // ── crianças ─────────────────────────────────────────────────────────────
-    for (const crianca of kids.criancas) {
-      for (const kt of crianca.tasks) {
-        items.push({
-          id:       makeId('crianca', kt.id),
-          nativeId: kt.id,
-          source:   'crianca',
-          turno:    turnoFromTime(kt.time),
-          title:    `${crianca.avatar} ${kt.task}`,
-          time:     kt.time,
-          tag:      crianca.name,
-          assignee: crianca.id,
-          done:     kids.done.includes(kt.id),
-        });
+    // ── crianças (oculto no modo essencial) ──────────────────────────────────
+    if (!essMode) {
+      for (const crianca of kids.criancas) {
+        for (const kt of crianca.tasks) {
+          items.push({
+            id:       makeId('crianca', kt.id),
+            nativeId: kt.id,
+            source:   'crianca',
+            turno:    turnoFromTime(kt.time),
+            title:    `${crianca.avatar} ${kt.task}`,
+            time:     kt.time,
+            tag:      crianca.name,
+            assignee: crianca.id,
+            done:     kids.done.includes(kt.id),
+          });
+        }
       }
     }
 
-    // ── pets ─────────────────────────────────────────────────────────────────
-    for (const pet of pets.pets) {
-      for (const c of pet.cuidados) {
-        items.push({
-          id:       makeId('pet', c.id),
-          nativeId: c.id,
-          source:   'pet',
-          turno:    turnoFromTime(c.horario),
-          title:    c.descricao,
-          time:     c.horario,
-          tag:      `${pet.avatar} ${pet.name}`,
-          done:     (pets.done[c.id] ?? 0) > 0,
-        });
+    // ── pets (oculto no modo essencial) ──────────────────────────────────────
+    if (!essMode) {
+      for (const pet of pets.pets) {
+        for (const c of pet.cuidados) {
+          items.push({
+            id:       makeId('pet', c.id),
+            nativeId: c.id,
+            source:   'pet',
+            turno:    turnoFromTime(c.horario),
+            title:    c.descricao,
+            time:     c.horario,
+            tag:      `${pet.avatar} ${pet.name}`,
+            done:     (pets.done[c.id] ?? 0) > 0,
+          });
+        }
       }
     }
 
@@ -176,7 +220,7 @@ export function useDia(date: ISODate): DiaItem[] {
       return 0;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date, rotina, casa, kids, pets, reminders, agendaTarefas, agendaDoneIds]);
+  }, [date, essMode, essential, rotina, casa, kids, pets, reminders, agendaTarefas, agendaDoneIds]);
 }
 
 // useDiaPct — percentual de itens concluídos no dia

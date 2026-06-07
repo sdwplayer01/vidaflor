@@ -95,6 +95,8 @@ export interface FinancasActions {
   adicionarParcelada:         (input: AdicionarParceladaInput) => void;
   marcarComoPago:             (id: ID) => void;
   desmarcarPago:              (id: ID) => void;
+  concretizarVirtual:         (virtualId: ID) => void;
+  desmarcarVirtual:           (virtualId: ID) => void;
   removerTransacao:           (id: ID) => void;
   removerGrupoParcelado:      (groupId: ID) => void;
   // Item 9: editar transação

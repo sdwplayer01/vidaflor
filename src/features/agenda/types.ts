@@ -37,6 +37,7 @@ export interface AgendaState {
 
 export interface AgendaActions {
   adicionarTarefa:  (t: Omit<TarefaAvulsa, 'id' | 'done' | 'createdAt'>) => void;
+  atualizarTarefa:  (id: ID, patch: Partial<Omit<TarefaAvulsa, 'id' | 'createdAt'>>) => void;
   removerTarefa:    (id: ID) => void;
   toggleTarefa:     (date: ISODate, id: ID) => void;
   adicionarCaptura: (text: string) => void;
