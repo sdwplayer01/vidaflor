@@ -74,7 +74,13 @@ export function useOrcamentoMes(mes?: IsoMonth) {
     useShallow((s) => {
       const m          = mes ?? currentMonth();
       const entry      = s.budget[m];
-      const disponivel = entry?.total ?? 0;
+      let disponivel   = entry?.total ?? 0;
+      
+      // Se não há um total definido no mês (ou é zero), fallback para a soma dos limites dos envelopes criados
+      if (disponivel === 0 && entry?.porCategoria) {
+        disponivel = Object.values(entry.porCategoria).reduce((acc, val) => acc + (val ?? 0), 0);
+      }
+
       const { saidas } = calcSaldoMes(s.transactions, m);
       const gasto      = saidas;
       const restante   = disponivel - gasto;
