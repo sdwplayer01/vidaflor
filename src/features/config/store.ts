@@ -13,11 +13,12 @@ interface ConfigState extends AppConfig {
 }
 
 interface ConfigActions {
-  setTheme:    (key: ThemeKey) => void;
-  setName:     (name: string) => void;
-  toggleDash:  (key: keyof DashConfig) => void;
-  setDash:     (dash: Partial<DashConfig>) => void;
-  setParceiro: (p: Parceiro | undefined) => void;
+  setTheme:          (key: ThemeKey) => void;
+  setName:           (name: string) => void;
+  toggleDash:        (key: keyof DashConfig) => void;
+  setDash:           (dash: Partial<DashConfig>) => void;
+  setParceiro:       (p: Parceiro | undefined) => void;
+  toggleHideBalance: () => void;
 }
 
 const defaultDash: DashConfig = {
@@ -37,11 +38,12 @@ const defaultDash: DashConfig = {
 export const useConfigStore = create<ConfigState & ConfigActions>()(
   persistVidaFlor(
     (set) => ({
-      theme:     'aurora',
-      name:      'Amor',
-      dash:      defaultDash,
-      _version:  CONFIG_STORE_VERSION,
-      _hydrated: false,
+      theme:       'aurora',
+      name:        'Amor',
+      dash:        defaultDash,
+      hideBalance: false,
+      _version:    CONFIG_STORE_VERSION,
+      _hydrated:   false,
 
       setTheme: (key) => {
         applyTheme(resolveTheme(key));
@@ -61,6 +63,9 @@ export const useConfigStore = create<ConfigState & ConfigActions>()(
         })),
 
       setParceiro: (p) => set({ parceiro: p }),
+
+      toggleHideBalance: () =>
+        set((state) => ({ hideBalance: !state.hideBalance })),
     }),
     {
       name:    STORAGE_KEYS.config,

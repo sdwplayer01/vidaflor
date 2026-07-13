@@ -141,6 +141,11 @@ export const seedFinancas: FinancasState = {
       },
     },
   },
+  revisao: {
+    reflexoes:  {},
+    focos:      {},
+    conquistas: {},
+  },
   _version:  FINANCAS_VERSION,
   _hydrated: false,
 };

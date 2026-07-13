@@ -1,7 +1,7 @@
 // src/features/config/migrations.ts
 import { AppConfig } from "./types";
 
-export const CONFIG_STORE_VERSION = 3;
+export const CONFIG_STORE_VERSION = 4;
 
 /** Maps legacy theme keys to the new Aurora/Crepusculo system */
 const THEME_MAP: Record<string, string> = {
@@ -41,6 +41,10 @@ export function migrateConfigState(persistedState: any, version: number): any {
 
   if (version < 3) {
     // parceiro é opcional — sem transformação necessária
+  }
+
+  if (version < 4) {
+    state.hideBalance = state.hideBalance ?? false;
   }
 
   return state;

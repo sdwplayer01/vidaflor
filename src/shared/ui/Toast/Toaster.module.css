@@ -1,0 +1,52 @@
+/* Toaster.module.css — toast flutuante com ação opcional */
+
+.root {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 460px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--vf-r-md, 14px);
+  background: var(--vf-tx);
+  color: var(--vf-bg);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  font-size: 14px;
+  animation: toast-in 0.28s var(--vf-ease-spring, ease-out);
+}
+
+.msg {
+  flex: 1;
+  min-width: 0;
+}
+
+.action {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--vf-p);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -12,6 +12,7 @@ import { ErrorBoundary } from "@/shared/ui/ErrorBoundary/ErrorBoundary";
 import { boot } from "./app/boot";
 import { getSession } from "@/features/auth/api/supabase";
 import { useAuthStore } from "@/features/auth/store";
+import { registerSW } from "virtual:pwa-register";
 
 (async () => {
   boot();
@@ -34,4 +35,17 @@ import { useAuthStore } from "@/features/auth/store";
       </ErrorBoundary>
     </StrictMode>
   );
+
+  // PWA: registrar service worker com prompt de atualização
+  registerSW({
+    onNeedRefresh() {
+      if (confirm("Nova versão disponível. Atualizar agora?")) {
+        // O callback de updateSW é retornado pelo registerSW
+        window.location.reload();
+      }
+    },
+    onOfflineReady() {
+      console.log("[VidaFlor] App pronto para uso offline.");
+    },
+  });
 })();

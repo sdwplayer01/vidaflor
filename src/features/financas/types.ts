@@ -81,11 +81,25 @@ export interface BudgetEntry {
   porCategoria: Record<string, Money>;
 }
 
+// ── Revisão (reflexão mensal/anual) ───────────────────────────────────────────
+// Foco do mês: objetivo → resultado.
+export interface FocoMes {
+  objetivo:  string;
+  resultado: string;
+}
+
+export interface RevisaoState {
+  reflexoes:  Record<IsoMonth, Record<string, string>>; // mes    -> { q1..q4 }
+  focos:      Record<IsoMonth, FocoMes>;                 // mes    -> objetivo/resultado
+  conquistas: Record<string,   Record<string, string>>; // 'YYYY' -> { c1..c3 }
+}
+
 // ── Estado e actions do store ─────────────────────────────────────────────────
 export interface FinancasState {
   transactions: Transaction[];
   cards:        Card[];
   budget:       Record<IsoMonth, BudgetEntry>;
+  revisao:      RevisaoState;
   _version:     number;
   _hydrated:    boolean;
 }
@@ -98,6 +112,7 @@ export interface FinancasActions {
   concretizarVirtual:         (virtualId: ID) => void;
   desmarcarVirtual:           (virtualId: ID) => void;
   removerTransacao:           (id: ID) => void;
+  restaurarTransacao:         (tx: Transaction) => void;
   removerGrupoParcelado:      (groupId: ID) => void;
   // Item 9: editar transação
   atualizarTransacao:         (id: ID, patch: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
@@ -111,4 +126,8 @@ export interface FinancasActions {
   definirOrcamentoCategoria:  (month: IsoMonth, categoria: string, amount: Money) => void;
   removerEnvelope:            (month: IsoMonth, categoria: string) => void;
   limparOrcamentoMes:         (month: IsoMonth) => void;
+  // Fatia 2: revisão reflexiva
+  setReflexao:                (mes: IsoMonth, qKey: string, valor: string) => void;
+  setFoco:                    (mes: IsoMonth, campo: keyof FocoMes, valor: string) => void;
+  setConquista:               (ano: string, cKey: string, valor: string) => void;
 }

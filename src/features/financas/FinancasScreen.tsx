@@ -1,6 +1,6 @@
 // src/features/financas/FinancasScreen.tsx
 import { useState, useMemo } from 'react';
-import { Plus, TrendingUp, TrendingDown, Search, X, Download } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Search, X, Download, Eye, EyeOff } from 'lucide-react';
 import { MonthCarousel }       from './components/MonthCarousel';
 import { BudgetBar }           from './components/BudgetBar';
 import { ProximasContas }      from './components/ProximasContas';
@@ -9,8 +9,11 @@ import { CardItem }            from './components/CardItem';
 import { AddTransactionSheet } from './components/AddTransactionSheet';
 import { AddCardSheet }        from './components/AddCardSheet';
 import { CardDetailSheet }     from './components/CardDetailSheet';
+import { RevisaoTab }          from './components/RevisaoTab';
 import { useSaldoDoMes, useTransacoesDoMes, useCartoes } from './selectors';
 import { useFinancasStore }    from './store';
+import { useConfigStore }      from '@/features/config/store';
+import { toast }               from '@/shared/ui/Toast';
 import { formatBRL }           from '@/shared/utils/money';
 import { HEADERS }             from '@/shared/constants/messages';
 import type { Card, IsoMonth } from './types';
@@ -21,13 +24,14 @@ function currentMonth(): IsoMonth {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-type Tab    = 'resumo' | 'transacoes' | 'cartoes';
+type Tab    = 'resumo' | 'transacoes' | 'cartoes' | 'revisao';
 type Filtro = 'todos' | 'entradas' | 'saidas' | 'a-pagar' | string; // string = cardId
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'resumo',     label: 'resumo'     },
   { key: 'transacoes', label: 'movimentos' },
   { key: 'cartoes',    label: 'cartoes'    },
+  { key: 'revisao',    label: 'revisao'    },
 ];
 
 
@@ -76,12 +80,27 @@ export function FinancasScreen() {
   const saldo         = useSaldoDoMes(mes);
   const transacoes    = useTransacoesDoMes(mes);
   const cartoes       = useCartoes();
+  const hideBalance        = useConfigStore((s) => s.hideBalance);
+  const toggleHideBalance  = useConfigStore((s) => s.toggleHideBalance);
+  const fmt = (v: number) => (hideBalance ? 'R$ ••••' : `R$ ${formatBRL(v)}`);
   const marcarPago         = useFinancasStore((s) => s.marcarComoPago);
   const desmarcar          = useFinancasStore((s) => s.desmarcarPago);
   const concretizarVirtual = useFinancasStore((s) => s.concretizarVirtual);
   const desmarcarVirtual   = useFinancasStore((s) => s.desmarcarVirtual);
   const remover            = useFinancasStore((s) => s.removerTransacao);
+  const restaurar          = useFinancasStore((s) => s.restaurarTransacao);
   const removerCartao      = useFinancasStore((s) => s.removerCartao);
+
+  const handleRemove = (id: ID) => {
+    const tx = transacoes.find((t) => t.id === id);
+    remover(id);
+    // Transações virtuais (derivadas) não são restauráveis — sem undo
+    if (!tx || id.includes('_v_')) return;
+    toast('Movimento removido.', {
+      actionLabel: 'Desfazer',
+      onAction: () => restaurar(tx),
+    });
+  };
 
   const handleTogglePago = (id: ID) => {
     const tx = transacoes.find((t) => t.id === id);
@@ -177,7 +196,7 @@ export function FinancasScreen() {
           color: saldoPositivo ? 'var(--vf-sage)' : 'var(--vf-coral)',
         }}>
           {saldoPositivo ? HEADERS.financas.saldoPos : HEADERS.financas.saldoNeg}
-          <span className="vf-mono">R$ {formatBRL(saldo.saldo)}</span>
+          <span className="vf-mono">{fmt(saldo.saldo)}</span>
         </div>
       </div>
 
@@ -198,23 +217,38 @@ export function FinancasScreen() {
           width: 140, height: 140, borderRadius: '50%',
           background: 'rgba(255,255,255,0.10)',
         }} />
+        <button
+          onClick={toggleHideBalance}
+          title={hideBalance ? 'Mostrar valores' : 'Ocultar valores'}
+          aria-label={hideBalance ? 'Mostrar valores' : 'Ocultar valores'}
+          style={{
+            position: 'absolute', top: 14, right: 14,
+            width: 32, height: 32, borderRadius: 10,
+            background: 'rgba(255,255,255,0.16)', border: 'none',
+            color: 'var(--vf-on-rose)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          {hideBalance ? <EyeOff size={16} /> : <Eye size={16} />}
+        </button>
         <div className="vf-eyebrow" style={{ color: 'var(--vf-on-rose)', opacity: 0.85 }}>saldo do mes</div>
         <div style={{ fontSize: 36, marginTop: 4, lineHeight: 1, fontFamily: 'var(--vf-font-display)', fontStyle: 'italic' }}>
-          R$ {formatBRL(saldo.saldo)}
+          {fmt(saldo.saldo)}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <TrendingUp size={14} style={{ opacity: 0.85 }} />
             <div>
               <div style={{ fontSize: 10, opacity: 0.7 }}>entrou</div>
-              <div className="vf-mono" style={{ fontSize: 13 }}>R$ {formatBRL(saldo.entradas)}</div>
+              <div className="vf-mono" style={{ fontSize: 13 }}>{fmt(saldo.entradas)}</div>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <TrendingDown size={14} style={{ opacity: 0.85 }} />
             <div>
               <div style={{ fontSize: 10, opacity: 0.7 }}>saiu</div>
-              <div className="vf-mono" style={{ fontSize: 13 }}>R$ {formatBRL(saldo.saidas)}</div>
+              <div className="vf-mono" style={{ fontSize: 13 }}>{fmt(saldo.saidas)}</div>
             </div>
           </div>
         </div>
@@ -329,7 +363,7 @@ export function FinancasScreen() {
                   key={tx.id}
                   tx={tx}
                   onTogglePago={handleTogglePago}
-                  onRemove={remover}
+                  onRemove={handleRemove}
                   onEdit={handleEdit}
                 />
               ))
@@ -364,6 +398,9 @@ export function FinancasScreen() {
           </button>
         </>
       )}
+
+      {/* Revisao */}
+      {tab === 'revisao' && <RevisaoTab mes={mes} />}
 
       {/* Cartoes */}
       {tab === 'cartoes' && (

@@ -4,12 +4,13 @@
 import { useState } from 'react';
 import { Sheet }         from '@/shared/ui/Sheet';
 import { FInput }        from '@/shared/ui/FInput';
+import { MoneyPad }      from '@/shared/ui/MoneyPad';
 import { Btn }           from '@/shared/ui/Btn';
 import { CategoryChips } from './CategoryChips';
 import { useFinancasStore } from '../store';
 import { useCartoes, useTransacao } from '../selectors';
 import { today }         from '@/shared/utils/date';
-import { parseBRL, formatBRL, maskAmount } from '@/shared/utils/money';
+import { parseBRL, formatBRL } from '@/shared/utils/money';
 import type { Transaction, TransactionType } from '../types';
 import type { ID } from '@/shared/types/common';
 
@@ -108,11 +109,9 @@ function TransactionForm({ modoEdicao, txId: _txId, initial, onSave, onClose }: 
           onChange={(v) => setForm((f) => ({ ...f, desc: v }))}
           placeholder="Descricao"
         />
-        <FInput
-          value={form.amount}
-          onChange={(v) => setForm((f) => ({ ...f, amount: maskAmount(v) }))}
-          placeholder="0,00"
-          inputMode="numeric"
+        <MoneyPad
+          value={amountCents}
+          onChange={(c) => setForm((f) => ({ ...f, amount: c === 0 ? '' : formatBRL(c) }))}
         />
         <FInput
           value={form.date}

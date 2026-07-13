@@ -6,7 +6,7 @@ import {
   calcSaldoMes, calcFatura, proximasContas, projecaoMeses,
   montarFatura, expandirRecorrentes,
 } from './utils';
-import type { Card, Fatura, Transaction, Money, IsoMonth } from './types';
+import type { Card, Fatura, Transaction, Money, IsoMonth, FocoMes } from './types';
 import type { ID } from '@/shared/types/common';
 
 function currentMonth(): IsoMonth {
@@ -158,4 +158,24 @@ export function useProjecaoMeses(qtd = 3) {
     () => projecaoMeses(transactions, currentMonth(), qtd),
     [transactions, qtd]
   );
+}
+
+// ── Fatia 2: revisão reflexiva ────────────────────────────────────────────────
+// Sentinelas congeladas: caso "vazio" SEMPRE com a mesma referência (anti-#185).
+const EMPTY_REFLEXAO: Record<string, string> = Object.freeze({});
+const FOCO_VAZIO: FocoMes = Object.freeze({ objetivo: '', resultado: '' });
+const EMPTY_CONQUISTAS: Record<string, string> = Object.freeze({});
+
+// Cada seletor lê UM sub-objeto direto do store (ref estável) ou sentinela.
+// Sem useShallow/.map — Object.is resolve; só re-renderiza quando o dado muda.
+export function useReflexaoMes(mes: IsoMonth): Record<string, string> {
+  return useFinancasStore((s) => s.revisao.reflexoes[mes] ?? EMPTY_REFLEXAO);
+}
+
+export function useFocoMes(mes: IsoMonth): FocoMes {
+  return useFinancasStore((s) => s.revisao.focos[mes] ?? FOCO_VAZIO);
+}
+
+export function useConquistasAno(ano: string): Record<string, string> {
+  return useFinancasStore((s) => s.revisao.conquistas[ano] ?? EMPTY_CONQUISTAS);
 }

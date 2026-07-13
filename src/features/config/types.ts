@@ -21,8 +21,9 @@ export interface Parceiro {
 }
 
 export interface AppConfig {
-  theme:     ThemeKey;
-  name:      string;
-  dash:      DashConfig;
-  parceiro?: Parceiro;
+  theme:        ThemeKey;
+  name:         string;
+  dash:         DashConfig;
+  parceiro?:    Parceiro;
+  hideBalance?: boolean;   // oculta valores monetários sensíveis em telas públicas
 }

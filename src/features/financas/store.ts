@@ -105,6 +105,14 @@ export const useFinancasStore = create<Store>()(
           transactions: s.transactions.filter((t) => t.id !== id),
         })),
 
+      // Desfazer remoção: reinsere a transação preservando id/installment/createdAt
+      restaurarTransacao: (tx: Transaction) =>
+        set((s) =>
+          s.transactions.some((t) => t.id === tx.id)
+            ? s
+            : { transactions: [...s.transactions, tx] }
+        ),
+
       removerGrupoParcelado: (groupId: ID) =>
         set((s) => ({
           transactions: s.transactions.filter(
@@ -218,6 +226,40 @@ export const useFinancasStore = create<Store>()(
         set((s) => {
           const { [month]: _removed, ...rest } = s.budget;
           return { budget: rest };
+        }),
+
+      // Fatia 2: revisão reflexiva — merges imutáveis preservando demais chaves
+      setReflexao: (mes: IsoMonth, qKey: string, valor: string) =>
+        set((s) => {
+          const atual = s.revisao.reflexoes[mes] ?? {};
+          return {
+            revisao: {
+              ...s.revisao,
+              reflexoes: { ...s.revisao.reflexoes, [mes]: { ...atual, [qKey]: valor } },
+            },
+          };
+        }),
+
+      setFoco: (mes: IsoMonth, campo, valor: string) =>
+        set((s) => {
+          const atual = s.revisao.focos[mes] ?? { objetivo: '', resultado: '' };
+          return {
+            revisao: {
+              ...s.revisao,
+              focos: { ...s.revisao.focos, [mes]: { ...atual, [campo]: valor } },
+            },
+          };
+        }),
+
+      setConquista: (ano: string, cKey: string, valor: string) =>
+        set((s) => {
+          const atual = s.revisao.conquistas[ano] ?? {};
+          return {
+            revisao: {
+              ...s.revisao,
+              conquistas: { ...s.revisao.conquistas, [ano]: { ...atual, [cKey]: valor } },
+            },
+          };
         }),
     }),
     {

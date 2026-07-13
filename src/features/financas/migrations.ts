@@ -1,6 +1,6 @@
 // src/features/financas/migrations.ts
 
-export const FINANCAS_VERSION = 3;
+export const FINANCAS_VERSION = 4;
 
 export function migrate(state: any, fromVersion: number): any {
   let s = state;
@@ -52,6 +52,15 @@ export function migrate(state: any, fromVersion: number): any {
       }
     }
     s = { ...s, budget: newBudget };
+  }
+
+  // v3 -> v4: adiciona container de revisão (reflexão mensal/anual).
+  // Campos novos — apenas garante o shape vazio, sem transformar dados.
+  if (fromVersion < 4) {
+    s = {
+      ...s,
+      revisao: s.revisao ?? { reflexoes: {}, focos: {}, conquistas: {} },
+    };
   }
 
   return s;

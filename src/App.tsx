@@ -10,6 +10,7 @@ import { AuthGate }                 from "./features/auth/AuthGate";
 import { SyncBoot }                 from "./features/auth/SyncBoot";
 import { useSyncReady }             from "./shared/sync/sync-ready-store";
 import { LandingScreen }            from "./screens/LandingScreen";
+import { Toaster }                  from "./shared/ui/Toast";
 
 function SplashSincronizando() {
   return (
@@ -71,6 +72,7 @@ export function App() {
       ) : (
         <SplashSincronizando />
       )}
+      <Toaster />
     </>
   );
 }
